@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Motif PLACEHOLDER (trois barres ascendantes, évoquant la gestion/croissance
+    d'une PME) — voir ic_launcher.xml pour le contexte. Géométrie volontairement
+    contenue dans la zone de sécurité 66dp x 66dp centrée (21..87 sur un canevas
+    108x108), comme recommandé pour les icônes adaptatives afin d'éviter tout
+    rognage par les masques (cercle, carré arrondi, etc.) selon le lanceur.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path android:fillColor="#FFFFFFFF" android:pathData="M30,56L42,56L42,76L30,76Z" />
+    <path android:fillColor="#FFFFFFFF" android:pathData="M48,44L60,44L60,76L48,76Z" />
+    <path android:fillColor="#FFFFFFFF" android:pathData="M66,32L78,32L78,76L66,76Z" />
+</vector>

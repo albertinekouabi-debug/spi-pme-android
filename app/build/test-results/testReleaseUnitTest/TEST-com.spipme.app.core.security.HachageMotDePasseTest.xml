@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.spipme.app.core.security.HachageMotDePasseTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-09-16T23:16:04" hostname="CEJ_MES_AMOURS" time="1.484">
+  <properties/>
+  <testcase name="deux hachages du meme mot de passe sont differents (sel aleatoire)" classname="com.spipme.app.core.security.HachageMotDePasseTest" time="0.935"/>
+  <testcase name="un hachage malforme est rejete sans exception" classname="com.spipme.app.core.security.HachageMotDePasseTest" time="0.006"/>
+  <testcase name="un mot de passe correct est verifie avec succes" classname="com.spipme.app.core.security.HachageMotDePasseTest" time="0.267"/>
+  <testcase name="un mot de passe incorrect echoue la verification" classname="com.spipme.app.core.security.HachageMotDePasseTest" time="0.275"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,0 +1,21 @@
+package com.spipme.app.ui.treasury
+
+import com.spipme.app.domain.model.PointSolde
+import com.spipme.app.domain.model.ResumeTresorerie
+import com.spipme.app.domain.model.Transaction
+
+enum class OngletTresorerie(val libelle: String, val typeFiltre: String?) {
+    TOUTES("Toutes", null),
+    ENTREES("Entrées", "entree"),
+    SORTIES("Sorties", "sortie"),
+}
+
+data class TreasuryUiState(
+    val enChargement: Boolean = true,
+    val transactions: List<Transaction> = emptyList(),
+    val resume: ResumeTresorerie? = null,
+    val evolution: List<PointSolde> = emptyList(),
+    val ongletActif: OngletTresorerie = OngletTresorerie.TOUTES,
+    val messageErreur: String? = null,
+    val secteurActifNom: String = "",
+)

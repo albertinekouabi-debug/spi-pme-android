@@ -1,0 +1,1062 @@
+package com.spipme.app;
+
+import android.app.Activity;
+import android.app.Service;
+import android.view.View;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.SavedStateHandle;
+import androidx.lifecycle.ViewModel;
+import com.spipme.app.core.network.AuthInterceptor;
+import com.spipme.app.core.network.NetworkModule_FournirAlerteApiFactory;
+import com.spipme.app.core.network.NetworkModule_FournirAuthApiBrutFactory;
+import com.spipme.app.core.network.NetworkModule_FournirAuthApiFactory;
+import com.spipme.app.core.network.NetworkModule_FournirEntiteApiFactory;
+import com.spipme.app.core.network.NetworkModule_FournirImportApiFactory;
+import com.spipme.app.core.network.NetworkModule_FournirJsonFactory;
+import com.spipme.app.core.network.NetworkModule_FournirLoggingInterceptorFactory;
+import com.spipme.app.core.network.NetworkModule_FournirOkHttpClientAuthentifieFactory;
+import com.spipme.app.core.network.NetworkModule_FournirOkHttpClientBrutFactory;
+import com.spipme.app.core.network.NetworkModule_FournirRessourceApiFactory;
+import com.spipme.app.core.network.NetworkModule_FournirRetrofitAuthentifieFactory;
+import com.spipme.app.core.network.NetworkModule_FournirRetrofitBrutFactory;
+import com.spipme.app.core.network.NetworkModule_FournirSuggestionApiFactory;
+import com.spipme.app.core.network.NetworkModule_FournirTacheApiFactory;
+import com.spipme.app.core.network.NetworkModule_FournirTransactionApiFactory;
+import com.spipme.app.core.network.TokenAuthenticator;
+import com.spipme.app.core.security.SessionManager;
+import com.spipme.app.core.security.TokenManager;
+import com.spipme.app.data.local.AppDatabase;
+import com.spipme.app.data.local.dao.UtilisateurLocalDao;
+import com.spipme.app.data.remote.api.AlerteApi;
+import com.spipme.app.data.remote.api.AuthApi;
+import com.spipme.app.data.remote.api.EntiteApi;
+import com.spipme.app.data.remote.api.ImportApi;
+import com.spipme.app.data.remote.api.RessourceApi;
+import com.spipme.app.data.remote.api.SuggestionApi;
+import com.spipme.app.data.remote.api.TacheApi;
+import com.spipme.app.data.remote.api.TransactionApi;
+import com.spipme.app.data.repository.AlerteRepositoryImpl;
+import com.spipme.app.data.repository.AuthRepositoryImpl;
+import com.spipme.app.data.repository.EntiteRepositoryImpl;
+import com.spipme.app.data.repository.ImportRepositoryImpl;
+import com.spipme.app.data.repository.RessourceRepositoryImpl;
+import com.spipme.app.data.repository.SuggestionRepositoryImpl;
+import com.spipme.app.data.repository.TacheRepositoryImpl;
+import com.spipme.app.data.repository.TransactionRepositoryImpl;
+import com.spipme.app.di.DatabaseModule_FournirAppDatabaseFactory;
+import com.spipme.app.di.DatabaseModule_FournirUtilisateurLocalDaoFactory;
+import com.spipme.app.ui.alerts.AlertsViewModel;
+import com.spipme.app.ui.alerts.AlertsViewModel_HiltModules;
+import com.spipme.app.ui.auth.login.LoginViewModel;
+import com.spipme.app.ui.auth.login.LoginViewModel_HiltModules;
+import com.spipme.app.ui.auth.offline.OfflineLoginViewModel;
+import com.spipme.app.ui.auth.offline.OfflineLoginViewModel_HiltModules;
+import com.spipme.app.ui.home.HomeViewModel;
+import com.spipme.app.ui.home.HomeViewModel_HiltModules;
+import com.spipme.app.ui.imports.ImportsViewModel;
+import com.spipme.app.ui.imports.ImportsViewModel_HiltModules;
+import com.spipme.app.ui.intelligence.IntelligenceViewModel;
+import com.spipme.app.ui.intelligence.IntelligenceViewModel_HiltModules;
+import com.spipme.app.ui.registry.RegistryViewModel;
+import com.spipme.app.ui.registry.RegistryViewModel_HiltModules;
+import com.spipme.app.ui.registry.creation.CreerEntiteViewModel;
+import com.spipme.app.ui.registry.creation.CreerEntiteViewModel_HiltModules;
+import com.spipme.app.ui.resources.ResourcesViewModel;
+import com.spipme.app.ui.resources.ResourcesViewModel_HiltModules;
+import com.spipme.app.ui.resources.creation.CreerRessourceViewModel;
+import com.spipme.app.ui.resources.creation.CreerRessourceViewModel_HiltModules;
+import com.spipme.app.ui.tasks.TasksViewModel;
+import com.spipme.app.ui.tasks.TasksViewModel_HiltModules;
+import com.spipme.app.ui.tasks.creation.CreerTacheViewModel;
+import com.spipme.app.ui.tasks.creation.CreerTacheViewModel_HiltModules;
+import com.spipme.app.ui.treasury.TreasuryViewModel;
+import com.spipme.app.ui.treasury.TreasuryViewModel_HiltModules;
+import com.spipme.app.ui.treasury.creation.CreerTransactionViewModel;
+import com.spipme.app.ui.treasury.creation.CreerTransactionViewModel_HiltModules;
+import dagger.hilt.android.ActivityRetainedLifecycle;
+import dagger.hilt.android.ViewModelLifecycle;
+import dagger.hilt.android.internal.builders.ActivityComponentBuilder;
+import dagger.hilt.android.internal.builders.ActivityRetainedComponentBuilder;
+import dagger.hilt.android.internal.builders.FragmentComponentBuilder;
+import dagger.hilt.android.internal.builders.ServiceComponentBuilder;
+import dagger.hilt.android.internal.builders.ViewComponentBuilder;
+import dagger.hilt.android.internal.builders.ViewModelComponentBuilder;
+import dagger.hilt.android.internal.builders.ViewWithFragmentComponentBuilder;
+import dagger.hilt.android.internal.lifecycle.DefaultViewModelFactories;
+import dagger.hilt.android.internal.lifecycle.DefaultViewModelFactories_InternalFactoryFactory_Factory;
+import dagger.hilt.android.internal.managers.ActivityRetainedComponentManager_LifecycleModule_ProvideActivityRetainedLifecycleFactory;
+import dagger.hilt.android.internal.managers.SavedStateHandleHolder;
+import dagger.hilt.android.internal.modules.ApplicationContextModule;
+import dagger.hilt.android.internal.modules.ApplicationContextModule_ProvideContextFactory;
+import dagger.internal.DaggerGenerated;
+import dagger.internal.DoubleCheck;
+import dagger.internal.IdentifierNameString;
+import dagger.internal.KeepFieldType;
+import dagger.internal.LazyClassKeyMap;
+import dagger.internal.MapBuilder;
+import dagger.internal.Preconditions;
+import dagger.internal.Provider;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
+import javax.annotation.processing.Generated;
+import kotlinx.serialization.json.Json;
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.Retrofit;
+
+@DaggerGenerated
+@Generated(
+    value = "dagger.internal.codegen.ComponentProcessor",
+    comments = "https://dagger.dev"
+)
+@SuppressWarnings({
+    "unchecked",
+    "rawtypes",
+    "KotlinInternal",
+    "KotlinInternalInJava",
+    "cast",
+    "deprecation"
+})
+public final class DaggerSpiPmeApplication_HiltComponents_SingletonC {
+  private DaggerSpiPmeApplication_HiltComponents_SingletonC() {
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  public static final class Builder {
+    private ApplicationContextModule applicationContextModule;
+
+    private Builder() {
+    }
+
+    public Builder applicationContextModule(ApplicationContextModule applicationContextModule) {
+      this.applicationContextModule = Preconditions.checkNotNull(applicationContextModule);
+      return this;
+    }
+
+    public SpiPmeApplication_HiltComponents.SingletonC build() {
+      Preconditions.checkBuilderRequirement(applicationContextModule, ApplicationContextModule.class);
+      return new SingletonCImpl(applicationContextModule);
+    }
+  }
+
+  private static final class ActivityRetainedCBuilder implements SpiPmeApplication_HiltComponents.ActivityRetainedC.Builder {
+    private final SingletonCImpl singletonCImpl;
+
+    private SavedStateHandleHolder savedStateHandleHolder;
+
+    private ActivityRetainedCBuilder(SingletonCImpl singletonCImpl) {
+      this.singletonCImpl = singletonCImpl;
+    }
+
+    @Override
+    public ActivityRetainedCBuilder savedStateHandleHolder(
+        SavedStateHandleHolder savedStateHandleHolder) {
+      this.savedStateHandleHolder = Preconditions.checkNotNull(savedStateHandleHolder);
+      return this;
+    }
+
+    @Override
+    public SpiPmeApplication_HiltComponents.ActivityRetainedC build() {
+      Preconditions.checkBuilderRequirement(savedStateHandleHolder, SavedStateHandleHolder.class);
+      return new ActivityRetainedCImpl(singletonCImpl, savedStateHandleHolder);
+    }
+  }
+
+  private static final class ActivityCBuilder implements SpiPmeApplication_HiltComponents.ActivityC.Builder {
+    private final SingletonCImpl singletonCImpl;
+
+    private final ActivityRetainedCImpl activityRetainedCImpl;
+
+    private Activity activity;
+
+    private ActivityCBuilder(SingletonCImpl singletonCImpl,
+        ActivityRetainedCImpl activityRetainedCImpl) {
+      this.singletonCImpl = singletonCImpl;
+      this.activityRetainedCImpl = activityRetainedCImpl;
+    }
+
+    @Override
+    public ActivityCBuilder activity(Activity activity) {
+      this.activity = Preconditions.checkNotNull(activity);
+      return this;
+    }
+
+    @Override
+    public SpiPmeApplication_HiltComponents.ActivityC build() {
+      Preconditions.checkBuilderRequirement(activity, Activity.class);
+      return new ActivityCImpl(singletonCImpl, activityRetainedCImpl, activity);
+    }
+  }
+
+  private static final class FragmentCBuilder implements SpiPmeApplication_HiltComponents.FragmentC.Builder {
+    private final SingletonCImpl singletonCImpl;
+
+    private final ActivityRetainedCImpl activityRetainedCImpl;
+
+    private final ActivityCImpl activityCImpl;
+
+    private Fragment fragment;
+
+    private FragmentCBuilder(SingletonCImpl singletonCImpl,
+        ActivityRetainedCImpl activityRetainedCImpl, ActivityCImpl activityCImpl) {
+      this.singletonCImpl = singletonCImpl;
+      this.activityRetainedCImpl = activityRetainedCImpl;
+      this.activityCImpl = activityCImpl;
+    }
+
+    @Override
+    public FragmentCBuilder fragment(Fragment fragment) {
+      this.fragment = Preconditions.checkNotNull(fragment);
+      return this;
+    }
+
+    @Override
+    public SpiPmeApplication_HiltComponents.FragmentC build() {
+      Preconditions.checkBuilderRequirement(fragment, Fragment.class);
+      return new FragmentCImpl(singletonCImpl, activityRetainedCImpl, activityCImpl, fragment);
+    }
+  }
+
+  private static final class ViewWithFragmentCBuilder implements SpiPmeApplication_HiltComponents.ViewWithFragmentC.Builder {
+    private final SingletonCImpl singletonCImpl;
+
+    private final ActivityRetainedCImpl activityRetainedCImpl;
+
+    private final ActivityCImpl activityCImpl;
+
+    private final FragmentCImpl fragmentCImpl;
+
+    private View view;
+
+    private ViewWithFragmentCBuilder(SingletonCImpl singletonCImpl,
+        ActivityRetainedCImpl activityRetainedCImpl, ActivityCImpl activityCImpl,
+        FragmentCImpl fragmentCImpl) {
+      this.singletonCImpl = singletonCImpl;
+      this.activityRetainedCImpl = activityRetainedCImpl;
+      this.activityCImpl = activityCImpl;
+      this.fragmentCImpl = fragmentCImpl;
+    }
+
+    @Override
+    public ViewWithFragmentCBuilder view(View view) {
+      this.view = Preconditions.checkNotNull(view);
+      return this;
+    }
+
+    @Override
+    public SpiPmeApplication_HiltComponents.ViewWithFragmentC build() {
+      Preconditions.checkBuilderRequirement(view, View.class);
+      return new ViewWithFragmentCImpl(singletonCImpl, activityRetainedCImpl, activityCImpl, fragmentCImpl, view);
+    }
+  }
+
+  private static final class ViewCBuilder implements SpiPmeApplication_HiltComponents.ViewC.Builder {
+    private final SingletonCImpl singletonCImpl;
+
+    private final ActivityRetainedCImpl activityRetainedCImpl;
+
+    private final ActivityCImpl activityCImpl;
+
+    private View view;
+
+    private ViewCBuilder(SingletonCImpl singletonCImpl, ActivityRetainedCImpl activityRetainedCImpl,
+        ActivityCImpl activityCImpl) {
+      this.singletonCImpl = singletonCImpl;
+      this.activityRetainedCImpl = activityRetainedCImpl;
+      this.activityCImpl = activityCImpl;
+    }
+
+    @Override
+    public ViewCBuilder view(View view) {
+      this.view = Preconditions.checkNotNull(view);
+      return this;
+    }
+
+    @Override
+    public SpiPmeApplication_HiltComponents.ViewC build() {
+      Preconditions.checkBuilderRequirement(view, View.class);
+      return new ViewCImpl(singletonCImpl, activityRetainedCImpl, activityCImpl, view);
+    }
+  }
+
+  private static final class ViewModelCBuilder implements SpiPmeApplication_HiltComponents.ViewModelC.Builder {
+    private final SingletonCImpl singletonCImpl;
+
+    private final ActivityRetainedCImpl activityRetainedCImpl;
+
+    private SavedStateHandle savedStateHandle;
+
+    private ViewModelLifecycle viewModelLifecycle;
+
+    private ViewModelCBuilder(SingletonCImpl singletonCImpl,
+        ActivityRetainedCImpl activityRetainedCImpl) {
+      this.singletonCImpl = singletonCImpl;
+      this.activityRetainedCImpl = activityRetainedCImpl;
+    }
+
+    @Override
+    public ViewModelCBuilder savedStateHandle(SavedStateHandle handle) {
+      this.savedStateHandle = Preconditions.checkNotNull(handle);
+      return this;
+    }
+
+    @Override
+    public ViewModelCBuilder viewModelLifecycle(ViewModelLifecycle viewModelLifecycle) {
+      this.viewModelLifecycle = Preconditions.checkNotNull(viewModelLifecycle);
+      return this;
+    }
+
+    @Override
+    public SpiPmeApplication_HiltComponents.ViewModelC build() {
+      Preconditions.checkBuilderRequirement(savedStateHandle, SavedStateHandle.class);
+      Preconditions.checkBuilderRequirement(viewModelLifecycle, ViewModelLifecycle.class);
+      return new ViewModelCImpl(singletonCImpl, activityRetainedCImpl, savedStateHandle, viewModelLifecycle);
+    }
+  }
+
+  private static final class ServiceCBuilder implements SpiPmeApplication_HiltComponents.ServiceC.Builder {
+    private final SingletonCImpl singletonCImpl;
+
+    private Service service;
+
+    private ServiceCBuilder(SingletonCImpl singletonCImpl) {
+      this.singletonCImpl = singletonCImpl;
+    }
+
+    @Override
+    public ServiceCBuilder service(Service service) {
+      this.service = Preconditions.checkNotNull(service);
+      return this;
+    }
+
+    @Override
+    public SpiPmeApplication_HiltComponents.ServiceC build() {
+      Preconditions.checkBuilderRequirement(service, Service.class);
+      return new ServiceCImpl(singletonCImpl, service);
+    }
+  }
+
+  private static final class ViewWithFragmentCImpl extends SpiPmeApplication_HiltComponents.ViewWithFragmentC {
+    private final SingletonCImpl singletonCImpl;
+
+    private final ActivityRetainedCImpl activityRetainedCImpl;
+
+    private final ActivityCImpl activityCImpl;
+
+    private final FragmentCImpl fragmentCImpl;
+
+    private final ViewWithFragmentCImpl viewWithFragmentCImpl = this;
+
+    private ViewWithFragmentCImpl(SingletonCImpl singletonCImpl,
+        ActivityRetainedCImpl activityRetainedCImpl, ActivityCImpl activityCImpl,
+        FragmentCImpl fragmentCImpl, View viewParam) {
+      this.singletonCImpl = singletonCImpl;
+      this.activityRetainedCImpl = activityRetainedCImpl;
+      this.activityCImpl = activityCImpl;
+      this.fragmentCImpl = fragmentCImpl;
+
+
+    }
+  }
+
+  private static final class FragmentCImpl extends SpiPmeApplication_HiltComponents.FragmentC {
+    private final SingletonCImpl singletonCImpl;
+
+    private final ActivityRetainedCImpl activityRetainedCImpl;
+
+    private final ActivityCImpl activityCImpl;
+
+    private final FragmentCImpl fragmentCImpl = this;
+
+    private FragmentCImpl(SingletonCImpl singletonCImpl,
+        ActivityRetainedCImpl activityRetainedCImpl, ActivityCImpl activityCImpl,
+        Fragment fragmentParam) {
+      this.singletonCImpl = singletonCImpl;
+      this.activityRetainedCImpl = activityRetainedCImpl;
+      this.activityCImpl = activityCImpl;
+
+
+    }
+
+    @Override
+    public DefaultViewModelFactories.InternalFactoryFactory getHiltInternalFactoryFactory() {
+      return activityCImpl.getHiltInternalFactoryFactory();
+    }
+
+    @Override
+    public ViewWithFragmentComponentBuilder viewWithFragmentComponentBuilder() {
+      return new ViewWithFragmentCBuilder(singletonCImpl, activityRetainedCImpl, activityCImpl, fragmentCImpl);
+    }
+  }
+
+  private static final class ViewCImpl extends SpiPmeApplication_HiltComponents.ViewC {
+    private final SingletonCImpl singletonCImpl;
+
+    private final ActivityRetainedCImpl activityRetainedCImpl;
+
+    private final ActivityCImpl activityCImpl;
+
+    private final ViewCImpl viewCImpl = this;
+
+    private ViewCImpl(SingletonCImpl singletonCImpl, ActivityRetainedCImpl activityRetainedCImpl,
+        ActivityCImpl activityCImpl, View viewParam) {
+      this.singletonCImpl = singletonCImpl;
+      this.activityRetainedCImpl = activityRetainedCImpl;
+      this.activityCImpl = activityCImpl;
+
+
+    }
+  }
+
+  private static final class ActivityCImpl extends SpiPmeApplication_HiltComponents.ActivityC {
+    private final SingletonCImpl singletonCImpl;
+
+    private final ActivityRetainedCImpl activityRetainedCImpl;
+
+    private final ActivityCImpl activityCImpl = this;
+
+    private ActivityCImpl(SingletonCImpl singletonCImpl,
+        ActivityRetainedCImpl activityRetainedCImpl, Activity activityParam) {
+      this.singletonCImpl = singletonCImpl;
+      this.activityRetainedCImpl = activityRetainedCImpl;
+
+
+    }
+
+    @Override
+    public void injectMainActivity(MainActivity mainActivity) {
+    }
+
+    @Override
+    public DefaultViewModelFactories.InternalFactoryFactory getHiltInternalFactoryFactory() {
+      return DefaultViewModelFactories_InternalFactoryFactory_Factory.newInstance(getViewModelKeys(), new ViewModelCBuilder(singletonCImpl, activityRetainedCImpl));
+    }
+
+    @Override
+    public Map<Class<?>, Boolean> getViewModelKeys() {
+      return LazyClassKeyMap.<Boolean>of(MapBuilder.<String, Boolean>newMapBuilder(15).put(LazyClassKeyProvider.com_spipme_app_ui_alerts_AlertsViewModel, AlertsViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_spipme_app_AppViewModel, AppViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_spipme_app_ui_registry_creation_CreerEntiteViewModel, CreerEntiteViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_spipme_app_ui_resources_creation_CreerRessourceViewModel, CreerRessourceViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_spipme_app_ui_tasks_creation_CreerTacheViewModel, CreerTacheViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_spipme_app_ui_treasury_creation_CreerTransactionViewModel, CreerTransactionViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_spipme_app_ui_home_HomeViewModel, HomeViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_spipme_app_ui_imports_ImportsViewModel, ImportsViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_spipme_app_ui_intelligence_IntelligenceViewModel, IntelligenceViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_spipme_app_ui_auth_login_LoginViewModel, LoginViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_spipme_app_ui_auth_offline_OfflineLoginViewModel, OfflineLoginViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_spipme_app_ui_registry_RegistryViewModel, RegistryViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_spipme_app_ui_resources_ResourcesViewModel, ResourcesViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_spipme_app_ui_tasks_TasksViewModel, TasksViewModel_HiltModules.KeyModule.provide()).put(LazyClassKeyProvider.com_spipme_app_ui_treasury_TreasuryViewModel, TreasuryViewModel_HiltModules.KeyModule.provide()).build());
+    }
+
+    @Override
+    public ViewModelComponentBuilder getViewModelComponentBuilder() {
+      return new ViewModelCBuilder(singletonCImpl, activityRetainedCImpl);
+    }
+
+    @Override
+    public FragmentComponentBuilder fragmentComponentBuilder() {
+      return new FragmentCBuilder(singletonCImpl, activityRetainedCImpl, activityCImpl);
+    }
+
+    @Override
+    public ViewComponentBuilder viewComponentBuilder() {
+      return new ViewCBuilder(singletonCImpl, activityRetainedCImpl, activityCImpl);
+    }
+
+    @IdentifierNameString
+    private static final class LazyClassKeyProvider {
+      static String com_spipme_app_ui_treasury_creation_CreerTransactionViewModel = "com.spipme.app.ui.treasury.creation.CreerTransactionViewModel";
+
+      static String com_spipme_app_ui_tasks_creation_CreerTacheViewModel = "com.spipme.app.ui.tasks.creation.CreerTacheViewModel";
+
+      static String com_spipme_app_ui_intelligence_IntelligenceViewModel = "com.spipme.app.ui.intelligence.IntelligenceViewModel";
+
+      static String com_spipme_app_ui_auth_login_LoginViewModel = "com.spipme.app.ui.auth.login.LoginViewModel";
+
+      static String com_spipme_app_ui_tasks_TasksViewModel = "com.spipme.app.ui.tasks.TasksViewModel";
+
+      static String com_spipme_app_ui_registry_RegistryViewModel = "com.spipme.app.ui.registry.RegistryViewModel";
+
+      static String com_spipme_app_ui_treasury_TreasuryViewModel = "com.spipme.app.ui.treasury.TreasuryViewModel";
+
+      static String com_spipme_app_ui_auth_offline_OfflineLoginViewModel = "com.spipme.app.ui.auth.offline.OfflineLoginViewModel";
+
+      static String com_spipme_app_ui_alerts_AlertsViewModel = "com.spipme.app.ui.alerts.AlertsViewModel";
+
+      static String com_spipme_app_ui_resources_ResourcesViewModel = "com.spipme.app.ui.resources.ResourcesViewModel";
+
+      static String com_spipme_app_ui_home_HomeViewModel = "com.spipme.app.ui.home.HomeViewModel";
+
+      static String com_spipme_app_ui_imports_ImportsViewModel = "com.spipme.app.ui.imports.ImportsViewModel";
+
+      static String com_spipme_app_ui_resources_creation_CreerRessourceViewModel = "com.spipme.app.ui.resources.creation.CreerRessourceViewModel";
+
+      static String com_spipme_app_ui_registry_creation_CreerEntiteViewModel = "com.spipme.app.ui.registry.creation.CreerEntiteViewModel";
+
+      static String com_spipme_app_AppViewModel = "com.spipme.app.AppViewModel";
+
+      @KeepFieldType
+      CreerTransactionViewModel com_spipme_app_ui_treasury_creation_CreerTransactionViewModel2;
+
+      @KeepFieldType
+      CreerTacheViewModel com_spipme_app_ui_tasks_creation_CreerTacheViewModel2;
+
+      @KeepFieldType
+      IntelligenceViewModel com_spipme_app_ui_intelligence_IntelligenceViewModel2;
+
+      @KeepFieldType
+      LoginViewModel com_spipme_app_ui_auth_login_LoginViewModel2;
+
+      @KeepFieldType
+      TasksViewModel com_spipme_app_ui_tasks_TasksViewModel2;
+
+      @KeepFieldType
+      RegistryViewModel com_spipme_app_ui_registry_RegistryViewModel2;
+
+      @KeepFieldType
+      TreasuryViewModel com_spipme_app_ui_treasury_TreasuryViewModel2;
+
+      @KeepFieldType
+      OfflineLoginViewModel com_spipme_app_ui_auth_offline_OfflineLoginViewModel2;
+
+      @KeepFieldType
+      AlertsViewModel com_spipme_app_ui_alerts_AlertsViewModel2;
+
+      @KeepFieldType
+      ResourcesViewModel com_spipme_app_ui_resources_ResourcesViewModel2;
+
+      @KeepFieldType
+      HomeViewModel com_spipme_app_ui_home_HomeViewModel2;
+
+      @KeepFieldType
+      ImportsViewModel com_spipme_app_ui_imports_ImportsViewModel2;
+
+      @KeepFieldType
+      CreerRessourceViewModel com_spipme_app_ui_resources_creation_CreerRessourceViewModel2;
+
+      @KeepFieldType
+      CreerEntiteViewModel com_spipme_app_ui_registry_creation_CreerEntiteViewModel2;
+
+      @KeepFieldType
+      AppViewModel com_spipme_app_AppViewModel2;
+    }
+  }
+
+  private static final class ViewModelCImpl extends SpiPmeApplication_HiltComponents.ViewModelC {
+    private final SingletonCImpl singletonCImpl;
+
+    private final ActivityRetainedCImpl activityRetainedCImpl;
+
+    private final ViewModelCImpl viewModelCImpl = this;
+
+    private Provider<AlertsViewModel> alertsViewModelProvider;
+
+    private Provider<AppViewModel> appViewModelProvider;
+
+    private Provider<CreerEntiteViewModel> creerEntiteViewModelProvider;
+
+    private Provider<CreerRessourceViewModel> creerRessourceViewModelProvider;
+
+    private Provider<CreerTacheViewModel> creerTacheViewModelProvider;
+
+    private Provider<CreerTransactionViewModel> creerTransactionViewModelProvider;
+
+    private Provider<HomeViewModel> homeViewModelProvider;
+
+    private Provider<ImportsViewModel> importsViewModelProvider;
+
+    private Provider<IntelligenceViewModel> intelligenceViewModelProvider;
+
+    private Provider<LoginViewModel> loginViewModelProvider;
+
+    private Provider<OfflineLoginViewModel> offlineLoginViewModelProvider;
+
+    private Provider<RegistryViewModel> registryViewModelProvider;
+
+    private Provider<ResourcesViewModel> resourcesViewModelProvider;
+
+    private Provider<TasksViewModel> tasksViewModelProvider;
+
+    private Provider<TreasuryViewModel> treasuryViewModelProvider;
+
+    private ViewModelCImpl(SingletonCImpl singletonCImpl,
+        ActivityRetainedCImpl activityRetainedCImpl, SavedStateHandle savedStateHandleParam,
+        ViewModelLifecycle viewModelLifecycleParam) {
+      this.singletonCImpl = singletonCImpl;
+      this.activityRetainedCImpl = activityRetainedCImpl;
+
+      initialize(savedStateHandleParam, viewModelLifecycleParam);
+
+    }
+
+    @SuppressWarnings("unchecked")
+    private void initialize(final SavedStateHandle savedStateHandleParam,
+        final ViewModelLifecycle viewModelLifecycleParam) {
+      this.alertsViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 0);
+      this.appViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 1);
+      this.creerEntiteViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 2);
+      this.creerRessourceViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 3);
+      this.creerTacheViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 4);
+      this.creerTransactionViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 5);
+      this.homeViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 6);
+      this.importsViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 7);
+      this.intelligenceViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 8);
+      this.loginViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 9);
+      this.offlineLoginViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 10);
+      this.registryViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 11);
+      this.resourcesViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 12);
+      this.tasksViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 13);
+      this.treasuryViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 14);
+    }
+
+    @Override
+    public Map<Class<?>, javax.inject.Provider<ViewModel>> getHiltViewModelMap() {
+      return LazyClassKeyMap.<javax.inject.Provider<ViewModel>>of(MapBuilder.<String, javax.inject.Provider<ViewModel>>newMapBuilder(15).put(LazyClassKeyProvider.com_spipme_app_ui_alerts_AlertsViewModel, ((Provider) alertsViewModelProvider)).put(LazyClassKeyProvider.com_spipme_app_AppViewModel, ((Provider) appViewModelProvider)).put(LazyClassKeyProvider.com_spipme_app_ui_registry_creation_CreerEntiteViewModel, ((Provider) creerEntiteViewModelProvider)).put(LazyClassKeyProvider.com_spipme_app_ui_resources_creation_CreerRessourceViewModel, ((Provider) creerRessourceViewModelProvider)).put(LazyClassKeyProvider.com_spipme_app_ui_tasks_creation_CreerTacheViewModel, ((Provider) creerTacheViewModelProvider)).put(LazyClassKeyProvider.com_spipme_app_ui_treasury_creation_CreerTransactionViewModel, ((Provider) creerTransactionViewModelProvider)).put(LazyClassKeyProvider.com_spipme_app_ui_home_HomeViewModel, ((Provider) homeViewModelProvider)).put(LazyClassKeyProvider.com_spipme_app_ui_imports_ImportsViewModel, ((Provider) importsViewModelProvider)).put(LazyClassKeyProvider.com_spipme_app_ui_intelligence_IntelligenceViewModel, ((Provider) intelligenceViewModelProvider)).put(LazyClassKeyProvider.com_spipme_app_ui_auth_login_LoginViewModel, ((Provider) loginViewModelProvider)).put(LazyClassKeyProvider.com_spipme_app_ui_auth_offline_OfflineLoginViewModel, ((Provider) offlineLoginViewModelProvider)).put(LazyClassKeyProvider.com_spipme_app_ui_registry_RegistryViewModel, ((Provider) registryViewModelProvider)).put(LazyClassKeyProvider.com_spipme_app_ui_resources_ResourcesViewModel, ((Provider) resourcesViewModelProvider)).put(LazyClassKeyProvider.com_spipme_app_ui_tasks_TasksViewModel, ((Provider) tasksViewModelProvider)).put(LazyClassKeyProvider.com_spipme_app_ui_treasury_TreasuryViewModel, ((Provider) treasuryViewModelProvider)).build());
+    }
+
+    @Override
+    public Map<Class<?>, Object> getHiltViewModelAssistedMap() {
+      return Collections.<Class<?>, Object>emptyMap();
+    }
+
+    @IdentifierNameString
+    private static final class LazyClassKeyProvider {
+      static String com_spipme_app_ui_imports_ImportsViewModel = "com.spipme.app.ui.imports.ImportsViewModel";
+
+      static String com_spipme_app_ui_alerts_AlertsViewModel = "com.spipme.app.ui.alerts.AlertsViewModel";
+
+      static String com_spipme_app_ui_tasks_TasksViewModel = "com.spipme.app.ui.tasks.TasksViewModel";
+
+      static String com_spipme_app_ui_resources_ResourcesViewModel = "com.spipme.app.ui.resources.ResourcesViewModel";
+
+      static String com_spipme_app_ui_registry_creation_CreerEntiteViewModel = "com.spipme.app.ui.registry.creation.CreerEntiteViewModel";
+
+      static String com_spipme_app_ui_home_HomeViewModel = "com.spipme.app.ui.home.HomeViewModel";
+
+      static String com_spipme_app_ui_auth_offline_OfflineLoginViewModel = "com.spipme.app.ui.auth.offline.OfflineLoginViewModel";
+
+      static String com_spipme_app_ui_intelligence_IntelligenceViewModel = "com.spipme.app.ui.intelligence.IntelligenceViewModel";
+
+      static String com_spipme_app_ui_treasury_TreasuryViewModel = "com.spipme.app.ui.treasury.TreasuryViewModel";
+
+      static String com_spipme_app_AppViewModel = "com.spipme.app.AppViewModel";
+
+      static String com_spipme_app_ui_resources_creation_CreerRessourceViewModel = "com.spipme.app.ui.resources.creation.CreerRessourceViewModel";
+
+      static String com_spipme_app_ui_treasury_creation_CreerTransactionViewModel = "com.spipme.app.ui.treasury.creation.CreerTransactionViewModel";
+
+      static String com_spipme_app_ui_auth_login_LoginViewModel = "com.spipme.app.ui.auth.login.LoginViewModel";
+
+      static String com_spipme_app_ui_registry_RegistryViewModel = "com.spipme.app.ui.registry.RegistryViewModel";
+
+      static String com_spipme_app_ui_tasks_creation_CreerTacheViewModel = "com.spipme.app.ui.tasks.creation.CreerTacheViewModel";
+
+      @KeepFieldType
+      ImportsViewModel com_spipme_app_ui_imports_ImportsViewModel2;
+
+      @KeepFieldType
+      AlertsViewModel com_spipme_app_ui_alerts_AlertsViewModel2;
+
+      @KeepFieldType
+      TasksViewModel com_spipme_app_ui_tasks_TasksViewModel2;
+
+      @KeepFieldType
+      ResourcesViewModel com_spipme_app_ui_resources_ResourcesViewModel2;
+
+      @KeepFieldType
+      CreerEntiteViewModel com_spipme_app_ui_registry_creation_CreerEntiteViewModel2;
+
+      @KeepFieldType
+      HomeViewModel com_spipme_app_ui_home_HomeViewModel2;
+
+      @KeepFieldType
+      OfflineLoginViewModel com_spipme_app_ui_auth_offline_OfflineLoginViewModel2;
+
+      @KeepFieldType
+      IntelligenceViewModel com_spipme_app_ui_intelligence_IntelligenceViewModel2;
+
+      @KeepFieldType
+      TreasuryViewModel com_spipme_app_ui_treasury_TreasuryViewModel2;
+
+      @KeepFieldType
+      AppViewModel com_spipme_app_AppViewModel2;
+
+      @KeepFieldType
+      CreerRessourceViewModel com_spipme_app_ui_resources_creation_CreerRessourceViewModel2;
+
+      @KeepFieldType
+      CreerTransactionViewModel com_spipme_app_ui_treasury_creation_CreerTransactionViewModel2;
+
+      @KeepFieldType
+      LoginViewModel com_spipme_app_ui_auth_login_LoginViewModel2;
+
+      @KeepFieldType
+      RegistryViewModel com_spipme_app_ui_registry_RegistryViewModel2;
+
+      @KeepFieldType
+      CreerTacheViewModel com_spipme_app_ui_tasks_creation_CreerTacheViewModel2;
+    }
+
+    private static final class SwitchingProvider<T> implements Provider<T> {
+      private final SingletonCImpl singletonCImpl;
+
+      private final ActivityRetainedCImpl activityRetainedCImpl;
+
+      private final ViewModelCImpl viewModelCImpl;
+
+      private final int id;
+
+      SwitchingProvider(SingletonCImpl singletonCImpl, ActivityRetainedCImpl activityRetainedCImpl,
+          ViewModelCImpl viewModelCImpl, int id) {
+        this.singletonCImpl = singletonCImpl;
+        this.activityRetainedCImpl = activityRetainedCImpl;
+        this.viewModelCImpl = viewModelCImpl;
+        this.id = id;
+      }
+
+      @SuppressWarnings("unchecked")
+      @Override
+      public T get() {
+        switch (id) {
+          case 0: // com.spipme.app.ui.alerts.AlertsViewModel 
+          return (T) new AlertsViewModel(singletonCImpl.alerteRepositoryImplProvider.get(), singletonCImpl.sessionManagerProvider.get());
+
+          case 1: // com.spipme.app.AppViewModel 
+          return (T) new AppViewModel(singletonCImpl.authRepositoryImplProvider.get());
+
+          case 2: // com.spipme.app.ui.registry.creation.CreerEntiteViewModel 
+          return (T) new CreerEntiteViewModel(singletonCImpl.entiteRepositoryImplProvider.get(), singletonCImpl.sessionManagerProvider.get());
+
+          case 3: // com.spipme.app.ui.resources.creation.CreerRessourceViewModel 
+          return (T) new CreerRessourceViewModel(singletonCImpl.ressourceRepositoryImplProvider.get(), singletonCImpl.sessionManagerProvider.get());
+
+          case 4: // com.spipme.app.ui.tasks.creation.CreerTacheViewModel 
+          return (T) new CreerTacheViewModel(singletonCImpl.tacheRepositoryImplProvider.get(), singletonCImpl.sessionManagerProvider.get());
+
+          case 5: // com.spipme.app.ui.treasury.creation.CreerTransactionViewModel 
+          return (T) new CreerTransactionViewModel(singletonCImpl.transactionRepositoryImplProvider.get(), singletonCImpl.sessionManagerProvider.get());
+
+          case 6: // com.spipme.app.ui.home.HomeViewModel 
+          return (T) new HomeViewModel(singletonCImpl.authRepositoryImplProvider.get());
+
+          case 7: // com.spipme.app.ui.imports.ImportsViewModel 
+          return (T) new ImportsViewModel(singletonCImpl.importRepositoryImplProvider.get(), singletonCImpl.sessionManagerProvider.get());
+
+          case 8: // com.spipme.app.ui.intelligence.IntelligenceViewModel 
+          return (T) new IntelligenceViewModel(singletonCImpl.suggestionRepositoryImplProvider.get(), singletonCImpl.sessionManagerProvider.get());
+
+          case 9: // com.spipme.app.ui.auth.login.LoginViewModel 
+          return (T) new LoginViewModel(singletonCImpl.authRepositoryImplProvider.get());
+
+          case 10: // com.spipme.app.ui.auth.offline.OfflineLoginViewModel 
+          return (T) new OfflineLoginViewModel(singletonCImpl.authRepositoryImplProvider.get());
+
+          case 11: // com.spipme.app.ui.registry.RegistryViewModel 
+          return (T) new RegistryViewModel(singletonCImpl.entiteRepositoryImplProvider.get(), singletonCImpl.sessionManagerProvider.get());
+
+          case 12: // com.spipme.app.ui.resources.ResourcesViewModel 
+          return (T) new ResourcesViewModel(singletonCImpl.ressourceRepositoryImplProvider.get(), singletonCImpl.sessionManagerProvider.get());
+
+          case 13: // com.spipme.app.ui.tasks.TasksViewModel 
+          return (T) new TasksViewModel(singletonCImpl.tacheRepositoryImplProvider.get(), singletonCImpl.sessionManagerProvider.get());
+
+          case 14: // com.spipme.app.ui.treasury.TreasuryViewModel 
+          return (T) new TreasuryViewModel(singletonCImpl.transactionRepositoryImplProvider.get(), singletonCImpl.sessionManagerProvider.get());
+
+          default: throw new AssertionError(id);
+        }
+      }
+    }
+  }
+
+  private static final class ActivityRetainedCImpl extends SpiPmeApplication_HiltComponents.ActivityRetainedC {
+    private final SingletonCImpl singletonCImpl;
+
+    private final ActivityRetainedCImpl activityRetainedCImpl = this;
+
+    private Provider<ActivityRetainedLifecycle> provideActivityRetainedLifecycleProvider;
+
+    private ActivityRetainedCImpl(SingletonCImpl singletonCImpl,
+        SavedStateHandleHolder savedStateHandleHolderParam) {
+      this.singletonCImpl = singletonCImpl;
+
+      initialize(savedStateHandleHolderParam);
+
+    }
+
+    @SuppressWarnings("unchecked")
+    private void initialize(final SavedStateHandleHolder savedStateHandleHolderParam) {
+      this.provideActivityRetainedLifecycleProvider = DoubleCheck.provider(new SwitchingProvider<ActivityRetainedLifecycle>(singletonCImpl, activityRetainedCImpl, 0));
+    }
+
+    @Override
+    public ActivityComponentBuilder activityComponentBuilder() {
+      return new ActivityCBuilder(singletonCImpl, activityRetainedCImpl);
+    }
+
+    @Override
+    public ActivityRetainedLifecycle getActivityRetainedLifecycle() {
+      return provideActivityRetainedLifecycleProvider.get();
+    }
+
+    private static final class SwitchingProvider<T> implements Provider<T> {
+      private final SingletonCImpl singletonCImpl;
+
+      private final ActivityRetainedCImpl activityRetainedCImpl;
+
+      private final int id;
+
+      SwitchingProvider(SingletonCImpl singletonCImpl, ActivityRetainedCImpl activityRetainedCImpl,
+          int id) {
+        this.singletonCImpl = singletonCImpl;
+        this.activityRetainedCImpl = activityRetainedCImpl;
+        this.id = id;
+      }
+
+      @SuppressWarnings("unchecked")
+      @Override
+      public T get() {
+        switch (id) {
+          case 0: // dagger.hilt.android.ActivityRetainedLifecycle 
+          return (T) ActivityRetainedComponentManager_LifecycleModule_ProvideActivityRetainedLifecycleFactory.provideActivityRetainedLifecycle();
+
+          default: throw new AssertionError(id);
+        }
+      }
+    }
+  }
+
+  private static final class ServiceCImpl extends SpiPmeApplication_HiltComponents.ServiceC {
+    private final SingletonCImpl singletonCImpl;
+
+    private final ServiceCImpl serviceCImpl = this;
+
+    private ServiceCImpl(SingletonCImpl singletonCImpl, Service serviceParam) {
+      this.singletonCImpl = singletonCImpl;
+
+
+    }
+  }
+
+  private static final class SingletonCImpl extends SpiPmeApplication_HiltComponents.SingletonC {
+    private final ApplicationContextModule applicationContextModule;
+
+    private final SingletonCImpl singletonCImpl = this;
+
+    private Provider<HttpLoggingInterceptor> fournirLoggingInterceptorProvider;
+
+    private Provider<TokenManager> tokenManagerProvider;
+
+    private Provider<OkHttpClient> fournirOkHttpClientBrutProvider;
+
+    private Provider<Json> fournirJsonProvider;
+
+    private Provider<Retrofit> fournirRetrofitBrutProvider;
+
+    private Provider<AuthApi> fournirAuthApiBrutProvider;
+
+    private Provider<OkHttpClient> fournirOkHttpClientAuthentifieProvider;
+
+    private Provider<Retrofit> fournirRetrofitAuthentifieProvider;
+
+    private Provider<AlerteApi> fournirAlerteApiProvider;
+
+    private Provider<AlerteRepositoryImpl> alerteRepositoryImplProvider;
+
+    private Provider<SessionManager> sessionManagerProvider;
+
+    private Provider<AuthApi> fournirAuthApiProvider;
+
+    private Provider<AppDatabase> fournirAppDatabaseProvider;
+
+    private Provider<UtilisateurLocalDao> fournirUtilisateurLocalDaoProvider;
+
+    private Provider<AuthRepositoryImpl> authRepositoryImplProvider;
+
+    private Provider<EntiteApi> fournirEntiteApiProvider;
+
+    private Provider<EntiteRepositoryImpl> entiteRepositoryImplProvider;
+
+    private Provider<RessourceApi> fournirRessourceApiProvider;
+
+    private Provider<RessourceRepositoryImpl> ressourceRepositoryImplProvider;
+
+    private Provider<TacheApi> fournirTacheApiProvider;
+
+    private Provider<TacheRepositoryImpl> tacheRepositoryImplProvider;
+
+    private Provider<TransactionApi> fournirTransactionApiProvider;
+
+    private Provider<TransactionRepositoryImpl> transactionRepositoryImplProvider;
+
+    private Provider<ImportApi> fournirImportApiProvider;
+
+    private Provider<ImportRepositoryImpl> importRepositoryImplProvider;
+
+    private Provider<SuggestionApi> fournirSuggestionApiProvider;
+
+    private Provider<SuggestionRepositoryImpl> suggestionRepositoryImplProvider;
+
+    private SingletonCImpl(ApplicationContextModule applicationContextModuleParam) {
+      this.applicationContextModule = applicationContextModuleParam;
+      initialize(applicationContextModuleParam);
+      initialize2(applicationContextModuleParam);
+
+    }
+
+    private AuthInterceptor authInterceptor() {
+      return new AuthInterceptor(tokenManagerProvider.get());
+    }
+
+    private TokenAuthenticator tokenAuthenticator() {
+      return new TokenAuthenticator(tokenManagerProvider.get(), fournirAuthApiBrutProvider.get());
+    }
+
+    @SuppressWarnings("unchecked")
+    private void initialize(final ApplicationContextModule applicationContextModuleParam) {
+      this.fournirLoggingInterceptorProvider = DoubleCheck.provider(new SwitchingProvider<HttpLoggingInterceptor>(singletonCImpl, 4));
+      this.tokenManagerProvider = DoubleCheck.provider(new SwitchingProvider<TokenManager>(singletonCImpl, 5));
+      this.fournirOkHttpClientBrutProvider = DoubleCheck.provider(new SwitchingProvider<OkHttpClient>(singletonCImpl, 8));
+      this.fournirJsonProvider = DoubleCheck.provider(new SwitchingProvider<Json>(singletonCImpl, 9));
+      this.fournirRetrofitBrutProvider = DoubleCheck.provider(new SwitchingProvider<Retrofit>(singletonCImpl, 7));
+      this.fournirAuthApiBrutProvider = DoubleCheck.provider(new SwitchingProvider<AuthApi>(singletonCImpl, 6));
+      this.fournirOkHttpClientAuthentifieProvider = DoubleCheck.provider(new SwitchingProvider<OkHttpClient>(singletonCImpl, 3));
+      this.fournirRetrofitAuthentifieProvider = DoubleCheck.provider(new SwitchingProvider<Retrofit>(singletonCImpl, 2));
+      this.fournirAlerteApiProvider = DoubleCheck.provider(new SwitchingProvider<AlerteApi>(singletonCImpl, 1));
+      this.alerteRepositoryImplProvider = DoubleCheck.provider(new SwitchingProvider<AlerteRepositoryImpl>(singletonCImpl, 0));
+      this.sessionManagerProvider = DoubleCheck.provider(new SwitchingProvider<SessionManager>(singletonCImpl, 10));
+      this.fournirAuthApiProvider = DoubleCheck.provider(new SwitchingProvider<AuthApi>(singletonCImpl, 12));
+      this.fournirAppDatabaseProvider = DoubleCheck.provider(new SwitchingProvider<AppDatabase>(singletonCImpl, 14));
+      this.fournirUtilisateurLocalDaoProvider = DoubleCheck.provider(new SwitchingProvider<UtilisateurLocalDao>(singletonCImpl, 13));
+      this.authRepositoryImplProvider = DoubleCheck.provider(new SwitchingProvider<AuthRepositoryImpl>(singletonCImpl, 11));
+      this.fournirEntiteApiProvider = DoubleCheck.provider(new SwitchingProvider<EntiteApi>(singletonCImpl, 16));
+      this.entiteRepositoryImplProvider = DoubleCheck.provider(new SwitchingProvider<EntiteRepositoryImpl>(singletonCImpl, 15));
+      this.fournirRessourceApiProvider = DoubleCheck.provider(new SwitchingProvider<RessourceApi>(singletonCImpl, 18));
+      this.ressourceRepositoryImplProvider = DoubleCheck.provider(new SwitchingProvider<RessourceRepositoryImpl>(singletonCImpl, 17));
+      this.fournirTacheApiProvider = DoubleCheck.provider(new SwitchingProvider<TacheApi>(singletonCImpl, 20));
+      this.tacheRepositoryImplProvider = DoubleCheck.provider(new SwitchingProvider<TacheRepositoryImpl>(singletonCImpl, 19));
+      this.fournirTransactionApiProvider = DoubleCheck.provider(new SwitchingProvider<TransactionApi>(singletonCImpl, 22));
+      this.transactionRepositoryImplProvider = DoubleCheck.provider(new SwitchingProvider<TransactionRepositoryImpl>(singletonCImpl, 21));
+      this.fournirImportApiProvider = DoubleCheck.provider(new SwitchingProvider<ImportApi>(singletonCImpl, 24));
+      this.importRepositoryImplProvider = DoubleCheck.provider(new SwitchingProvider<ImportRepositoryImpl>(singletonCImpl, 23));
+    }
+
+    @SuppressWarnings("unchecked")
+    private void initialize2(final ApplicationContextModule applicationContextModuleParam) {
+      this.fournirSuggestionApiProvider = DoubleCheck.provider(new SwitchingProvider<SuggestionApi>(singletonCImpl, 26));
+      this.suggestionRepositoryImplProvider = DoubleCheck.provider(new SwitchingProvider<SuggestionRepositoryImpl>(singletonCImpl, 25));
+    }
+
+    @Override
+    public void injectSpiPmeApplication(SpiPmeApplication spiPmeApplication) {
+    }
+
+    @Override
+    public Set<Boolean> getDisableFragmentGetContextFix() {
+      return Collections.<Boolean>emptySet();
+    }
+
+    @Override
+    public ActivityRetainedComponentBuilder retainedComponentBuilder() {
+      return new ActivityRetainedCBuilder(singletonCImpl);
+    }
+
+    @Override
+    public ServiceComponentBuilder serviceComponentBuilder() {
+      return new ServiceCBuilder(singletonCImpl);
+    }
+
+    private static final class SwitchingProvider<T> implements Provider<T> {
+      private final SingletonCImpl singletonCImpl;
+
+      private final int id;
+
+      SwitchingProvider(SingletonCImpl singletonCImpl, int id) {
+        this.singletonCImpl = singletonCImpl;
+        this.id = id;
+      }
+
+      @SuppressWarnings("unchecked")
+      @Override
+      public T get() {
+        switch (id) {
+          case 0: // com.spipme.app.data.repository.AlerteRepositoryImpl 
+          return (T) new AlerteRepositoryImpl(singletonCImpl.fournirAlerteApiProvider.get(), singletonCImpl.fournirJsonProvider.get());
+
+          case 1: // com.spipme.app.data.remote.api.AlerteApi 
+          return (T) NetworkModule_FournirAlerteApiFactory.fournirAlerteApi(singletonCImpl.fournirRetrofitAuthentifieProvider.get());
+
+          case 2: // @com.spipme.app.core.network.ClientAuthentifie retrofit2.Retrofit 
+          return (T) NetworkModule_FournirRetrofitAuthentifieFactory.fournirRetrofitAuthentifie(singletonCImpl.fournirOkHttpClientAuthentifieProvider.get(), singletonCImpl.fournirJsonProvider.get());
+
+          case 3: // @com.spipme.app.core.network.ClientAuthentifie okhttp3.OkHttpClient 
+          return (T) NetworkModule_FournirOkHttpClientAuthentifieFactory.fournirOkHttpClientAuthentifie(singletonCImpl.fournirLoggingInterceptorProvider.get(), singletonCImpl.authInterceptor(), singletonCImpl.tokenAuthenticator());
+
+          case 4: // okhttp3.logging.HttpLoggingInterceptor 
+          return (T) NetworkModule_FournirLoggingInterceptorFactory.fournirLoggingInterceptor();
+
+          case 5: // com.spipme.app.core.security.TokenManager 
+          return (T) new TokenManager(ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule));
+
+          case 6: // @com.spipme.app.core.network.ClientBrut com.spipme.app.data.remote.api.AuthApi 
+          return (T) NetworkModule_FournirAuthApiBrutFactory.fournirAuthApiBrut(singletonCImpl.fournirRetrofitBrutProvider.get());
+
+          case 7: // @com.spipme.app.core.network.ClientBrut retrofit2.Retrofit 
+          return (T) NetworkModule_FournirRetrofitBrutFactory.fournirRetrofitBrut(singletonCImpl.fournirOkHttpClientBrutProvider.get(), singletonCImpl.fournirJsonProvider.get());
+
+          case 8: // @com.spipme.app.core.network.ClientBrut okhttp3.OkHttpClient 
+          return (T) NetworkModule_FournirOkHttpClientBrutFactory.fournirOkHttpClientBrut(singletonCImpl.fournirLoggingInterceptorProvider.get());
+
+          case 9: // kotlinx.serialization.json.Json 
+          return (T) NetworkModule_FournirJsonFactory.fournirJson();
+
+          case 10: // com.spipme.app.core.security.SessionManager 
+          return (T) new SessionManager(ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule));
+
+          case 11: // com.spipme.app.data.repository.AuthRepositoryImpl 
+          return (T) new AuthRepositoryImpl(singletonCImpl.fournirAuthApiProvider.get(), singletonCImpl.tokenManagerProvider.get(), singletonCImpl.sessionManagerProvider.get(), singletonCImpl.fournirUtilisateurLocalDaoProvider.get(), singletonCImpl.fournirJsonProvider.get());
+
+          case 12: // com.spipme.app.data.remote.api.AuthApi 
+          return (T) NetworkModule_FournirAuthApiFactory.fournirAuthApi(singletonCImpl.fournirRetrofitAuthentifieProvider.get());
+
+          case 13: // com.spipme.app.data.local.dao.UtilisateurLocalDao 
+          return (T) DatabaseModule_FournirUtilisateurLocalDaoFactory.fournirUtilisateurLocalDao(singletonCImpl.fournirAppDatabaseProvider.get());
+
+          case 14: // com.spipme.app.data.local.AppDatabase 
+          return (T) DatabaseModule_FournirAppDatabaseFactory.fournirAppDatabase(ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule));
+
+          case 15: // com.spipme.app.data.repository.EntiteRepositoryImpl 
+          return (T) new EntiteRepositoryImpl(singletonCImpl.fournirEntiteApiProvider.get(), singletonCImpl.fournirJsonProvider.get());
+
+          case 16: // com.spipme.app.data.remote.api.EntiteApi 
+          return (T) NetworkModule_FournirEntiteApiFactory.fournirEntiteApi(singletonCImpl.fournirRetrofitAuthentifieProvider.get());
+
+          case 17: // com.spipme.app.data.repository.RessourceRepositoryImpl 
+          return (T) new RessourceRepositoryImpl(singletonCImpl.fournirRessourceApiProvider.get(), singletonCImpl.fournirJsonProvider.get());
+
+          case 18: // com.spipme.app.data.remote.api.RessourceApi 
+          return (T) NetworkModule_FournirRessourceApiFactory.fournirRessourceApi(singletonCImpl.fournirRetrofitAuthentifieProvider.get());
+
+          case 19: // com.spipme.app.data.repository.TacheRepositoryImpl 
+          return (T) new TacheRepositoryImpl(singletonCImpl.fournirTacheApiProvider.get(), singletonCImpl.fournirJsonProvider.get());
+
+          case 20: // com.spipme.app.data.remote.api.TacheApi 
+          return (T) NetworkModule_FournirTacheApiFactory.fournirTacheApi(singletonCImpl.fournirRetrofitAuthentifieProvider.get());
+
+          case 21: // com.spipme.app.data.repository.TransactionRepositoryImpl 
+          return (T) new TransactionRepositoryImpl(singletonCImpl.fournirTransactionApiProvider.get(), singletonCImpl.fournirJsonProvider.get());
+
+          case 22: // com.spipme.app.data.remote.api.TransactionApi 
+          return (T) NetworkModule_FournirTransactionApiFactory.fournirTransactionApi(singletonCImpl.fournirRetrofitAuthentifieProvider.get());
+
+          case 23: // com.spipme.app.data.repository.ImportRepositoryImpl 
+          return (T) new ImportRepositoryImpl(singletonCImpl.fournirImportApiProvider.get(), singletonCImpl.fournirJsonProvider.get());
+
+          case 24: // com.spipme.app.data.remote.api.ImportApi 
+          return (T) NetworkModule_FournirImportApiFactory.fournirImportApi(singletonCImpl.fournirRetrofitAuthentifieProvider.get());
+
+          case 25: // com.spipme.app.data.repository.SuggestionRepositoryImpl 
+          return (T) new SuggestionRepositoryImpl(singletonCImpl.fournirSuggestionApiProvider.get(), singletonCImpl.fournirJsonProvider.get());
+
+          case 26: // com.spipme.app.data.remote.api.SuggestionApi 
+          return (T) NetworkModule_FournirSuggestionApiFactory.fournirSuggestionApi(singletonCImpl.fournirRetrofitAuthentifieProvider.get());
+
+          default: throw new AssertionError(id);
+        }
+      }
+    }
+  }
+}

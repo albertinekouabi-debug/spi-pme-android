@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Icône de lanceur adaptative (API 26+, cf. minSdk=26 dans app/build.gradle.kts —
+    aucune variante PNG legacy n'est donc nécessaire, mipmap-anydpi-v26 seul
+    couvre toute la plage d'appareils supportée par l'application).
+
+    PLACEHOLDER FONCTIONNEL : aucune icône n'a jamais été fournie pour ce
+    projet (confirmé dans README.md, section "Ce qui manque pour un premier
+    build"). Ce fichier corrige l'échec de build "resource mipmap/ic_launcher
+    not found" avec un visuel simple et volontairement neutre, en attendant
+    une véritable identité de marque (Image Asset Studio ou design fourni).
+-->
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@drawable/ic_launcher_background" />
+    <foreground android:drawable="@drawable/ic_launcher_foreground" />
+</adaptive-icon>
