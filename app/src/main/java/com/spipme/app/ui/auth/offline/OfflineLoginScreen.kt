@@ -1,4 +1,4 @@
-package com.spipme.app.ui.auth.offline
+﻿package com.spipme.app.ui.auth.offline
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -90,7 +90,7 @@ private fun OfflineLoginContenu(
             Spacer(Modifier.weight(1f))
             Text("Connexion hors ligne", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
             Spacer(Modifier.weight(1f))
-            Spacer(Modifier.width(48.dp)) // équilibre visuel avec le bouton retour
+            Spacer(Modifier.width(48.dp)) // Ã©quilibre visuel avec le bouton retour
         }
 
         Spacer(Modifier.height(24.dp))
@@ -115,14 +115,14 @@ private fun OfflineLoginContenu(
         }
 
         Text(
-            "Vous êtes hors ligne",
+            "Vous Ãªtes hors ligne",
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.fillMaxWidth(),
             textAlign = androidx.compose.ui.text.style.TextAlign.Center,
         )
         Text(
-            "Connectez-vous pour accéder à vos données enregistrées localement.",
+            "Connectez-vous pour accÃ©der Ã  vos donnÃ©es enregistrÃ©es localement.",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.fillMaxWidth(),
@@ -138,9 +138,9 @@ private fun OfflineLoginContenu(
                 Icon(Icons.Filled.Shield, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                 Spacer(Modifier.width(12.dp))
                 Column {
-                    Text("Connexion sécurisée", style = MaterialTheme.typography.titleMedium)
+                    Text("Connexion sÃ©curisÃ©e", style = MaterialTheme.typography.titleMedium)
                     Text(
-                        "Vos données restent protégées sur cet appareil. Elles seront synchronisées dès que la connexion Internet sera rétablie.",
+                        "Vos donnÃ©es restent protÃ©gÃ©es sur cet appareil. Elles seront synchronisÃ©es dÃ¨s que la connexion Internet sera rÃ©tablie.",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -180,8 +180,8 @@ private fun OfflineLoginContenu(
             Checkbox(checked = etat.seSouvenirDeMoi, onCheckedChange = surChangementSeSouvenirDeMoi)
             Text("Se souvenir de moi", style = MaterialTheme.typography.bodyMedium)
             Spacer(Modifier.weight(1f))
-            TextButton(onClick = { /* hors périmètre : le mot de passe oublié nécessite une connexion réseau */ }) {
-                Text("Mot de passe oublié ?")
+            TextButton(onClick = { /* hors pÃ©rimÃ¨tre : le mot de passe oubliÃ© nÃ©cessite une connexion rÃ©seau */ }) {
+                Text("Mot de passe oubliÃ© ?")
             }
         }
 
@@ -198,7 +198,7 @@ private fun OfflineLoginContenu(
             modifier = Modifier.fillMaxWidth().height(52.dp),
             shape = MaterialTheme.shapes.medium,
         ) {
-            Text("Revenir à la connexion en ligne")
+            Text("Revenir Ã  la connexion en ligne")
         }
 
         Spacer(Modifier.height(20.dp))
@@ -214,8 +214,8 @@ private fun OfflineLoginContenu(
                 }
                 Spacer(Modifier.height(8.dp))
                 listOf(
-                    "Vous pouvez consulter et saisir vos données",
-                    "Certaines fonctionnalités peuvent être limitées",
+                    "Vous pouvez consulter et saisir vos donnÃ©es",
+                    "Certaines fonctionnalitÃ©s peuvent Ãªtre limitÃ©es",
                     "La synchronisation se fera automatiquement",
                 ).forEach { ligne ->
                     Row(modifier = Modifier.padding(vertical = 2.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -249,3 +249,4 @@ private fun OfflineLoginScreenApercu() {
         )
     }
 }
+

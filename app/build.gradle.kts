@@ -1,4 +1,4 @@
-plugins {
+﻿plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.jetbrains.kotlin.serialization)
@@ -13,14 +13,14 @@ android {
 
     defaultConfig {
         applicationId = "com.spipme.app"
-        minSdk = 26          // Android 8.0 — couverture large sur le parc Android en Afrique centrale
+        minSdk = 26          // Android 8.0 â€” couverture large sur le parc Android en Afrique centrale
         targetSdk = 35
         versionCode = 1
         versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        // URL de base injectée par variante de build — jamais codée en dur dans les sources.
+        // URL de base injectÃ©e par variante de build â€” jamais codÃ©e en dur dans les sources.
         buildConfigField("String", "API_BASE_URL", "\"https://api.spipme.example.com/api/v1/\"")
     }
 
@@ -41,8 +41,8 @@ android {
         buildConfig = true
     }
 
-    // Room (exportSchema = true) écrit ses schémas ici, versionnés dans le repo
-    // pour permettre des migrations vérifiables plus tard.
+    // Room (exportSchema = true) Ã©crit ses schÃ©mas ici, versionnÃ©s dans le repo
+    // pour permettre des migrations vÃ©rifiables plus tard.
     ksp {
         arg("room.schemaLocation", "$projectDir/schemas")
     }
@@ -109,3 +109,4 @@ dependencies {
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
 }
+

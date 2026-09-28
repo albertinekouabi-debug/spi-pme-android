@@ -1,4 +1,4 @@
-package com.spipme.app.ui.resources
+﻿package com.spipme.app.ui.resources
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -114,7 +114,7 @@ private fun ResourcesContenu(
                 item {
                     Text("Ressources", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
                     Text(
-                        "Suivez vos stocks et ressources en temps réel",
+                        "Suivez vos stocks et ressources en temps rÃ©el",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -156,7 +156,7 @@ private fun ResourcesContenu(
                 } else if (etat.ressources.isEmpty()) {
                     item {
                         Text(
-                            "Aucune ressource trouvée.",
+                            "Aucune ressource trouvÃ©e.",
                             modifier = Modifier.fillMaxWidth().padding(32.dp),
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -181,7 +181,7 @@ private fun ResourcesContenu(
 private fun CartesResume(resume: ResumeRessources) {
     val donnees = listOf(
         Triple("Critiques", resume.critiques, MaterialTheme.colorScheme.error),
-        Triple("À surveiller", resume.aSurveiller, SpiPmeTheme.extendedColors.avertissement),
+        Triple("Ã€ surveiller", resume.aSurveiller, SpiPmeTheme.extendedColors.avertissement),
         Triple("Stables", resume.stables, SpiPmeTheme.extendedColors.succes),
         Triple("Total", resume.total, MaterialTheme.colorScheme.onSurface),
     )
@@ -211,7 +211,7 @@ private fun CarteRessource(ressource: Ressource) {
     }
     val libelleStatut = when (ressource.statut) {
         "critique" -> "Critique"
-        "a_surveiller" -> "À surveiller"
+        "a_surveiller" -> "Ã€ surveiller"
         else -> "Stable"
     }
 
@@ -226,7 +226,7 @@ private fun CarteRessource(ressource: Ressource) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(ressource.nom, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
                     Text(
-                        "Catégorie : ${ressource.type}" + if (ressource.emplacement.isNotBlank()) " · ${ressource.emplacement}" else "",
+                        "CatÃ©gorie : ${ressource.type}" + if (ressource.emplacement.isNotBlank()) " Â· ${ressource.emplacement}" else "",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -268,7 +268,7 @@ private fun CarteRessource(ressource: Ressource) {
             if (!ressource.seuilsConfigures) {
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    "Seuils non configurés",
+                    "Seuils non configurÃ©s",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -291,8 +291,8 @@ private fun ResourcesScreenApercu() {
                 resume = ResumeRessources(total = 76, critiques = 12, aSurveiller = 18, stables = 46),
                 ressources = listOf(
                     Ressource(
-                        1, "produit", "Lait en poudre", "unités", null,
-                        BigDecimal("2"), BigDecimal("10"), BigDecimal("25"), "critique", "Entrepôt principal", 1, "Commerce",
+                        1, "produit", "Lait en poudre", "unitÃ©s", null,
+                        BigDecimal("2"), BigDecimal("10"), BigDecimal("25"), "critique", "EntrepÃ´t principal", 1, "Commerce",
                     ),
                 ),
             ),
@@ -305,3 +305,4 @@ private fun ResourcesScreenApercu() {
         )
     }
 }
+

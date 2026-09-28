@@ -1,4 +1,4 @@
-package com.spipme.app.ui.components
+﻿package com.spipme.app.ui.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
@@ -61,3 +61,4 @@ fun SpiPmeTextField(
         ),
     )
 }
+

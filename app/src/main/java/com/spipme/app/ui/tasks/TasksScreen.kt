@@ -1,4 +1,4 @@
-package com.spipme.app.ui.tasks
+﻿package com.spipme.app.ui.tasks
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -91,7 +91,7 @@ private fun TasksContenu(
             ExtendedFloatingActionButton(
                 onClick = surClicNouvelleTache,
                 icon = { Icon(Icons.Filled.Add, null) },
-                text = { Text("Nouvelle tâche") },
+                text = { Text("Nouvelle tÃ¢che") },
             )
         },
     ) { padding ->
@@ -110,9 +110,9 @@ private fun TasksContenu(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 item {
-                    Text("Tâches", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+                    Text("TÃ¢ches", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
                     Text(
-                        "Organisez, suivez et accomplissez vos tâches",
+                        "Organisez, suivez et accomplissez vos tÃ¢ches",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -145,7 +145,7 @@ private fun TasksContenu(
                 } else if (etat.taches.isEmpty()) {
                     item {
                         Text(
-                            "Aucune tâche trouvée.",
+                            "Aucune tÃ¢che trouvÃ©e.",
                             modifier = Modifier.fillMaxWidth().padding(32.dp),
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -172,7 +172,7 @@ private fun TasksContenu(
 private fun CartesResume(resume: ResumeTaches) {
     val donnees = listOf(
         Triple("Toutes", resume.total, MaterialTheme.colorScheme.onSurface),
-        Triple("Terminées", resume.terminees, SpiPmeTheme.extendedColors.succes),
+        Triple("TerminÃ©es", resume.terminees, SpiPmeTheme.extendedColors.succes),
         Triple("En cours", resume.enCours, SpiPmeTheme.extendedColors.avertissement),
         Triple("En retard", resume.enRetard, MaterialTheme.colorScheme.error),
     )
@@ -212,7 +212,7 @@ private fun CarteTache(tache: Tache, surClicMarquerTerminee: () -> Unit) {
             IconButton(onClick = surClicMarquerTerminee, enabled = !estTerminee) {
                 Icon(
                     if (estTerminee) Icons.Filled.CheckCircle else Icons.Filled.RadioButtonUnchecked,
-                    contentDescription = if (estTerminee) "Terminée" else "Marquer comme terminée",
+                    contentDescription = if (estTerminee) "TerminÃ©e" else "Marquer comme terminÃ©e",
                     tint = if (estTerminee) SpiPmeTheme.extendedColors.succes else MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
@@ -226,7 +226,7 @@ private fun CarteTache(tache: Tache, surClicMarquerTerminee: () -> Unit) {
                 )
                 if (tache.categorie.isNotBlank()) {
                     Text(
-                        "Catégorie : ${tache.categorie}",
+                        "CatÃ©gorie : ${tache.categorie}",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -279,3 +279,4 @@ private fun TasksScreenApercu() {
         )
     }
 }
+

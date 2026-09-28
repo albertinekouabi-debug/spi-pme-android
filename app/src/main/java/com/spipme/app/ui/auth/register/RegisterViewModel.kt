@@ -1,4 +1,4 @@
-package com.spipme.app.ui.auth.register
+﻿package com.spipme.app.ui.auth.register
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -70,17 +70,18 @@ class RegisterViewModel @Inject constructor(
     }
 
     /**
-     * Vérifications rapides côté client (champs vides, longueur mini, confirmation).
-     * La politique de mot de passe complète (AUTH_PASSWORD_VALIDATORS) et la
-     * validité du code d'invitation restent arbitrées côté serveur — pas
-     * dupliquées ici pour éviter une double source de vérité.
+     * VÃ©rifications rapides cÃ´tÃ© client (champs vides, longueur mini, confirmation).
+     * La politique de mot de passe complÃ¨te (AUTH_PASSWORD_VALIDATORS) et la
+     * validitÃ© du code d'invitation restent arbitrÃ©es cÃ´tÃ© serveur â€” pas
+     * dupliquÃ©es ici pour Ã©viter une double source de vÃ©ritÃ©.
      */
     private fun validerLocalement(etat: RegisterUiState): String? = when {
         etat.nomUtilisateur.isBlank() -> "Veuillez choisir un nom d'utilisateur."
         etat.email.isBlank() || !etat.email.contains("@") -> "Veuillez saisir un email valide."
         etat.codeInvitation.isBlank() -> "Le code d'invitation fourni par votre entreprise est requis."
-        etat.motDePasse.length < 8 -> "Le mot de passe doit contenir au moins 8 caractères."
+        etat.motDePasse.length < 8 -> "Le mot de passe doit contenir au moins 8 caractÃ¨res."
         etat.motDePasse != etat.confirmationMotDePasse -> "Les deux mots de passe ne correspondent pas."
         else -> null
     }
 }
+

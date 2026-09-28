@@ -1,4 +1,4 @@
-package com.spipme.app.data.repository
+﻿package com.spipme.app.data.repository
 
 import com.spipme.app.core.network.executerAppelApi
 import com.spipme.app.core.security.HachageMotDePasse
@@ -47,7 +47,7 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun connexionHorsLigne(identifiant: String, motDePasse: String): Resultat<Utilisateur> {
         val entite = utilisateurLocalDao.trouverParIdentifiant(identifiant)
-            ?: return Resultat.Echec("Aucun compte synchronisé sur cet appareil pour cet identifiant. Une première connexion en ligne est nécessaire.")
+            ?: return Resultat.Echec("Aucun compte synchronisÃ© sur cet appareil pour cet identifiant. Une premiÃ¨re connexion en ligne est nÃ©cessaire.")
 
         val motDePasseValide = HachageMotDePasse.verifier(motDePasse.toCharArray(), entite.hashMotDePasse)
         if (!motDePasseValide) {
@@ -70,9 +70,9 @@ class AuthRepositoryImpl @Inject constructor(
         sessionManager.enregistrerSession(utilisateurDomaine)
         return Resultat.Succes(utilisateurDomaine)
         // Note : le mode hors ligne complet (file de synchronisation des actions
-        // effectuées sans réseau) est du ressort du futur module Offline — ici,
-        // seule l'authentification hors ligne est couverte, périmètre du module
-        // Identité & Accès.
+        // effectuÃ©es sans rÃ©seau) est du ressort du futur module Offline â€” ici,
+        // seule l'authentification hors ligne est couverte, pÃ©rimÃ¨tre du module
+        // IdentitÃ© & AccÃ¨s.
     }
 
     override suspend fun inscription(
@@ -104,8 +104,8 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun deconnexion() {
         val refresh = tokenManager.refreshTokenActuel()
         if (refresh != null) {
-            // Best-effort : la révocation côté serveur ne doit pas bloquer la
-            // déconnexion locale si le réseau est indisponible.
+            // Best-effort : la rÃ©vocation cÃ´tÃ© serveur ne doit pas bloquer la
+            // dÃ©connexion locale si le rÃ©seau est indisponible.
             executerAppelApi(json) { authApi.logout(LogoutRequestDto(refresh)) }
         }
         tokenManager.effacerTokens()
@@ -142,3 +142,4 @@ private fun UtilisateurDto.versDomaine() = Utilisateur(
     secteurs = secteurs,
     actif = actif,
 )
+

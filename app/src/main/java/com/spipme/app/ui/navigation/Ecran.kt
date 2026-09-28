@@ -1,4 +1,4 @@
-package com.spipme.app.ui.navigation
+﻿package com.spipme.app.ui.navigation
 
 sealed class Ecran(val route: String) {
     data object Connexion : Ecran("connexion")
@@ -16,5 +16,11 @@ sealed class Ecran(val route: String) {
     data object Suggestions : Ecran("suggestions")
     data object Alertes : Ecran("alertes")
     data object Imports : Ecran("imports")
-    // Écrans suivants ajoutés module par module (Audit...).
+    data object Audit : Ecran("audit")
+    data object Factures : Ecran("factures")
+    data object Conformite : Ecran("conformite")
+    data object Profil : Ecran("profil")
+    data object Administration : Ecran("administration")
+    data object Dashboard : Ecran("dashboard")
 }
+

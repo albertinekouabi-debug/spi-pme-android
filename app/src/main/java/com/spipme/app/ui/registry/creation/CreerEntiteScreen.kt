@@ -1,4 +1,4 @@
-package com.spipme.app.ui.registry.creation
+﻿package com.spipme.app.ui.registry.creation
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -78,7 +78,7 @@ private fun CreerEntiteContenu(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Nouvelle entité") },
+                title = { Text("Nouvelle entitÃ©") },
                 navigationIcon = {
                     IconButton(onClick = surRetour) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Retour")
@@ -94,7 +94,7 @@ private fun CreerEntiteContenu(
                 .verticalScroll(rememberScrollState())
                 .padding(20.dp),
         ) {
-            Text("Type d'entité", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.SemiBold)
+            Text("Type d'entitÃ©", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.SemiBold)
             Spacer(Modifier.height(8.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 TYPES_SUGGERES.forEach { type ->
@@ -111,17 +111,17 @@ private fun CreerEntiteContenu(
                 SpiPmeTextField(
                     valeur = etat.typePersonnalise,
                     surChangement = surChangementTypePersonnalise,
-                    libelle = "Préciser le type (ex. patient, locataire...)",
+                    libelle = "PrÃ©ciser le type (ex. patient, locataire...)",
                 )
             }
 
             Spacer(Modifier.height(20.dp))
             Text("Nom *", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.SemiBold)
             Spacer(Modifier.height(8.dp))
-            SpiPmeTextField(valeur = etat.nom, surChangement = surChangementNom, libelle = "Nom de l'entité")
+            SpiPmeTextField(valeur = etat.nom, surChangement = surChangementNom, libelle = "Nom de l'entitÃ©")
 
             Spacer(Modifier.height(16.dp))
-            Text("Téléphone", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.SemiBold)
+            Text("TÃ©lÃ©phone", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.SemiBold)
             Spacer(Modifier.height(8.dp))
             SpiPmeTextField(
                 valeur = etat.telephone,
@@ -181,3 +181,4 @@ private fun CreerEntiteScreenApercu() {
         )
     }
 }
+

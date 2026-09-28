@@ -1,4 +1,4 @@
-package com.spipme.app.ui.treasury
+﻿package com.spipme.app.ui.treasury
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -112,9 +112,9 @@ private fun TreasuryContenu(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 item {
-                    Text("Trésorerie", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+                    Text("TrÃ©sorerie", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
                     Text(
-                        "Suivez vos flux de trésorerie en temps réel",
+                        "Suivez vos flux de trÃ©sorerie en temps rÃ©el",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -151,7 +151,7 @@ private fun TreasuryContenu(
                 } else if (etat.transactions.isEmpty()) {
                     item {
                         Text(
-                            "Aucune transaction trouvée.",
+                            "Aucune transaction trouvÃ©e.",
                             modifier = Modifier.fillMaxWidth().padding(32.dp),
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -175,7 +175,7 @@ private fun TreasuryContenu(
 @Composable
 private fun CartesResume(resume: ResumeTresorerie) {
     val donnees = listOf(
-        Triple("Entrées (mois)", resume.entreesMois, SpiPmeTheme.extendedColors.succes),
+        Triple("EntrÃ©es (mois)", resume.entreesMois, SpiPmeTheme.extendedColors.succes),
         Triple("Sorties (mois)", resume.sortiesMois, MaterialTheme.colorScheme.error),
         Triple("Solde net (mois)", resume.soldeNetMois, MaterialTheme.colorScheme.primary),
         Triple("Solde disponible", resume.soldeDisponible, MaterialTheme.colorScheme.onSurface),
@@ -211,7 +211,7 @@ private fun GrapheEvolution(points: List<PointSolde>) {
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text("Évolution du solde", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+            Text("Ã‰volution du solde", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
             Spacer(Modifier.height(12.dp))
 
             val couleurLigne = MaterialTheme.colorScheme.primary
@@ -268,7 +268,7 @@ private fun CarteTransaction(transaction: Transaction) {
             Spacer(Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    transaction.description.ifBlank { if (estEntree) "Entrée" else "Sortie" },
+                    transaction.description.ifBlank { if (estEntree) "EntrÃ©e" else "Sortie" },
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                 )
@@ -332,3 +332,4 @@ private fun TreasuryScreenApercu() {
         )
     }
 }
+

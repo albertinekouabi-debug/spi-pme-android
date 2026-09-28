@@ -1,4 +1,4 @@
-package com.spipme.app.core.network
+﻿package com.spipme.app.core.network
 
 import com.spipme.app.BuildConfig
 import com.spipme.app.data.remote.api.AuthApi
@@ -34,7 +34,7 @@ object NetworkModule {
             level = if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE
         }
 
-    /** Client SANS AuthInterceptor ni TokenAuthenticator — réservé à /auth/login et /auth/refresh. */
+    /** Client SANS AuthInterceptor ni TokenAuthenticator â€” rÃ©servÃ© Ã  /auth/login et /auth/refresh. */
     @Provides
     @Singleton
     @ClientBrut
@@ -60,7 +60,7 @@ object NetworkModule {
     @ClientBrut
     fun fournirAuthApiBrut(@ClientBrut retrofit: Retrofit): AuthApi = retrofit.create(AuthApi::class.java)
 
-    /** Client AVEC AuthInterceptor + TokenAuthenticator — utilisé pour tous les autres endpoints métier. */
+    /** Client AVEC AuthInterceptor + TokenAuthenticator â€” utilisÃ© pour tous les autres endpoints mÃ©tier. */
     @Provides
     @Singleton
     @ClientAuthentifie
@@ -75,9 +75,9 @@ object NetworkModule {
             .addInterceptor(logging)
             .connectTimeout(15, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
-            // Ce client gère l'upload multipart du module imports (fichiers
-            // CSV/XLSX pouvant atteindre plusieurs Mo) — le défaut OkHttp
-            // (10s) serait trop court sur un réseau lent.
+            // Ce client gÃ¨re l'upload multipart du module imports (fichiers
+            // CSV/XLSX pouvant atteindre plusieurs Mo) â€” le dÃ©faut OkHttp
+            // (10s) serait trop court sur un rÃ©seau lent.
             .writeTimeout(60, TimeUnit.SECONDS)
             .build()
 
@@ -92,8 +92,8 @@ object NetworkModule {
             .build()
 
     /**
-     * AuthApi exposé aussi via le client authentifié, pour /auth/logout
-     * (qui exige d'être connecté — contrairement à login/refresh).
+     * AuthApi exposÃ© aussi via le client authentifiÃ©, pour /auth/logout
+     * (qui exige d'Ãªtre connectÃ© â€” contrairement Ã  login/refresh).
      */
     @Provides
     @Singleton
@@ -133,4 +133,35 @@ object NetworkModule {
     @Singleton
     fun fournirImportApi(@ClientAuthentifie retrofit: Retrofit): com.spipme.app.data.remote.api.ImportApi =
         retrofit.create(com.spipme.app.data.remote.api.ImportApi::class.java)
+
+    @Provides
+    @Singleton
+    fun fournirAuditApi(@ClientAuthentifie retrofit: Retrofit): com.spipme.app.data.remote.api.AuditApi =
+        retrofit.create(com.spipme.app.data.remote.api.AuditApi::class.java)
+
+    @Provides
+    @Singleton
+    fun fournirFactureApi(@ClientAuthentifie retrofit: Retrofit): com.spipme.app.data.remote.api.FactureApi =
+        retrofit.create(com.spipme.app.data.remote.api.FactureApi::class.java)
+
+    @Provides
+    @Singleton
+    fun fournirConformiteApi(@ClientAuthentifie retrofit: Retrofit): com.spipme.app.data.remote.api.ConformiteApi =
+        retrofit.create(com.spipme.app.data.remote.api.ConformiteApi::class.java)
+
+    @Provides
+    @Singleton
+    fun fournirSecteurApi(@ClientAuthentifie retrofit: Retrofit): com.spipme.app.data.remote.api.SecteurApi =
+        retrofit.create(com.spipme.app.data.remote.api.SecteurApi::class.java)
+
+    @Provides
+    @Singleton
+    fun fournirMoiApi(@ClientAuthentifie retrofit: Retrofit): com.spipme.app.data.remote.api.MoiApi =
+        retrofit.create(com.spipme.app.data.remote.api.MoiApi::class.java)
+
+    @Provides
+    @Singleton
+    fun fournirAdminApi(@ClientAuthentifie retrofit: Retrofit): com.spipme.app.data.remote.api.AdminApi =
+        retrofit.create(com.spipme.app.data.remote.api.AdminApi::class.java)
 }
+

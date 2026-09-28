@@ -1,4 +1,4 @@
-package com.spipme.app.ui.home
+﻿package com.spipme.app.ui.home
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,12 +17,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 
 /**
- * Placeholder volontaire : le vrai tableau de bord (maquette accueil.png —
- * cartes de synthèse, actions rapides, activité récente, suggestions IA) est
- * un module à part entière, pas construit dans cette passe consacrée à
- * Identité & Accès. Cet écran confirme seulement que la session fonctionne
- * de bout en bout (connexion -> navigation -> déconnexion) et sert de menu
- * de navigation temporaire vers chaque module déjà construit.
+ * Placeholder volontaire : le vrai tableau de bord (maquette accueil.png â€”
+ * cartes de synthÃ¨se, actions rapides, activitÃ© rÃ©cente, suggestions IA) est
+ * un module Ã  part entiÃ¨re, pas construit dans cette passe consacrÃ©e Ã 
+ * IdentitÃ© & AccÃ¨s. Cet Ã©cran confirme seulement que la session fonctionne
+ * de bout en bout (connexion -> navigation -> dÃ©connexion) et sert de menu
+ * de navigation temporaire vers chaque module dÃ©jÃ  construit.
  */
 @Composable
 fun HomeScreen(
@@ -34,6 +34,11 @@ fun HomeScreen(
     surClicSuggestions: () -> Unit,
     surClicAlertes: () -> Unit,
     surClicImports: () -> Unit,
+    surClicAudit: () -> Unit,
+    surClicFactures: () -> Unit,
+    surClicConformite: () -> Unit,
+    surClicAdministration: () -> Unit,
+    surClicDashboard: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     Scaffold { padding ->
@@ -46,9 +51,9 @@ fun HomeScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-            Text("Connexion réussie", style = MaterialTheme.typography.headlineMedium)
+            Text("Connexion rÃ©ussie", style = MaterialTheme.typography.headlineMedium)
             Text(
-                "Le tableau de bord complet (écran Accueil) sera construit comme module suivant.",
+                "Le tableau de bord complet (Ã©cran Accueil) sera construit comme module suivant.",
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.padding(top = 8.dp, bottom = 24.dp),
             )
@@ -59,10 +64,10 @@ fun HomeScreen(
                 Text("Aller aux Ressources")
             }
             Button(onClick = surClicTresorerie, modifier = Modifier.padding(bottom = 12.dp)) {
-                Text("Aller à la Trésorerie")
+                Text("Aller Ã  la TrÃ©sorerie")
             }
             Button(onClick = surClicTaches, modifier = Modifier.padding(bottom = 12.dp)) {
-                Text("Aller aux Tâches")
+                Text("Aller aux TÃ¢ches")
             }
             Button(onClick = surClicSuggestions, modifier = Modifier.padding(bottom = 12.dp)) {
                 Text("Aller aux Suggestions IA")
@@ -73,9 +78,25 @@ fun HomeScreen(
             Button(onClick = surClicImports, modifier = Modifier.padding(bottom = 12.dp)) {
                 Text("Aller aux Imports")
             }
+            Button(onClick = surClicAudit, modifier = Modifier.padding(bottom = 12.dp)) {
+                Text("Journal d'audit")
+            }
+            Button(onClick = surClicFactures, modifier = Modifier.padding(bottom = 12.dp)) {
+                Text("Factures")
+            }
+            Button(onClick = surClicConformite, modifier = Modifier.padding(bottom = 12.dp)) {
+                Text("ConformitÃ©")
+            }
+            Button(onClick = surClicDashboard, modifier = Modifier.padding(bottom = 12.dp)) {
+                Text("Tableau de bord")
+            }
+            Button(onClick = surClicAdministration, modifier = Modifier.padding(bottom = 12.dp)) {
+                Text("Administration")
+            }
             Button(onClick = { viewModel.seDeconnecter(); surDeconnexion() }) {
-                Text("Se déconnecter")
+                Text("Se dÃ©connecter")
             }
         }
     }
 }
+

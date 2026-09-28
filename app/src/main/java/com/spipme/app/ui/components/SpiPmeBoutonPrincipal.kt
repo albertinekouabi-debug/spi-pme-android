@@ -1,4 +1,4 @@
-package com.spipme.app.ui.components
+﻿package com.spipme.app.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -59,3 +59,4 @@ fun SpiPmeBoutonPrincipal(
         }
     }
 }
+

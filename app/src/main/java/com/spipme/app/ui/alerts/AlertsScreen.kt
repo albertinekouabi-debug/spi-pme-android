@@ -1,4 +1,4 @@
-package com.spipme.app.ui.alerts
+﻿package com.spipme.app.ui.alerts
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -105,7 +105,7 @@ private fun AlertsContenu(
                 item {
                     Text("Alertes", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
                     Text(
-                        "Surveillez les points critiques de votre activité",
+                        "Surveillez les points critiques de votre activitÃ©",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -149,7 +149,7 @@ private fun AlertsContenu(
                 } else if (etat.alertes.isEmpty()) {
                     item {
                         Text(
-                            "Aucune alerte dans cette catégorie.",
+                            "Aucune alerte dans cette catÃ©gorie.",
                             modifier = Modifier.fillMaxWidth().padding(32.dp),
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -180,9 +180,9 @@ private fun AlertsContenu(
 private fun CartesResume(resume: ResumeAlertes) {
     val donnees = listOf(
         Triple("Critique", resume.critiques, MaterialTheme.colorScheme.error),
-        Triple("Élevée", resume.elevees, SpiPmeTheme.extendedColors.avertissement),
-        Triple("Modérée", resume.moderees, SpiPmeTheme.extendedColors.information),
-        Triple("Résolue", resume.resolues, SpiPmeTheme.extendedColors.succes),
+        Triple("Ã‰levÃ©e", resume.elevees, SpiPmeTheme.extendedColors.avertissement),
+        Triple("ModÃ©rÃ©e", resume.moderees, SpiPmeTheme.extendedColors.information),
+        Triple("RÃ©solue", resume.resolues, SpiPmeTheme.extendedColors.succes),
     )
     LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
         items(donnees) { (libelle, valeur, couleur) ->
@@ -265,7 +265,7 @@ private fun AlertsScreenApercu() {
                 secteurActifNom = "Commerce",
                 resume = ResumeAlertes(critiques = 5, elevees = 8, moderees = 12, resolues = 24),
                 alertes = listOf(
-                    Alerte(1, "stock_critique", "critique", "Stock critique : Lait en poudre", "Stock actuel : 2 unités restantes.", "active", "Lait en poudre", null, null, null, 1, "2026-07-28", null),
+                    Alerte(1, "stock_critique", "critique", "Stock critique : Lait en poudre", "Stock actuel : 2 unitÃ©s restantes.", "active", "Lait en poudre", null, null, null, 1, "2026-07-28", null),
                 ),
             ),
             surClicNotifications = {}, surClicProfil = {}, surClicSecteur = {},
@@ -273,3 +273,4 @@ private fun AlertsScreenApercu() {
         )
     }
 }
+

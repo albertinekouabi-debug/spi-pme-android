@@ -1,4 +1,4 @@
-package com.spipme.app.data.remote.dto.auth
+﻿package com.spipme.app.data.remote.dto.auth
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -13,7 +13,7 @@ data class InscriptionRequestDto(
     @SerialName("code_invitation") val codeInvitation: String,
 )
 
-/** Ne contient jamais de token : le compte est créé INACTIF, en attente de vérification email. */
+/** Ne contient jamais de token : le compte est crÃ©Ã© INACTIF, en attente de vÃ©rification email. */
 @Serializable
 data class InscriptionResponseDto(
     val id: Int,
@@ -22,3 +22,4 @@ data class InscriptionResponseDto(
     @SerialName("nom_complet") val nomComplet: String? = null,
     val telephone: String? = null,
 )
+

@@ -1,4 +1,4 @@
-package com.spipme.app.ui.intelligence
+﻿package com.spipme.app.ui.intelligence
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -92,7 +92,7 @@ private fun IntelligenceContenu(
             ExtendedFloatingActionButton(
                 onClick = surClicGenerer,
                 icon = { Icon(Icons.Filled.AutoAwesome, null) },
-                text = { Text(if (etat.enCoursDeGeneration) "Génération..." else "Nouvelle analyse") },
+                text = { Text(if (etat.enCoursDeGeneration) "GÃ©nÃ©ration..." else "Nouvelle analyse") },
             )
         },
     ) { padding ->
@@ -117,7 +117,7 @@ private fun IntelligenceContenu(
                         Text("Suggestions IA", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
                     }
                     Text(
-                        "Des recommandations intelligentes pour améliorer vos performances",
+                        "Des recommandations intelligentes pour amÃ©liorer vos performances",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -185,9 +185,9 @@ private fun IntelligenceContenu(
 private fun CartesResume(resume: ResumeSuggestions) {
     val donnees = listOf(
         Triple("Total (mois)", resume.total, MaterialTheme.colorScheme.onSurface),
-        Triple("Validées", resume.validees, SpiPmeTheme.extendedColors.succes),
+        Triple("ValidÃ©es", resume.validees, SpiPmeTheme.extendedColors.succes),
         Triple("En attente", resume.enAttente, SpiPmeTheme.extendedColors.avertissement),
-        Triple("Rejetées", resume.rejetees, MaterialTheme.colorScheme.error),
+        Triple("RejetÃ©es", resume.rejetees, MaterialTheme.colorScheme.error),
     )
     LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
         items(donnees) { (libelle, valeur, couleur) ->
@@ -229,9 +229,9 @@ private fun CarteSuggestion(suggestion: Suggestion, surClicValider: () -> Unit, 
         else -> SpiPmeTheme.extendedColors.avertissement
     }
     val libelleStatut = when (suggestion.statut) {
-        "validee" -> "Validée"
-        "rejetee" -> "Rejetée"
-        "ignoree" -> "Ignorée"
+        "validee" -> "ValidÃ©e"
+        "rejetee" -> "RejetÃ©e"
+        "ignoree" -> "IgnorÃ©e"
         else -> "En attente"
     }
 
@@ -277,7 +277,7 @@ private fun CarteSuggestion(suggestion: Suggestion, surClicValider: () -> Unit, 
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 suggestion.impactEstime?.let { impact ->
                     Column {
-                        Text("Impact estimé", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text("Impact estimÃ©", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Text("+${formaterMontant(impact)} FCFA", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
                     }
                 }
@@ -321,7 +321,7 @@ private fun DialogueRejet(surConfirmer: (String) -> Unit, surAnnuler: () -> Unit
         text = {
             Column {
                 Text(
-                    "Le motif de rejet est obligatoire — il sert à l'amélioration future des algorithmes.",
+                    "Le motif de rejet est obligatoire â€” il sert Ã  l'amÃ©lioration future des algorithmes.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -354,10 +354,10 @@ private fun IntelligenceScreenApercu() {
                 resume = ResumeSuggestions(total = 18, validees = 11, enAttente = 5, rejetees = 2, tauxAcceptation = 61.0),
                 suggestions = listOf(
                     Suggestion(
-                        1, "seuil", "Recommandation", "Augmenter le stock de Riz étuvé 25kg",
-                        "La demande a augmenté de 23% ces 7 derniers jours.",
+                        1, "seuil", "Recommandation", "Augmenter le stock de Riz Ã©tuvÃ© 25kg",
+                        "La demande a augmentÃ© de 23% ces 7 derniers jours.",
                         listOf("Niveau actuel" to "18.0", "Seuil critique" to "10.0"),
-                        BigDecimal("1250000"), BigDecimal("87"), "en_attente", "", "Riz étuvé 25kg", 1, null, "2026-07-28", null,
+                        BigDecimal("1250000"), BigDecimal("87"), "en_attente", "", "Riz Ã©tuvÃ© 25kg", 1, null, "2026-07-28", null,
                     ),
                 ),
             ),
@@ -367,3 +367,4 @@ private fun IntelligenceScreenApercu() {
         )
     }
 }
+

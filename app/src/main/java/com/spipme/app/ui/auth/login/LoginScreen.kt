@@ -1,4 +1,4 @@
-package com.spipme.app.ui.auth.login
+﻿package com.spipme.app.ui.auth.login
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -104,7 +104,7 @@ private fun LoginContenu(
                         textAlign = TextAlign.Center,
                     )
                     Text(
-                        "Accédez à votre espace professionnel",
+                        "AccÃ©dez Ã  votre espace professionnel",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.fillMaxWidth(),
@@ -134,8 +134,8 @@ private fun LoginContenu(
                     )
 
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                        TextButton(onClick = { /* écran mot de passe oublié — module Identité & Accès, à venir */ }) {
-                            Text("Mot de passe oublié ?")
+                        TextButton(onClick = { /* Ã©cran mot de passe oubliÃ© â€” module IdentitÃ© & AccÃ¨s, Ã  venir */ }) {
+                            Text("Mot de passe oubliÃ© ?")
                         }
                     }
 
@@ -171,7 +171,7 @@ private fun LoginContenu(
                         Text("Connexion hors ligne", fontWeight = FontWeight.SemiBold)
                     }
                     Text(
-                        "Accéder en mode hors ligne",
+                        "AccÃ©der en mode hors ligne",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
@@ -195,7 +195,7 @@ private fun LoginContenu(
                 )
                 Spacer(Modifier.width(6.dp))
                 Text(
-                    "Vos données sont sécurisées",
+                    "Vos donnÃ©es sont sÃ©curisÃ©es",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -219,14 +219,14 @@ private fun EnTeteMarque() {
         Spacer(Modifier.height(12.dp))
         Text("SPI-PME", style = MaterialTheme.typography.headlineLarge, fontWeight = FontWeight.Bold)
         Text(
-            "Système de Pilotage Intelligent des PME",
+            "SystÃ¨me de Pilotage Intelligent des PME",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
         )
         Spacer(Modifier.height(8.dp))
         Text(
-            "Gérez. Analysez. Anticipez. Développez.",
+            "GÃ©rez. Analysez. Anticipez. DÃ©veloppez.",
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.primary,
         )
@@ -247,3 +247,4 @@ private fun LoginScreenApercu() {
         )
     }
 }
+

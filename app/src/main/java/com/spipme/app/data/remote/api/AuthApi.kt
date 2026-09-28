@@ -1,4 +1,4 @@
-package com.spipme.app.data.remote.api
+﻿package com.spipme.app.data.remote.api
 
 import com.spipme.app.data.remote.dto.auth.InscriptionRequestDto
 import com.spipme.app.data.remote.dto.auth.InscriptionResponseDto
@@ -21,7 +21,8 @@ interface AuthApi {
     @POST("auth/logout")
     suspend fun logout(@Body body: LogoutRequestDto): Response<Unit>
 
-    /** Compte créé INACTIF côté serveur — voir InscriptionResponseDto. */
+    /** Compte crÃ©Ã© INACTIF cÃ´tÃ© serveur â€” voir InscriptionResponseDto. */
     @POST("auth/register")
     suspend fun inscription(@Body body: InscriptionRequestDto): Response<InscriptionResponseDto>
 }
+

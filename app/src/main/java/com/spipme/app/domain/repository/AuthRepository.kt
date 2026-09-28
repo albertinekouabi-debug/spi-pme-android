@@ -1,4 +1,4 @@
-package com.spipme.app.domain.repository
+﻿package com.spipme.app.domain.repository
 
 import com.spipme.app.core.util.Resultat
 import com.spipme.app.domain.model.Utilisateur
@@ -9,14 +9,14 @@ interface AuthRepository {
 
     suspend fun connexion(identifiant: String, motDePasse: String): Resultat<Utilisateur>
 
-    /** Connexion hors ligne (maquette connexion_hors_ligne.png) — nécessite une connexion en ligne préalable réussie sur cet appareil. */
+    /** Connexion hors ligne (maquette connexion_hors_ligne.png) â€” nÃ©cessite une connexion en ligne prÃ©alable rÃ©ussie sur cet appareil. */
     suspend fun connexionHorsLigne(identifiant: String, motDePasse: String): Resultat<Utilisateur>
 
     /**
-     * Auto-inscription publique. Le compte créé est INACTIF côté serveur
-     * (vérification email requise) — ne retourne donc aucun token, aucune
-     * session n'est ouverte. Résultat purement informatif pour l'écran
-     * ("vérifiez votre boîte mail").
+     * Auto-inscription publique. Le compte crÃ©Ã© est INACTIF cÃ´tÃ© serveur
+     * (vÃ©rification email requise) â€” ne retourne donc aucun token, aucune
+     * session n'est ouverte. RÃ©sultat purement informatif pour l'Ã©cran
+     * ("vÃ©rifiez votre boÃ®te mail").
      */
     suspend fun inscription(
         nomUtilisateur: String,
@@ -29,3 +29,4 @@ interface AuthRepository {
 
     suspend fun deconnexion()
 }
+
