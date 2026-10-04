@@ -1,5 +1,13 @@
-﻿package com.spipme.app.ui.resources
+package com.spipme.app.ui.resources
 
+import com.spipme.app.ui.sync.ElementEnAttente
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.AlertDialog
+import com.spipme.app.core.notifications.NotificationBadgeViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -59,6 +67,7 @@ fun ResourcesScreen(
     viewModel: ResourcesViewModel = hiltViewModel(),
 ) {
     val etat by viewModel.uiState.collectAsStateWithLifecycle()
+    val nombreNotifs by (hiltViewModel<NotificationBadgeViewModel>()).compte.collectAsStateWithLifecycle()
 
     LaunchedEffect(ressourceVientDetreCreee) {
         if (ressourceVientDetreCreee) {
@@ -68,6 +77,7 @@ fun ResourcesScreen(
     }
 
     ResourcesContenu(
+        nombreNotifs = nombreNotifs,
         etat = etat,
         surClicNotifications = surClicNotifications,
         surClicProfil = surClicProfil,
@@ -75,7 +85,17 @@ fun ResourcesScreen(
         surChangementOnglet = viewModel::surChangementOnglet,
         surChangementRecherche = viewModel::surChangementRecherche,
         surClicNouvelleRessource = surClicNouvelleRessource,
+        surModifier = viewModel::demanderModification,
     )
+
+    etat.ressourceAModifier?.let { ressource ->
+        DialogueModificationRessource(
+            ressource = ressource,
+            erreur = etat.erreurModification,
+            surConfirmer = viewModel::confirmerModification,
+            surAbandonner = viewModel::abandonnerModification,
+        )
+    }
 }
 
 @Composable
@@ -87,6 +107,8 @@ private fun ResourcesContenu(
     surChangementOnglet: (OngletRessources) -> Unit,
     surChangementRecherche: (String) -> Unit,
     surClicNouvelleRessource: () -> Unit,
+    surModifier: (Ressource) -> Unit = {},
+    nombreNotifs: Int = 0,
 ) {
     Scaffold(
         floatingActionButton = {
@@ -100,7 +122,7 @@ private fun ResourcesContenu(
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
             SpiPmeTopBar(
                 secteurActifNom = etat.secteurActifNom,
-                nombreNotificationsNonLues = 0,
+                nombreNotificationsNonLues = nombreNotifs,
                 surClicSecteur = surClicSecteur,
                 surClicNotifications = surClicNotifications,
                 surClicProfil = surClicProfil,
@@ -114,13 +136,18 @@ private fun ResourcesContenu(
                 item {
                     Text("Ressources", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
                     Text(
-                        "Suivez vos stocks et ressources en temps rÃ©el",
+                        "Suivez vos stocks et ressources en temps réel",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
 
                 etat.resume?.let { resume -> item { CartesResume(resume) } }
+
+                etat.messageInfo?.let { info ->
+                    item { Text(info, style = MaterialTheme.typography.bodySmall, color = SpiPmeTheme.extendedColors.succes) }
+                }
+                items(etat.creationsEnAttente, key = { "attente-${it.id}" }) { element -> CarteEnAttente(element) }
 
                 item {
                     LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -156,13 +183,20 @@ private fun ResourcesContenu(
                 } else if (etat.ressources.isEmpty()) {
                     item {
                         Text(
-                            "Aucune ressource trouvÃ©e.",
+                            "Aucune ressource trouvée.",
                             modifier = Modifier.fillMaxWidth().padding(32.dp),
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 } else {
-                    items(etat.ressources, key = { it.id }) { ressource -> CarteRessource(ressource) }
+                    items(etat.ressources, key = { it.id }) { ressource ->
+                        CarteRessource(
+                            ressource = ressource,
+                            modifiable = etat.peutModifier && ressource.id !in etat.idsModificationEnAttente,
+                            modificationEnAttente = ressource.id in etat.idsModificationEnAttente,
+                            surModifier = { surModifier(ressource) },
+                        )
+                    }
                 }
 
                 etat.messageErreur?.let { message ->
@@ -181,7 +215,7 @@ private fun ResourcesContenu(
 private fun CartesResume(resume: ResumeRessources) {
     val donnees = listOf(
         Triple("Critiques", resume.critiques, MaterialTheme.colorScheme.error),
-        Triple("Ã€ surveiller", resume.aSurveiller, SpiPmeTheme.extendedColors.avertissement),
+        Triple("À surveiller", resume.aSurveiller, SpiPmeTheme.extendedColors.avertissement),
         Triple("Stables", resume.stables, SpiPmeTheme.extendedColors.succes),
         Triple("Total", resume.total, MaterialTheme.colorScheme.onSurface),
     )
@@ -203,7 +237,12 @@ private fun CartesResume(resume: ResumeRessources) {
 }
 
 @Composable
-private fun CarteRessource(ressource: Ressource) {
+private fun CarteRessource(
+    ressource: Ressource,
+    modifiable: Boolean = false,
+    modificationEnAttente: Boolean = false,
+    surModifier: () -> Unit = {},
+) {
     val couleurStatut = when (ressource.statut) {
         "critique" -> MaterialTheme.colorScheme.error
         "a_surveiller" -> SpiPmeTheme.extendedColors.avertissement
@@ -211,7 +250,7 @@ private fun CarteRessource(ressource: Ressource) {
     }
     val libelleStatut = when (ressource.statut) {
         "critique" -> "Critique"
-        "a_surveiller" -> "Ã€ surveiller"
+        "a_surveiller" -> "À surveiller"
         else -> "Stable"
     }
 
@@ -226,7 +265,7 @@ private fun CarteRessource(ressource: Ressource) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(ressource.nom, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
                     Text(
-                        "CatÃ©gorie : ${ressource.type}" + if (ressource.emplacement.isNotBlank()) " Â· ${ressource.emplacement}" else "",
+                        "Catégorie : ${ressource.type}" + if (ressource.emplacement.isNotBlank()) " · ${ressource.emplacement}" else "",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -268,13 +307,72 @@ private fun CarteRessource(ressource: Ressource) {
             if (!ressource.seuilsConfigures) {
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    "Seuils non configurÃ©s",
+                    "Seuils non configurés",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
+            if (modificationEnAttente) {
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    "Modification en attente de synchronisation",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = SpiPmeTheme.extendedColors.avertissement,
+                    fontWeight = FontWeight.SemiBold,
+                )
+            } else if (modifiable) {
+                TextButton(onClick = surModifier) { Text("Modifier") }
+            }
         }
     }
+}
+
+/** Saisie faite hors ligne : visible immédiatement, clairement marquée comme non synchronisée. */
+@Composable
+private fun CarteEnAttente(element: ElementEnAttente) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(element.detail.ifBlank { element.titre }, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+            Text(
+                "${element.titre} — en attente de synchronisation",
+                style = MaterialTheme.typography.labelMedium,
+                color = SpiPmeTheme.extendedColors.avertissement,
+            )
+        }
+    }
+}
+
+/** Le NIVEAU de stock n'est pas modifiable ici : il ne change que par des mouvements tracés. */
+@Composable
+private fun DialogueModificationRessource(
+    ressource: Ressource,
+    erreur: String?,
+    surConfirmer: (String, String, String, String) -> Unit,
+    surAbandonner: () -> Unit,
+) {
+    var nom by rememberSaveable(ressource.id) { mutableStateOf(ressource.nom) }
+    var emplacement by rememberSaveable(ressource.id) { mutableStateOf(ressource.emplacement) }
+    var critique by rememberSaveable(ressource.id) { mutableStateOf(ressource.seuilCritique?.toPlainString().orEmpty()) }
+    var alerte by rememberSaveable(ressource.id) { mutableStateOf(ressource.seuilAlerte?.toPlainString().orEmpty()) }
+    AlertDialog(
+        onDismissRequest = surAbandonner,
+        title = { Text("Modifier la ressource") },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedTextField(nom, { nom = it }, label = { Text("Nom") }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                OutlinedTextField(emplacement, { emplacement = it }, label = { Text("Emplacement") }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                OutlinedTextField(critique, { critique = it }, label = { Text("Seuil critique") }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                OutlinedTextField(alerte, { alerte = it }, label = { Text("Seuil d'alerte") }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                erreur?.let { Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall) }
+            }
+        },
+        confirmButton = { TextButton(onClick = { surConfirmer(nom, emplacement, critique, alerte) }) { Text("Enregistrer") } },
+        dismissButton = { TextButton(onClick = surAbandonner) { Text("Annuler") } },
+    )
 }
 
 private fun formaterQuantite(valeur: BigDecimal): String =
@@ -291,8 +389,8 @@ private fun ResourcesScreenApercu() {
                 resume = ResumeRessources(total = 76, critiques = 12, aSurveiller = 18, stables = 46),
                 ressources = listOf(
                     Ressource(
-                        1, "produit", "Lait en poudre", "unitÃ©s", null,
-                        BigDecimal("2"), BigDecimal("10"), BigDecimal("25"), "critique", "EntrepÃ´t principal", 1, "Commerce",
+                        1, "produit", "Lait en poudre", "unités", null,
+                        BigDecimal("2"), BigDecimal("10"), BigDecimal("25"), "critique", "Entrepôt principal", 1, "Commerce",
                     ),
                 ),
             ),

@@ -42,7 +42,7 @@ suspend fun <T> executerAppelApi(json: Json, appel: suspend () -> Response<T>): 
             )
         }
     } catch (e: IOException) {
-        Resultat.Echec("Impossible de contacter le serveur. Vérifiez votre connexion.")
+        Resultat.Echec("Impossible de contacter le serveur. Vérifiez votre connexion.", reseau = true)
     } catch (e: Exception) {
         Resultat.Echec("Une erreur inattendue est survenue : ${e.message ?: e::class.simpleName}")
     }

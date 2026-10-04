@@ -12,4 +12,5 @@ data class Utilisateur(
     val secteurPrincipalNom: String?,
     val secteurs: List<Int>,
     val actif: Boolean,
+    val permissions: List<String> = emptyList(),
 )

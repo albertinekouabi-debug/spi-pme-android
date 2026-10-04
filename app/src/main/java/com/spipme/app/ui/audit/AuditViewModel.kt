@@ -1,4 +1,4 @@
-﻿package com.spipme.app.ui.audit
+package com.spipme.app.ui.audit
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -26,7 +26,7 @@ class AuditViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(AuditUiState())
     val uiState: StateFlow<AuditUiState> = _uiState.asStateFlow()
 
-    /** Debounce de la recherche, mÃªme convention que Registre/Ressources (350 ms). */
+    /** Debounce de la recherche, même convention que Registre/Ressources (350 ms). */
     private var jobRecherche: Job? = null
 
     init {
@@ -58,7 +58,7 @@ class AuditViewModel @Inject constructor(
         charger()
     }
 
-    /** Charge la premiÃ¨re page + le rÃ©sumÃ© en parallÃ¨le (les deux filtres identiques). */
+    /** Charge la première page + le résumé en parallèle (les deux filtres identiques). */
     private fun charger() {
         viewModelScope.launch {
             val etat = _uiState.value
@@ -94,8 +94,8 @@ class AuditViewModel @Inject constructor(
                     if (resultat is Resultat.Succes) {
                         _uiState.update { it.copy(resume = resultat.donnees) }
                     }
-                    // Un Ã©chec du seul rÃ©sumÃ© ne doit pas masquer la liste : l'erreur
-                    // principale reste portÃ©e par le chargement de la liste ci-dessus.
+                    // Un échec du seul résumé ne doit pas masquer la liste : l'erreur
+                    // principale reste portée par le chargement de la liste ci-dessus.
                 }
             }
         }

@@ -18,4 +18,6 @@ data class UtilisateurDto(
     @kotlinx.serialization.SerialName("mfa_active") val mfaActive: Boolean = false,
     @kotlinx.serialization.SerialName("date_creation") val dateCreation: String? = null,
     @kotlinx.serialization.SerialName("derniere_connexion") val derniereConnexion: String? = null,
+    // Fournies par /me et /auth/login ; vide ailleurs (listes d'utilisateurs). Indicatif : le serveur reste l'autorité.
+    val permissions: List<String> = emptyList(),
 )

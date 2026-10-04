@@ -1,5 +1,6 @@
 package com.spipme.app.ui.resources
 
+import com.spipme.app.ui.sync.ElementEnAttente
 import com.spipme.app.domain.model.ResumeRessources
 import com.spipme.app.domain.model.Ressource
 
@@ -18,4 +19,10 @@ data class ResourcesUiState(
     val recherche: String = "",
     val messageErreur: String? = null,
     val secteurActifNom: String = "",
+    val peutModifier: Boolean = false,
+    val creationsEnAttente: List<ElementEnAttente> = emptyList(),
+    val idsModificationEnAttente: Set<Int> = emptySet(),
+    val ressourceAModifier: Ressource? = null,
+    val erreurModification: String? = null,
+    val messageInfo: String? = null,
 )

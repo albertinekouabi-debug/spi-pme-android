@@ -1,4 +1,4 @@
-﻿package com.spipme.app.ui.resources.creation
+package com.spipme.app.ui.resources.creation
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -91,20 +91,20 @@ private fun CreerRessourceContenu(
                 .verticalScroll(rememberScrollState())
                 .padding(20.dp),
         ) {
-            Champ("CatÃ©gorie *", etat.type, surChangementType, "Ex. Produits laitiers")
+            Champ("Catégorie *", etat.type, surChangementType, "Ex. Produits laitiers")
             Champ("Nom *", etat.nom, surChangementNom, "Nom de la ressource")
 
             Row(horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(12.dp)) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Champ("QuantitÃ© actuelle *", etat.niveauActuel, surChangementNiveauActuel, "0", KeyboardType.Decimal)
+                    Champ("Quantité actuelle *", etat.niveauActuel, surChangementNiveauActuel, "0", KeyboardType.Decimal)
                 }
                 Column(modifier = Modifier.weight(1f)) {
-                    Champ("UnitÃ©", etat.unite, surChangementUnite, "Ex. unitÃ©s, sacs")
+                    Champ("Unité", etat.unite, surChangementUnite, "Ex. unités, sacs")
                 }
             }
 
             Text(
-                "Seuils d'alerte (optionnels â€” configurables plus tard, Ã  partir des donnÃ©es rÃ©elles de consommation)",
+                "Seuils d'alerte (optionnels — configurables plus tard, à partir des données réelles de consommation)",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 8.dp, bottom = 8.dp),
@@ -119,7 +119,7 @@ private fun CreerRessourceContenu(
             }
 
             Champ("Valeur unitaire (FCFA)", etat.valeurUnitaire, surChangementValeurUnitaire, "0", KeyboardType.Decimal)
-            Champ("Emplacement", etat.emplacement, surChangementEmplacement, "Ex. EntrepÃ´t principal")
+            Champ("Emplacement", etat.emplacement, surChangementEmplacement, "Ex. Entrepôt principal")
 
             etat.messageErreur?.let { message ->
                 Spacer(Modifier.height(4.dp))

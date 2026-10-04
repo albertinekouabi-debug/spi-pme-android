@@ -1,4 +1,4 @@
-﻿package com.spipme.app.ui.components
+package com.spipme.app.ui.components
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -53,8 +53,8 @@ class SecteurSelectorViewModel @Inject constructor(
         }
     }
 
-    /** Change le secteur actif localement. Chaque appel API suivant le transmet en paramÃ¨tre ;
-     * le serveur l'intersecte TOUJOURS avec les secteurs rÃ©ellement autorisÃ©s â€” jamais de confiance aveugle au client. */
+    /** Change le secteur actif localement. Chaque appel API suivant le transmet en paramètre ;
+     * le serveur l'intersecte TOUJOURS avec les secteurs réellement autorisés — jamais de confiance aveugle au client. */
     fun selectionner(secteur: Secteur) {
         viewModelScope.launch {
             sessionManager.changerSecteurActif(secteur.id, secteur.nom)

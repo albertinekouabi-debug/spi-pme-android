@@ -20,6 +20,7 @@ data class RessourceDto(
     val secteur: Int,
     @SerialName("secteur_nom") val secteurNom: String? = null,
     @SerialName("date_maj") val dateMaj: String? = null,
+    val version: Int = 1,   // contrôle de concurrence (If-Match)
 )
 
 @Serializable

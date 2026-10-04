@@ -1,4 +1,4 @@
-﻿package com.spipme.app.di
+package com.spipme.app.di
 
 import com.spipme.app.data.repository.AlerteRepositoryImpl
 import com.spipme.app.data.repository.AuditRepositoryImpl
@@ -77,6 +77,10 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun lierFactureRepository(impl: FactureRepositoryImpl): FactureRepository
+
+    @Binds
+    @Singleton
+    abstract fun lierAnalyticsRepository(impl: com.spipme.app.data.repository.AnalyticsRepositoryImpl): com.spipme.app.domain.repository.AnalyticsRepository
 
     @Binds
     @Singleton

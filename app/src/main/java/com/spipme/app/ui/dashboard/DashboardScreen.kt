@@ -1,5 +1,6 @@
-﻿package com.spipme.app.ui.dashboard
+package com.spipme.app.ui.dashboard
 
+import com.spipme.app.core.notifications.NotificationBadgeViewModel
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,10 +37,10 @@ import com.spipme.app.ui.components.SpiPmeTopBar
 import com.spipme.app.ui.theme.SpiPmeTheme
 
 /**
- * Tableau de bord â€” assemble les `summary` dÃ©jÃ  existants et testÃ©s cÃ´tÃ©
- * serveur (pas de duplication de logique mÃ©tier). Chaque carte navigue
- * vers son module. Un Ã©chec sur un seul module n'empÃªche jamais
- * l'affichage des autres â€” voir DashboardViewModel.
+ * Tableau de bord — assemble les `summary` déjà existants et testés côté
+ * serveur (pas de duplication de logique métier). Chaque carte navigue
+ * vers son module. Un échec sur un seul module n'empêche jamais
+ * l'affichage des autres — voir DashboardViewModel.
  */
 @Composable
 fun DashboardScreen(
@@ -55,12 +56,13 @@ fun DashboardScreen(
     viewModel: DashboardViewModel = hiltViewModel(),
 ) {
     val etat by viewModel.uiState.collectAsStateWithLifecycle()
+    val nombreNotifs by (hiltViewModel<NotificationBadgeViewModel>()).compte.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
             SpiPmeTopBar(
                 secteurActifNom = etat.secteurActifNom,
-                nombreNotificationsNonLues = 0,
+                nombreNotificationsNonLues = nombreNotifs,
                 surClicSecteur = surClicSecteur,
                 surClicNotifications = surClicNotifications,
                 surClicProfil = surClicProfil,
@@ -86,7 +88,7 @@ fun DashboardScreen(
                         textAlign = TextAlign.Center,
                     )
                     Spacer(Modifier.height(8.dp))
-                    TextButton(onClick = viewModel::rafraichir) { Text("RÃ©essayer") }
+                    TextButton(onClick = viewModel::rafraichir) { Text("Réessayer") }
                 }
             }
 
@@ -104,7 +106,7 @@ fun DashboardScreen(
                 etat.resumeTresorerie?.let { resume ->
                     item {
                         CarteDashboard(
-                            titre = "TrÃ©sorerie",
+                            titre = "Trésorerie",
                             valeurPrincipale = "${resume.soldeDisponible}",
                             sousTitre = "Solde disponible",
                             couleur = MaterialTheme.colorScheme.primary,
@@ -137,7 +139,7 @@ fun DashboardScreen(
                 etat.resumeTaches?.let { resume ->
                     item {
                         CarteDashboard(
-                            titre = "TÃ¢ches",
+                            titre = "Tâches",
                             valeurPrincipale = "${resume.total}",
                             sousTitre = "${resume.enRetard} en retard",
                             couleur = if (resume.enRetard > 0) MaterialTheme.colorScheme.error else SpiPmeTheme.extendedColors.succes,

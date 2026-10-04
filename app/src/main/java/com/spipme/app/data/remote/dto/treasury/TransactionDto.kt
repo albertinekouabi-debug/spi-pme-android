@@ -20,6 +20,9 @@ data class TransactionDto(
     val secteur: Int,
     @SerialName("secteur_nom") val secteurNom: String? = null,
     @SerialName("date_transaction") val dateTransaction: String,
+    val statut: String = "validee",
+    @SerialName("contre_ecriture_de") val contreEcritureDe: Int? = null,
+    val version: Int = 1,
 )
 
 @Serializable

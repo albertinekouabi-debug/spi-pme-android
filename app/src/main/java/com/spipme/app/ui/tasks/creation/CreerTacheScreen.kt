@@ -1,4 +1,4 @@
-﻿package com.spipme.app.ui.tasks.creation
+package com.spipme.app.ui.tasks.creation
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -70,7 +70,7 @@ private fun CreerTacheContenu(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Nouvelle tÃ¢che") },
+                title = { Text("Nouvelle tâche") },
                 navigationIcon = {
                     IconButton(onClick = surRetour) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Retour") }
                 },
@@ -89,12 +89,12 @@ private fun CreerTacheContenu(
             SpiPmeTextField(valeur = etat.titre, surChangement = surChangementTitre, libelle = "Ex. Commander du stock")
 
             Spacer(Modifier.height(16.dp))
-            Text("CatÃ©gorie", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.SemiBold)
+            Text("Catégorie", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.SemiBold)
             Spacer(Modifier.height(8.dp))
             SpiPmeTextField(valeur = etat.categorie, surChangement = surChangementCategorie, libelle = "Ex. Approvisionnement")
 
             Spacer(Modifier.height(16.dp))
-            Text("PrioritÃ©", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.SemiBold)
+            Text("Priorité", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.SemiBold)
             Spacer(Modifier.height(8.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 PRIORITES.forEach { priorite ->
@@ -107,7 +107,7 @@ private fun CreerTacheContenu(
             }
 
             Spacer(Modifier.height(16.dp))
-            Text("Ã‰chÃ©ance", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.SemiBold)
+            Text("Échéance", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.SemiBold)
             Spacer(Modifier.height(8.dp))
             SpiPmeTextField(
                 valeur = etat.echeance,
@@ -119,7 +119,7 @@ private fun CreerTacheContenu(
             Spacer(Modifier.height(16.dp))
             Text("Description", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.SemiBold)
             Spacer(Modifier.height(8.dp))
-            SpiPmeTextField(valeur = etat.description, surChangement = surChangementDescription, libelle = "DÃ©tails de la tÃ¢che")
+            SpiPmeTextField(valeur = etat.description, surChangement = surChangementDescription, libelle = "Détails de la tâche")
 
             Spacer(Modifier.height(24.dp))
             SpiPmeBoutonPrincipal(texte = "Enregistrer", surClic = surClicEnregistrer, enCours = etat.enCoursDEnvoi)

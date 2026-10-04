@@ -1,5 +1,6 @@
-﻿package com.spipme.app.ui.imports
+package com.spipme.app.ui.imports
 
+import com.spipme.app.core.notifications.NotificationBadgeViewModel
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -61,16 +62,17 @@ fun ImportsScreen(
     viewModel: ImportsViewModel = hiltViewModel(),
 ) {
     val etat by viewModel.uiState.collectAsStateWithLifecycle()
+    val nombreNotifs by (hiltViewModel<NotificationBadgeViewModel>()).compte.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val porteeCoroutine = rememberCoroutineScope()
 
     val selecteurFichier = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         if (uri != null) {
-            // Le callback d'OpenDocument s'exÃ©cute sur le THREAD PRINCIPAL. La lecture
+            // Le callback d'OpenDocument s'exécute sur le THREAD PRINCIPAL. La lecture
             // (contentResolver.query + openInputStream().readBytes()) est une I/O
             // bloquante, et un Uri SAF peut pointer vers un fournisseur DISTANT
-            // (Google Drive, OneDrive...) â€” la lire ici gelait l'UI et pouvait
-            // dÃ©clencher un ANR sur un fichier volumineux. DÃ©portÃ© sur Dispatchers.IO.
+            // (Google Drive, OneDrive...) — la lire ici gelait l'UI et pouvait
+            // déclencher un ANR sur un fichier volumineux. Déporté sur Dispatchers.IO.
             porteeCoroutine.launch {
                 val fichier = withContext(Dispatchers.IO) { lireFichierDepuisUri(context, uri) }
                 if (fichier != null) {
@@ -81,6 +83,7 @@ fun ImportsScreen(
     }
 
     ImportsContenu(
+        nombreNotifs = nombreNotifs,
         etat = etat,
         surClicNotifications = surClicNotifications,
         surClicProfil = surClicProfil,
@@ -92,7 +95,7 @@ fun ImportsScreen(
                     "text/comma-separated-values",
                     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                     "application/vnd.ms-excel",
-                    "*/*", // certains gestionnaires de fichiers Android ne dÃ©clarent pas de type MIME correct pour le CSV
+                    "*/*", // certains gestionnaires de fichiers Android ne déclarent pas de type MIME correct pour le CSV
                 )
             )
         },
@@ -112,12 +115,13 @@ private fun ImportsContenu(
     surClicApercu: () -> Unit,
     surClicConfirmerImport: () -> Unit,
     surClicRecommencer: () -> Unit,
+    nombreNotifs: Int = 0,
 ) {
     Scaffold { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
             SpiPmeTopBar(
                 secteurActifNom = etat.secteurActifNom,
-                nombreNotificationsNonLues = 0,
+                nombreNotificationsNonLues = nombreNotifs,
                 surClicSecteur = surClicSecteur,
                 surClicNotifications = surClicNotifications,
                 surClicProfil = surClicProfil,
@@ -129,9 +133,9 @@ private fun ImportsContenu(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 item {
-                    Text("Import de donnÃ©es", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+                    Text("Import de données", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
                     Text(
-                        "Importez et intÃ©grez vos donnÃ©es en toute sÃ©curitÃ©",
+                        "Importez et intégrez vos données en toute sécurité",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -166,7 +170,7 @@ private fun ImportsContenu(
                 } else if (etat.historique.isEmpty()) {
                     item {
                         Text(
-                            "Aucun import effectuÃ© pour ce secteur.",
+                            "Aucun import effectué pour ce secteur.",
                             modifier = Modifier.fillMaxWidth().padding(24.dp),
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -200,10 +204,10 @@ private fun CarteFluxImport(
                 EtapeImport.TERMINE -> etat.resultatImport?.let { ResultatImportTermine(it, surClicRecommencer) }
                 else -> {
                     if (etat.fichierSelectionne == null) {
-                        Text("1. SÃ©lectionner un fichier", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                        Text("1. Sélectionner un fichier", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
                         Spacer(Modifier.height(8.dp))
                         Text(
-                            "Formats supportÃ©s : .csv, .xlsx, .xls",
+                            "Formats supportés : .csv, .xlsx, .xls",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -222,7 +226,7 @@ private fun CarteFluxImport(
                         Spacer(Modifier.height(12.dp))
 
                         when (etat.etape) {
-                            EtapeImport.SELECTION -> SpiPmeBoutonPrincipal(texte = "Valider et prÃ©visualiser", surClic = surClicApercu)
+                            EtapeImport.SELECTION -> SpiPmeBoutonPrincipal(texte = "Valider et prévisualiser", surClic = surClicApercu)
                             EtapeImport.APERCU_EN_COURS -> SpiPmeBoutonPrincipal(texte = "Analyse...", surClic = {}, enCours = true)
                             EtapeImport.APERCU_PRET -> etat.apercu?.let { apercu ->
                                 Column {
@@ -258,7 +262,7 @@ private fun ApercuResultats(apercu: ApercuImport) {
 
     if (apercu.anomalies.isNotEmpty()) {
         Spacer(Modifier.height(12.dp))
-        Text("Anomalies dÃ©tectÃ©es", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+        Text("Anomalies détectées", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
         Spacer(Modifier.height(6.dp))
         apercu.anomalies.take(10).forEach { anomalie -> LigneAnomalie(anomalie) }
         if (apercu.anomalies.size > 10) {
@@ -290,7 +294,7 @@ private fun LigneAnomalie(anomalie: Anomalie) {
         )
         Spacer(Modifier.width(6.dp))
         Text(
-            "Ligne ${anomalie.ligne} â€” ${anomalie.colonne} : ${anomalie.motif}",
+            "Ligne ${anomalie.ligne} — ${anomalie.colonne} : ${anomalie.motif}",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -308,14 +312,14 @@ private fun ResultatImportTermine(resultat: ImportFichier, surClicRecommencer: (
         )
         Spacer(Modifier.width(8.dp))
         Text(
-            if (succes) "Import terminÃ©" else "Ã‰chec de l'import",
+            if (succes) "Import terminé" else "Échec de l'import",
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold,
         )
     }
     Spacer(Modifier.height(8.dp))
     Text(
-        "${resultat.lignesImportees} ligne(s) importÃ©e(s), ${resultat.lignesRejetees} en erreur.",
+        "${resultat.lignesImportees} ligne(s) importée(s), ${resultat.lignesRejetees} en erreur.",
         style = MaterialTheme.typography.bodyMedium,
     )
     Spacer(Modifier.height(12.dp))
@@ -327,9 +331,9 @@ private fun ResultatImportTermine(resultat: ImportFichier, surClicRecommencer: (
 @Composable
 private fun CarteHistoriqueImport(import: ImportFichier) {
     val (couleur, libelle) = when (import.statut) {
-        "termine" -> SpiPmeTheme.extendedColors.succes to "Import rÃ©ussi"
-        "termine_avec_anomalies" -> SpiPmeTheme.extendedColors.avertissement to "TerminÃ© avec anomalies"
-        "echec" -> MaterialTheme.colorScheme.error to "Ã‰chec de l'import"
+        "termine" -> SpiPmeTheme.extendedColors.succes to "Import réussi"
+        "termine_avec_anomalies" -> SpiPmeTheme.extendedColors.avertissement to "Terminé avec anomalies"
+        "echec" -> MaterialTheme.colorScheme.error to "Échec de l'import"
         else -> SpiPmeTheme.extendedColors.information to "En cours"
     }
 
@@ -343,12 +347,12 @@ private fun CarteHistoriqueImport(import: ImportFichier) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(import.nomFichier, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
                 Text(
-                    "${import.lignesTotales} lignes Â· ${import.lignesImportees} importÃ©es",
+                    "${import.lignesTotales} lignes · ${import.lignesImportees} importées",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 import.auteurNom?.let {
-                    Text("ImportÃ© par $it", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text("Importé par $it", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
             Box(

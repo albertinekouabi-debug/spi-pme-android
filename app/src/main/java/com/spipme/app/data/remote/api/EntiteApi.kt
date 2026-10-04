@@ -1,5 +1,6 @@
 package com.spipme.app.data.remote.api
 
+import retrofit2.http.Header
 import com.spipme.app.data.remote.dto.registry.CreerEntiteRequestDto
 import com.spipme.app.data.remote.dto.registry.EntiteDto
 import com.spipme.app.data.remote.dto.registry.PageDto
@@ -28,5 +29,5 @@ interface EntiteApi {
     suspend fun obtenir(@Path("id") id: Int): Response<EntiteDto>
 
     @POST("entities/")
-    suspend fun creer(@Body body: CreerEntiteRequestDto): Response<EntiteDto>
+    suspend fun creer(@Header("Idempotency-Key") cle: String? = null, @Body body: CreerEntiteRequestDto): Response<EntiteDto>
 }

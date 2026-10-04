@@ -1,20 +1,32 @@
-﻿package com.spipme.app.domain.repository
+package com.spipme.app.domain.repository
 
 import com.spipme.app.core.util.Resultat
 import com.spipme.app.domain.model.DeclarationConformite
 import com.spipme.app.domain.model.Facture
+import kotlinx.coroutines.flow.Flow
 
 interface FactureRepository {
+    /** Hors ligne (et seulement si le réseau est la cause de l'échec) : sert la dernière page lue en cache. */
     suspend fun lister(
         secteurId: Int,
         statut: String? = null,
         page: Int? = null,
     ): Resultat<Pair<List<Facture>, Boolean>>
+
+    /**
+     * Annulation = écriture append-only (avoir total côté serveur), jamais une suppression. Enfilée
+     * localement puis synchronisée avec une clé d'idempotence : fonctionne hors ligne. Le serveur
+     * revalide (droits, état, période clôturée) ; un refus remonte comme opération en échec.
+     */
+    suspend fun annuler(factureId: Int, motif: String): Resultat<Unit>
+
+    /** Ids des factures ayant une écriture en attente de synchronisation. */
+    fun idsAvecOperationEnAttente(): Flow<Set<Int>>
 }
 
 /**
- * ConformitÃ© : les transitions passent par des actions dÃ©diÃ©es (declarer /
- * exempter), jamais par une mise Ã  jour gÃ©nÃ©rique â€” le serveur n'expose
+ * Conformité : les transitions passent par des actions dédiées (declarer /
+ * exempter), jamais par une mise à jour générique — le serveur n'expose
  * volontairement aucun champ modifiable.
  */
 interface ConformiteRepository {

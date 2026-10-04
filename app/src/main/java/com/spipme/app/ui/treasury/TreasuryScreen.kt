@@ -1,5 +1,12 @@
-﻿package com.spipme.app.ui.treasury
+package com.spipme.app.ui.treasury
 
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.AlertDialog
+import com.spipme.app.core.notifications.NotificationBadgeViewModel
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -61,6 +68,7 @@ fun TreasuryScreen(
     viewModel: TreasuryViewModel = hiltViewModel(),
 ) {
     val etat by viewModel.uiState.collectAsStateWithLifecycle()
+    val nombreNotifs by (hiltViewModel<NotificationBadgeViewModel>()).compte.collectAsStateWithLifecycle()
 
     LaunchedEffect(transactionVientDetreCreee) {
         if (transactionVientDetreCreee) {
@@ -70,13 +78,24 @@ fun TreasuryScreen(
     }
 
     TreasuryContenu(
+        nombreNotifs = nombreNotifs,
         etat = etat,
         surClicNotifications = surClicNotifications,
         surClicProfil = surClicProfil,
         surClicSecteur = surClicSecteur,
         surChangementOnglet = viewModel::surChangementOnglet,
         surClicNouvelleTransaction = surClicNouvelleTransaction,
+        surContrePasser = viewModel::demanderContrePassation,
     )
+
+    etat.transactionAContrePasser?.let { transaction ->
+        DialogueContrePassation(
+            transaction = transaction,
+            erreur = etat.erreurContrePassation,
+            surConfirmer = viewModel::confirmerContrePassation,
+            surAbandonner = viewModel::abandonnerContrePassation,
+        )
+    }
 }
 
 @Composable
@@ -87,6 +106,8 @@ private fun TreasuryContenu(
     surClicSecteur: () -> Unit,
     surChangementOnglet: (OngletTresorerie) -> Unit,
     surClicNouvelleTransaction: () -> Unit,
+    surContrePasser: (Transaction) -> Unit = {},
+    nombreNotifs: Int = 0,
 ) {
     Scaffold(
         floatingActionButton = {
@@ -100,7 +121,7 @@ private fun TreasuryContenu(
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
             SpiPmeTopBar(
                 secteurActifNom = etat.secteurActifNom,
-                nombreNotificationsNonLues = 0,
+                nombreNotificationsNonLues = nombreNotifs,
                 surClicSecteur = surClicSecteur,
                 surClicNotifications = surClicNotifications,
                 surClicProfil = surClicProfil,
@@ -112,9 +133,9 @@ private fun TreasuryContenu(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 item {
-                    Text("TrÃ©sorerie", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+                    Text("Trésorerie", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
                     Text(
-                        "Suivez vos flux de trÃ©sorerie en temps rÃ©el",
+                        "Suivez vos flux de trésorerie en temps réel",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -151,13 +172,33 @@ private fun TreasuryContenu(
                 } else if (etat.transactions.isEmpty()) {
                     item {
                         Text(
-                            "Aucune transaction trouvÃ©e.",
+                            "Aucune transaction trouvée.",
                             modifier = Modifier.fillMaxWidth().padding(32.dp),
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 } else {
-                    items(etat.transactions, key = { it.id }) { transaction -> CarteTransaction(transaction) }
+                    etat.messageInfo?.let { info ->
+                        item { Text(info, style = MaterialTheme.typography.bodySmall, color = SpiPmeTheme.extendedColors.succes) }
+                    }
+                    items(etat.creationsEnAttente, key = { "attente-${it.id}" }) { element ->
+                        Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Text(element.detail.ifBlank { element.titre }, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                                Text("${element.titre} — en attente de synchronisation", style = MaterialTheme.typography.labelMedium,
+                                    color = SpiPmeTheme.extendedColors.avertissement)
+                            }
+                        }
+                    }
+                    items(etat.transactions, key = { it.id }) { transaction ->
+                        CarteTransaction(
+                            transaction = transaction,
+                            contrePassable = etat.peutCorriger && transaction.contrePassable && transaction.id !in etat.idsEnAttente,
+                            enAttente = transaction.id in etat.idsEnAttente,
+                            surContrePasser = { surContrePasser(transaction) },
+                        )
+                    }
                 }
 
                 etat.messageErreur?.let { message ->
@@ -175,7 +216,7 @@ private fun TreasuryContenu(
 @Composable
 private fun CartesResume(resume: ResumeTresorerie) {
     val donnees = listOf(
-        Triple("EntrÃ©es (mois)", resume.entreesMois, SpiPmeTheme.extendedColors.succes),
+        Triple("Entrées (mois)", resume.entreesMois, SpiPmeTheme.extendedColors.succes),
         Triple("Sorties (mois)", resume.sortiesMois, MaterialTheme.colorScheme.error),
         Triple("Solde net (mois)", resume.soldeNetMois, MaterialTheme.colorScheme.primary),
         Triple("Solde disponible", resume.soldeDisponible, MaterialTheme.colorScheme.onSurface),
@@ -211,7 +252,7 @@ private fun GrapheEvolution(points: List<PointSolde>) {
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text("Ã‰volution du solde", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+            Text("Évolution du solde", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
             Spacer(Modifier.height(12.dp))
 
             val couleurLigne = MaterialTheme.colorScheme.primary
@@ -243,7 +284,12 @@ private fun GrapheEvolution(points: List<PointSolde>) {
 }
 
 @Composable
-private fun CarteTransaction(transaction: Transaction) {
+private fun CarteTransaction(
+    transaction: Transaction,
+    contrePassable: Boolean = false,
+    enAttente: Boolean = false,
+    surContrePasser: () -> Unit = {},
+) {
     val estEntree = transaction.type == "entree"
     val couleur = if (estEntree) SpiPmeTheme.extendedColors.succes else MaterialTheme.colorScheme.error
 
@@ -253,7 +299,8 @@ private fun CarteTransaction(transaction: Transaction) {
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
     ) {
-        Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+        Column(modifier = Modifier.padding(16.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             Box(
                 modifier = Modifier
                     .background(couleur.copy(alpha = 0.12f), RoundedCornerShape(12.dp))
@@ -268,7 +315,7 @@ private fun CarteTransaction(transaction: Transaction) {
             Spacer(Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    transaction.description.ifBlank { if (estEntree) "EntrÃ©e" else "Sortie" },
+                    transaction.description.ifBlank { if (estEntree) "Entrée" else "Sortie" },
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                 )
@@ -289,14 +336,66 @@ private fun CarteTransaction(transaction: Transaction) {
             }
             transaction.montant?.let { montant ->
                 Text(
-                    "${if (estEntree) "+" else "-"}${formaterMontant(montant)} ${transaction.devise}",
+                    // Le signe suit le montant ET le type : une contre-écriture (montant négatif) d'une entrée est un « - ».
+                    "${if ((montant.signum() >= 0) == estEntree) "+" else "-"}${formaterMontant(montant)} ${transaction.devise}",
                     style = MaterialTheme.typography.titleMedium,
                     color = couleur,
                     fontWeight = FontWeight.Bold,
                 )
             }
         }
+        val mention = when {
+            transaction.contreEcritureDe != null -> "Contre-écriture de #${transaction.contreEcritureDe}"
+            transaction.statut == "contrepassee" -> "Contre-passée"
+            transaction.statut == "brouillon" -> "Brouillon"
+            else -> null
+        }
+        mention?.let {
+            Text(it, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+        if (enAttente) {
+            Text(
+                "Correction en attente de synchronisation",
+                style = MaterialTheme.typography.labelMedium,
+                color = SpiPmeTheme.extendedColors.avertissement,
+                fontWeight = FontWeight.SemiBold,
+            )
+        } else if (contrePassable) {
+            TextButton(onClick = surContrePasser) { Text("Contre-passer") }
+        }
+        }
     }
+}
+
+/** Motif obligatoire : la correction est tracée (écriture inverse) ; la transaction d'origine n'est jamais modifiée. */
+@Composable
+private fun DialogueContrePassation(
+    transaction: Transaction,
+    erreur: String?,
+    surConfirmer: (String) -> Unit,
+    surAbandonner: () -> Unit,
+) {
+    var motif by rememberSaveable(transaction.id) { mutableStateOf("") }
+    AlertDialog(
+        onDismissRequest = surAbandonner,
+        title = { Text("Contre-passer la transaction #${transaction.id} ?") },
+        text = {
+            Column {
+                Text(
+                    "Une écriture inverse sera créée ; l'original reste visible et ne peut pas être supprimé. " +
+                        "Le serveur vérifie vos droits et que la période n'est pas clôturée.",
+                    style = MaterialTheme.typography.bodySmall,
+                )
+                Spacer(Modifier.height(12.dp))
+                OutlinedTextField(
+                    value = motif, onValueChange = { motif = it }, label = { Text("Motif (obligatoire)") },
+                    isError = erreur != null, supportingText = erreur?.let { { Text(it) } }, modifier = Modifier.fillMaxWidth(),
+                )
+            }
+        },
+        confirmButton = { TextButton(onClick = { surConfirmer(motif) }) { Text("Contre-passer") } },
+        dismissButton = { TextButton(onClick = surAbandonner) { Text("Retour") } },
+    )
 }
 
 private fun formaterMontant(valeur: BigDecimal): String {

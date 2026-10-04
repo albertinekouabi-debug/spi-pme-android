@@ -37,4 +37,43 @@ class HachageMotDePasseTest {
     fun `un hachage malforme est rejete sans exception`() {
         assertFalse(HachageMotDePasse.verifier("peu importe".toCharArray(), "hash_invalide_sans_separateur"))
     }
+
+    @Test
+    fun `un hachage a separateurs mais base64 invalide est rejete sans exception`() {
+        assertFalse(HachageMotDePasse.verifier("x".toCharArray(), "@@@:###"))
+        assertFalse(HachageMotDePasse.verifier("x".toCharArray(), "pbkdf2-sha256\$600000\$@@@\$###"))
+    }
+
+    @Test
+    fun `un nombre d'iterations hors bornes est rejete`() {
+        assertFalse(HachageMotDePasse.verifier("x".toCharArray(), "pbkdf2-sha256\$1\$QUJD\$QUJD"))
+        assertFalse(HachageMotDePasse.verifier("x".toCharArray(), "pbkdf2-sha256\$999999999\$QUJD\$QUJD"))
+    }
+
+    @Test
+    fun `un hachage vide ou tronque est rejete`() {
+        assertFalse(HachageMotDePasse.verifier("x".toCharArray(), ""))
+        assertFalse(HachageMotDePasse.verifier("x".toCharArray(), "pbkdf2-sha256\$600000\$QUJD"))
+    }
+
+    @Test
+    fun `un nouveau hachage utilise le format versionne et n'est pas obsolete`() {
+        val hash = HachageMotDePasse.hacher("MotDePasse#2026".toCharArray())
+        assertTrue(hash.startsWith("pbkdf2-sha256\$600000\$"))
+        assertFalse(HachageMotDePasse.estObsolete(hash))
+    }
+
+    @Test
+    fun `l'ancien format sel-deux-points reste verifiable et est signale obsolete`() {
+        // Hash produit par l'ancienne implémentation : PBKDF2-SHA256, 120 000 itérations.
+        val sel = ByteArray(16) { it.toByte() }
+        val spec = javax.crypto.spec.PBEKeySpec("MotDePasse#2026".toCharArray(), sel, 120_000, 256)
+        val cle = javax.crypto.SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256").generateSecret(spec).encoded
+        val b64 = java.util.Base64.getEncoder()
+        val ancien = "${b64.encodeToString(sel)}:${b64.encodeToString(cle)}"
+
+        assertTrue(HachageMotDePasse.verifier("MotDePasse#2026".toCharArray(), ancien))
+        assertFalse(HachageMotDePasse.verifier("Autre".toCharArray(), ancien))
+        assertTrue(HachageMotDePasse.estObsolete(ancien))
+    }
 }

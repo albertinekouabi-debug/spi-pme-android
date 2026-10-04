@@ -1,4 +1,4 @@
-﻿package com.spipme.app.data.remote.api
+package com.spipme.app.data.remote.api
 
 import com.spipme.app.data.remote.dto.ChangerMotDePasseRequestDto
 import com.spipme.app.data.remote.dto.MettreAJourProfilRequestDto

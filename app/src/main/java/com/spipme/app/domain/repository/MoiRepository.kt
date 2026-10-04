@@ -1,13 +1,13 @@
-﻿package com.spipme.app.domain.repository
+package com.spipme.app.domain.repository
 
 import com.spipme.app.core.util.Resultat
 import com.spipme.app.domain.model.Utilisateur
 
 /**
- * Profil de l'utilisateur connectÃ©. PATCH volontairement restreint Ã 
- * nom_complet/telephone â€” le serveur (MoiUpdateSerializer) refuse tout le
- * reste, ce contrat est reflÃ©tÃ© ici pour ne pas laisser croire Ã  l'UI
- * qu'elle peut modifier le rÃ´le, le secteur ou le statut actif.
+ * Profil de l'utilisateur connecté. PATCH volontairement restreint à
+ * nom_complet/telephone — le serveur (MoiUpdateSerializer) refuse tout le
+ * reste, ce contrat est reflété ici pour ne pas laisser croire à l'UI
+ * qu'elle peut modifier le rôle, le secteur ou le statut actif.
  */
 interface MoiRepository {
     suspend fun obtenirProfil(): Resultat<Utilisateur>

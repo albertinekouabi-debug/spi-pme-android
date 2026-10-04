@@ -1,5 +1,10 @@
 package com.spipme.app.data.repository
 
+import com.spipme.app.core.sync.android.EcritureHorsLigne
+import com.spipme.app.core.sync.PREFIXE_ID_LOCAL
+import com.spipme.app.core.sync.OperationsMetier
+import com.spipme.app.data.remote.dto.registry.PageDto
+import com.spipme.app.data.local.CacheLecture
 import com.spipme.app.core.network.executerAppelApi
 import com.spipme.app.core.util.Resultat
 import com.spipme.app.data.remote.api.TacheApi
@@ -17,13 +22,18 @@ import javax.inject.Singleton
 
 @Singleton
 class TacheRepositoryImpl @Inject constructor(
+    private val ecriture: EcritureHorsLigne,
+    private val cacheLecture: CacheLecture,
     private val tacheApi: TacheApi,
     private val json: Json,
 ) : TacheRepository {
 
     override suspend fun lister(secteurId: Int, statut: String?, retard: Boolean?): Resultat<List<Tache>> {
-        val resultat = executerAppelApi(json) {
-            tacheApi.lister(secteurId = secteurId, statut = statut, retard = retard?.let { if (it) "true" else null })
+        val cle = "taches:$secteurId:${statut ?: "-"}:${retard ?: "-"}"
+        val resultat = cacheLecture.lire(cle, PageDto.serializer(TacheDto.serializer())) {
+            executerAppelApi(json) {
+                tacheApi.lister(secteurId = secteurId, statut = statut, retard = retard?.let { if (it) "true" else null })
+            }
         }
         return when (resultat) {
             is Resultat.Succes -> Resultat.Succes(resultat.donnees.results.map { it.versDomaine() })
@@ -57,14 +67,25 @@ class TacheRepositoryImpl @Inject constructor(
     override suspend fun creer(
         secteurId: Int, titre: String, description: String?, categorie: String?, priorite: String, echeanceIso: String?,
     ): Resultat<Tache> {
-        val resultat = executerAppelApi(json) {
-            tacheApi.creer(
-                CreerTacheRequestDto(
-                    titre = titre, description = description, categorie = categorie,
-                    priorite = priorite, echeance = echeanceIso, secteur = secteurId,
-                )
-            )
-        }
+        val dto = CreerTacheRequestDto(
+            titre = titre, description = description, categorie = categorie,
+            priorite = priorite, echeance = echeanceIso, secteur = secteurId,
+        )
+        val payload = OperationsMetier.jsonObjet(
+            "titre" to titre, "description" to description, "categorie" to categorie,
+            "priorite" to priorite, "echeance" to echeanceIso, "secteur" to secteurId,
+        )
+        val resultat = ecriture.tenterOuEnfiler(
+            cle = ecriture.nouvelleCle(),
+            appel = { cle -> executerAppelApi(json) { tacheApi.creer(cle, dto) } },
+            operation = { cle ->
+                OperationsMetier.creer(
+                    type = "CREER_TACHE", entityType = "tache", cheminCollection = "tasks/",
+                    payloadJson = payload, refLocale = "$PREFIXE_ID_LOCAL$cle",
+                    maintenantMs = System.currentTimeMillis(),
+                ) { cle }
+            },
+        )
         return when (resultat) {
             is Resultat.Succes -> Resultat.Succes(resultat.donnees.versDomaine())
             is Resultat.Echec -> resultat

@@ -1,4 +1,4 @@
-﻿package com.spipme.app.ui.navigation
+package com.spipme.app.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
@@ -6,6 +6,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.spipme.app.ui.auth.login.LoginScreen
+import com.spipme.app.ui.pilotage.PilotageScreen
+import com.spipme.app.ui.auth.motdepasseoublie.MotDePasseOublieScreen
 import com.spipme.app.ui.auth.offline.OfflineLoginScreen
 import com.spipme.app.ui.audit.AuditScreen
 import com.spipme.app.ui.compliance.ComplianceScreen
@@ -44,12 +46,22 @@ fun SpiPmeNavGraph(
                 },
                 surClicConnexionHorsLigne = { navController.navigate(Ecran.ConnexionHorsLigne.route) },
                 surClicInscription = { navController.navigate(Ecran.Inscription.route) },
+                surClicMotDePasseOublie = { navController.navigate(Ecran.MotDePasseOublie.route) },
             )
         }
 
         composable(Ecran.Inscription.route) {
             RegisterScreen(
                 surRetourConnexion = { navController.popBackStack() },
+            )
+        }
+
+        composable(Ecran.MotDePasseOublie.route) {
+            MotDePasseOublieScreen(
+                surRetour = { navController.popBackStack() },
+                surReinitialisationReussie = {
+                    navController.popBackStack(Ecran.Connexion.route, inclusive = false)
+                },
             )
         }
 
@@ -83,6 +95,15 @@ fun SpiPmeNavGraph(
                 surClicConformite = { navController.navigate(Ecran.Conformite.route) },
                 surClicAdministration = { navController.navigate(Ecran.Administration.route) },
                 surClicDashboard = { navController.navigate(Ecran.Dashboard.route) },
+                surClicPilotage = { navController.navigate(Ecran.Pilotage.route) },
+            )
+        }
+
+        composable(Ecran.Pilotage.route) {
+            PilotageScreen(
+                surClicNotifications = { navController.navigate(Ecran.Alertes.route) },
+                surClicProfil = { navController.navigate(Ecran.Profil.route) },
+                surClicSecteur = { /* le sélecteur de secteur s'ouvre depuis la barre supérieure */ },
             )
         }
 
@@ -93,9 +114,9 @@ fun SpiPmeNavGraph(
             RegistryScreen(
                 entiteVientDetreCreee = entiteCreee,
                 surEntiteCreeeConsommee = { backStackEntry.savedStateHandle["entite_creee"] = false },
-                surClicNotifications = { /* Ã©cran Notifications â€” module Ã  venir */ },
+                surClicNotifications = { navController.navigate(Ecran.Alertes.route) },
                 surClicProfil = { navController.navigate(Ecran.Profil.route) },
-                surClicSecteur = { /* sÃ©lecteur de secteur â€” module Ã  venir */ },
+                surClicSecteur = { /* sélecteur de secteur — module à venir */ },
                 surClicNouvelleEntite = { navController.navigate(Ecran.CreationEntite.route) },
             )
         }
@@ -117,9 +138,9 @@ fun SpiPmeNavGraph(
             ResourcesScreen(
                 ressourceVientDetreCreee = ressourceCreee,
                 surRessourceCreeeConsommee = { backStackEntry.savedStateHandle["ressource_creee"] = false },
-                surClicNotifications = { /* Ã©cran Notifications â€” module Ã  venir */ },
+                surClicNotifications = { navController.navigate(Ecran.Alertes.route) },
                 surClicProfil = { navController.navigate(Ecran.Profil.route) },
-                surClicSecteur = { /* sÃ©lecteur de secteur â€” module Ã  venir */ },
+                surClicSecteur = { /* sélecteur de secteur — module à venir */ },
                 surClicNouvelleRessource = { navController.navigate(Ecran.CreationRessource.route) },
             )
         }
@@ -141,9 +162,9 @@ fun SpiPmeNavGraph(
             TreasuryScreen(
                 transactionVientDetreCreee = transactionCreee,
                 surTransactionCreeeConsommee = { backStackEntry.savedStateHandle["transaction_creee"] = false },
-                surClicNotifications = { /* Ã©cran Notifications â€” module Ã  venir */ },
+                surClicNotifications = { navController.navigate(Ecran.Alertes.route) },
                 surClicProfil = { navController.navigate(Ecran.Profil.route) },
-                surClicSecteur = { /* sÃ©lecteur de secteur â€” module Ã  venir */ },
+                surClicSecteur = { /* sélecteur de secteur — module à venir */ },
                 surClicNouvelleTransaction = { navController.navigate(Ecran.CreationTransaction.route) },
             )
         }
@@ -165,9 +186,9 @@ fun SpiPmeNavGraph(
             TasksScreen(
                 tacheVientDetreCreee = tacheCreee,
                 surTacheCreeeConsommee = { backStackEntry.savedStateHandle["tache_creee"] = false },
-                surClicNotifications = { /* Ã©cran Notifications â€” module Ã  venir */ },
+                surClicNotifications = { navController.navigate(Ecran.Alertes.route) },
                 surClicProfil = { navController.navigate(Ecran.Profil.route) },
-                surClicSecteur = { /* sÃ©lecteur de secteur â€” module Ã  venir */ },
+                surClicSecteur = { /* sélecteur de secteur — module à venir */ },
                 surClicNouvelleTache = { navController.navigate(Ecran.CreationTache.route) },
             )
         }
@@ -184,49 +205,49 @@ fun SpiPmeNavGraph(
 
         composable(Ecran.Suggestions.route) {
             IntelligenceScreen(
-                surClicNotifications = { /* Ã©cran Notifications â€” module Ã  venir */ },
+                surClicNotifications = { navController.navigate(Ecran.Alertes.route) },
                 surClicProfil = { navController.navigate(Ecran.Profil.route) },
-                surClicSecteur = { /* sÃ©lecteur de secteur â€” module Ã  venir */ },
+                surClicSecteur = { /* sélecteur de secteur — module à venir */ },
             )
         }
 
         composable(Ecran.Alertes.route) {
             AlertsScreen(
-                surClicNotifications = { /* Ã©cran Notifications â€” module Ã  venir */ },
+                surClicNotifications = {},  // déjà sur l'écran Alertes : rien à faire
                 surClicProfil = { navController.navigate(Ecran.Profil.route) },
-                surClicSecteur = { /* sÃ©lecteur de secteur â€” module Ã  venir */ },
+                surClicSecteur = { /* sélecteur de secteur — module à venir */ },
             )
         }
 
         composable(Ecran.Imports.route) {
             ImportsScreen(
-                surClicNotifications = { /* Ã©cran Notifications â€” module Ã  venir */ },
+                surClicNotifications = { navController.navigate(Ecran.Alertes.route) },
                 surClicProfil = { navController.navigate(Ecran.Profil.route) },
-                surClicSecteur = { /* sÃ©lecteur de secteur â€” module Ã  venir */ },
+                surClicSecteur = { /* sélecteur de secteur — module à venir */ },
             )
         }
 
         composable(Ecran.Audit.route) {
             AuditScreen(
-                surClicNotifications = { /* Ã©cran Notifications â€” module Ã  venir */ },
+                surClicNotifications = { navController.navigate(Ecran.Alertes.route) },
                 surClicProfil = { navController.navigate(Ecran.Profil.route) },
-                surClicSecteur = { /* sÃ©lecteur de secteur â€” module Ã  venir */ },
+                surClicSecteur = { /* sélecteur de secteur — module à venir */ },
             )
         }
 
         composable(Ecran.Factures.route) {
             InvoicesScreen(
-                surClicNotifications = { /* Ã©cran Notifications â€” module Ã  venir */ },
+                surClicNotifications = { navController.navigate(Ecran.Alertes.route) },
                 surClicProfil = { navController.navigate(Ecran.Profil.route) },
-                surClicSecteur = { /* sÃ©lecteur de secteur â€” module Ã  venir */ },
+                surClicSecteur = { /* sélecteur de secteur — module à venir */ },
             )
         }
 
         composable(Ecran.Conformite.route) {
             ComplianceScreen(
-                surClicNotifications = { /* Ã©cran Notifications â€” module Ã  venir */ },
+                surClicNotifications = { navController.navigate(Ecran.Alertes.route) },
                 surClicProfil = { navController.navigate(Ecran.Profil.route) },
-                surClicSecteur = { /* sÃ©lecteur de secteur â€” module Ã  venir */ },
+                surClicSecteur = { /* sélecteur de secteur — module à venir */ },
             )
         }
 
@@ -243,7 +264,7 @@ fun SpiPmeNavGraph(
 
         composable(Ecran.Administration.route) {
             AdminScreen(
-                surClicNotifications = { /* Ã©cran Notifications â€” module Ã  venir */ },
+                surClicNotifications = { navController.navigate(Ecran.Alertes.route) },
                 surClicProfil = { navController.navigate(Ecran.Profil.route) },
                 surClicSecteur = { /* auto-contenu dans SpiPmeTopBar */ },
             )
@@ -251,7 +272,7 @@ fun SpiPmeNavGraph(
 
         composable(Ecran.Dashboard.route) {
             DashboardScreen(
-                surClicNotifications = { /* Ã©cran Notifications â€” module Ã  venir */ },
+                surClicNotifications = { navController.navigate(Ecran.Alertes.route) },
                 surClicProfil = { navController.navigate(Ecran.Profil.route) },
                 surClicSecteur = { /* auto-contenu dans SpiPmeTopBar */ },
                 surClicTresorerie = { navController.navigate(Ecran.Tresorerie.route) },

@@ -1,4 +1,4 @@
-﻿package com.spipme.app.domain.model
+package com.spipme.app.domain.model
 
 import java.math.BigDecimal
 

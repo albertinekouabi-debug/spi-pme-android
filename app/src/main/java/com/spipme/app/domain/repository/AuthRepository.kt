@@ -1,4 +1,4 @@
-﻿package com.spipme.app.domain.repository
+package com.spipme.app.domain.repository
 
 import com.spipme.app.core.util.Resultat
 import com.spipme.app.domain.model.Utilisateur
@@ -9,14 +9,14 @@ interface AuthRepository {
 
     suspend fun connexion(identifiant: String, motDePasse: String): Resultat<Utilisateur>
 
-    /** Connexion hors ligne (maquette connexion_hors_ligne.png) â€” nÃ©cessite une connexion en ligne prÃ©alable rÃ©ussie sur cet appareil. */
+    /** Connexion hors ligne (maquette connexion_hors_ligne.png) — nécessite une connexion en ligne préalable réussie sur cet appareil. */
     suspend fun connexionHorsLigne(identifiant: String, motDePasse: String): Resultat<Utilisateur>
 
     /**
-     * Auto-inscription publique. Le compte crÃ©Ã© est INACTIF cÃ´tÃ© serveur
-     * (vÃ©rification email requise) â€” ne retourne donc aucun token, aucune
-     * session n'est ouverte. RÃ©sultat purement informatif pour l'Ã©cran
-     * ("vÃ©rifiez votre boÃ®te mail").
+     * Auto-inscription publique. Le compte créé est INACTIF côté serveur
+     * (vérification email requise) — ne retourne donc aucun token, aucune
+     * session n'est ouverte. Résultat purement informatif pour l'écran
+     * ("vérifiez votre boîte mail").
      */
     suspend fun inscription(
         nomUtilisateur: String,
@@ -26,6 +26,16 @@ interface AuthRepository {
         nomComplet: String?,
         telephone: String?,
     ): Resultat<Unit>
+
+    /**
+     * Parcours "Mot de passe oublié". Retourne toujours un succès si la
+     * requête réseau aboutit : le serveur répond 200 que l'email existe ou
+     * non (anti-énumération de comptes) — l'écran affiche donc le même
+     * message dans les deux cas.
+     */
+    suspend fun demanderReinitialisationMotDePasse(email: String): Resultat<Unit>
+
+    suspend fun confirmerReinitialisationMotDePasse(token: String, nouveauMotDePasse: String): Resultat<Unit>
 
     suspend fun deconnexion()
 }

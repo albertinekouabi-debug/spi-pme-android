@@ -1,4 +1,4 @@
-﻿package com.spipme.app.data.repository
+package com.spipme.app.data.repository
 
 import com.spipme.app.core.network.executerAppelApi
 import com.spipme.app.core.util.Resultat
@@ -17,7 +17,7 @@ class AuditRepositoryImpl @Inject constructor(
     private val json: Json,
 ) : AuditRepository {
 
-    /** Retourne la page demandÃ©e + un boolÃ©en indiquant s'il reste des pages (pagination DRF). */
+    /** Retourne la page demandée + un booléen indiquant s'il reste des pages (pagination DRF). */
     override suspend fun lister(
         module: String?,
         resultat: String?,

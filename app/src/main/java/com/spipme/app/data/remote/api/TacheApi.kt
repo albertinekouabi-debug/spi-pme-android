@@ -1,5 +1,6 @@
 package com.spipme.app.data.remote.api
 
+import retrofit2.http.Header
 import com.spipme.app.data.remote.dto.registry.PageDto
 import com.spipme.app.data.remote.dto.tasks.CreerTacheRequestDto
 import com.spipme.app.data.remote.dto.tasks.HistoriqueStatutDto
@@ -30,7 +31,7 @@ interface TacheApi {
     suspend fun historique(@Path("id") id: Int): Response<List<HistoriqueStatutDto>>
 
     @POST("tasks/")
-    suspend fun creer(@Body body: CreerTacheRequestDto): Response<TacheDto>
+    suspend fun creer(@Header("Idempotency-Key") cle: String? = null, @Body body: CreerTacheRequestDto): Response<TacheDto>
 
     @PATCH("tasks/{id}/")
     suspend fun modifierStatut(@Path("id") id: Int, @Body body: ModifierStatutTacheRequestDto): Response<TacheDto>

@@ -1,4 +1,4 @@
-﻿package com.spipme.app.ui.components
+package com.spipme.app.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -38,17 +38,18 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.spipme.app.domain.model.Secteur
+import com.spipme.app.ui.sync.BandeauSynchronisation
 
 /**
- * En-tÃªte prÃ©sent sur les 16 maquettes : sÃ©lecteur "Secteur actif",
+ * En-tête présent sur les 16 maquettes : sélecteur "Secteur actif",
  * notifications (badge = nombre non lues), avatar utilisateur. Un seul
- * composant rÃ©utilisÃ© partout plutÃ´t que rÃ©implÃ©mentÃ© Ã©cran par Ã©cran.
+ * composant réutilisé partout plutôt que réimplémenté écran par écran.
  *
- * Le sÃ©lecteur de secteur est AUTO-CONTENU (SecteurSelectorViewModel) : le
- * clic ouvre directement le dialogue de choix, chargÃ© depuis GET /secteurs
- * (jamais une liste inventÃ©e). Aucun Ã©cran appelant n'a besoin d'Ãªtre
- * modifiÃ© â€” surClicSecteur reste appelÃ© en plus, pour un usage futur
- * (analytics...), mais n'est plus le seul dÃ©clencheur du sÃ©lecteur.
+ * Le sélecteur de secteur est AUTO-CONTENU (SecteurSelectorViewModel) : le
+ * clic ouvre directement le dialogue de choix, chargé depuis GET /secteurs
+ * (jamais une liste inventée). Aucun écran appelant n'a besoin d'être
+ * modifié — surClicSecteur reste appelé en plus, pour un usage futur
+ * (analytics...), mais n'est plus le seul déclencheur du sélecteur.
  */
 @Composable
 fun SpiPmeTopBar(
@@ -62,24 +63,27 @@ fun SpiPmeTopBar(
 ) {
     val etatSelecteur by selecteurViewModel.uiState.collectAsStateWithLifecycle()
 
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        SelecteurSecteur(
-            secteurActifNom = secteurActifNom,
-            surClic = {
-                surClicSecteur()
-                selecteurViewModel.ouvrir()
-            },
-            modifier = Modifier.weight(1f),
-        )
-        Spacer(Modifier.width(12.dp))
-        BoutonNotifications(nombreNotificationsNonLues, surClicNotifications)
-        Spacer(Modifier.width(12.dp))
-        AvatarUtilisateur(surClicProfil)
+    Column {
+        Row(
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            SelecteurSecteur(
+                secteurActifNom = secteurActifNom,
+                surClic = {
+                    surClicSecteur()
+                    selecteurViewModel.ouvrir()
+                },
+                modifier = Modifier.weight(1f),
+            )
+            Spacer(Modifier.width(12.dp))
+            BoutonNotifications(nombreNotificationsNonLues, surClicNotifications)
+            Spacer(Modifier.width(12.dp))
+            AvatarUtilisateur(surClicProfil)
+        }
+        BandeauSynchronisation()
     }
 
     if (etatSelecteur.ouvert) {

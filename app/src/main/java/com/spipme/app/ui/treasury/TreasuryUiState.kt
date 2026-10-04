@@ -1,5 +1,6 @@
 package com.spipme.app.ui.treasury
 
+import com.spipme.app.ui.sync.ElementEnAttente
 import com.spipme.app.domain.model.PointSolde
 import com.spipme.app.domain.model.ResumeTresorerie
 import com.spipme.app.domain.model.Transaction
@@ -18,4 +19,10 @@ data class TreasuryUiState(
     val ongletActif: OngletTresorerie = OngletTresorerie.TOUTES,
     val messageErreur: String? = null,
     val secteurActifNom: String = "",
+    val peutCorriger: Boolean = false,
+    val idsEnAttente: Set<Int> = emptySet(),
+    val creationsEnAttente: List<ElementEnAttente> = emptyList(),
+    val transactionAContrePasser: Transaction? = null,
+    val erreurContrePassation: String? = null,
+    val messageInfo: String? = null,
 )

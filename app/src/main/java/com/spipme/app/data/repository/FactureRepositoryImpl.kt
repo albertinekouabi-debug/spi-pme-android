@@ -1,7 +1,12 @@
-﻿package com.spipme.app.data.repository
+package com.spipme.app.data.repository
 
+import com.spipme.app.data.remote.dto.registry.PageDto
+import com.spipme.app.data.local.CacheLecture
 import com.spipme.app.core.network.executerAppelApi
+import com.spipme.app.core.sync.OperationsMetier
+import com.spipme.app.core.sync.android.SynchronisationRepository
 import com.spipme.app.core.util.Resultat
+import com.spipme.app.data.local.dao.CacheDao
 import com.spipme.app.data.remote.api.ConformiteApi
 import com.spipme.app.data.remote.api.FactureApi
 import com.spipme.app.data.remote.dto.treasury.DeclarationConformiteDto
@@ -12,7 +17,11 @@ import com.spipme.app.domain.model.DeclarationConformite
 import com.spipme.app.domain.model.Facture
 import com.spipme.app.domain.repository.ConformiteRepository
 import com.spipme.app.domain.repository.FactureRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import java.util.UUID
 import java.math.BigDecimal
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -21,6 +30,8 @@ import javax.inject.Singleton
 class FactureRepositoryImpl @Inject constructor(
     private val factureApi: FactureApi,
     private val json: Json,
+    private val cacheLecture: CacheLecture,
+    private val synchronisation: SynchronisationRepository,
 ) : FactureRepository {
 
     override suspend fun lister(
@@ -28,16 +39,28 @@ class FactureRepositoryImpl @Inject constructor(
         statut: String?,
         page: Int?,
     ): Resultat<Pair<List<Facture>, Boolean>> {
-        val reponse = executerAppelApi(json) {
-            factureApi.lister(secteurId = secteurId, statut = statut, page = page)
+        val cle = "factures:$secteurId:${statut ?: "-"}:${page ?: 1}"
+        val reponse = cacheLecture.lire(cle, PageDto.serializer(FactureDto.serializer())) {
+            executerAppelApi(json) { factureApi.lister(secteurId = secteurId, statut = statut, page = page) }
         }
         return when (reponse) {
-            is Resultat.Succes -> Resultat.Succes(
-                reponse.donnees.results.map { it.versDomaine() } to (reponse.donnees.next != null)
-            )
+            is Resultat.Succes -> Resultat.Succes(reponse.donnees.results.map { it.versDomaine() } to (reponse.donnees.next != null))
             is Resultat.Echec -> reponse
         }
     }
+
+    override suspend fun annuler(factureId: Int, motif: String): Resultat<Unit> {
+        if (motif.isBlank()) return Resultat.Echec("Le motif d'annulation est obligatoire.")
+        synchronisation.enfiler(
+            OperationsMetier.annulerFacture(factureId.toString(), motif.trim(), System.currentTimeMillis()) {
+                UUID.randomUUID().toString()  // créée UNE fois ; réutilisée telle quelle à chaque tentative
+            }
+        )
+        return Resultat.Succes(Unit)
+    }
+
+    override fun idsAvecOperationEnAttente(): Flow<Set<Int>> =
+        synchronisation.entitesEnAttente("facture").map { ids -> ids.mapNotNull { it.toIntOrNull() }.toSet() }
 }
 
 @Singleton
@@ -83,7 +106,7 @@ class ConformiteRepositoryImpl @Inject constructor(
     }
 }
 
-/** DRF sÃ©rialise les Decimal en chaÃ®ne : conversion dÃ©fensive, jamais de crash sur une valeur inattendue. */
+/** DRF sérialise les Decimal en chaîne : conversion défensive, jamais de crash sur une valeur inattendue. */
 private fun String?.versBigDecimal(): BigDecimal? = this?.toBigDecimalOrNull()
 
 private fun FactureDto.versDomaine() = Facture(

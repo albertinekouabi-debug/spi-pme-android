@@ -13,6 +13,14 @@ interface TransactionRepository {
 
     suspend fun obtenirEvolution(secteurId: Int, jours: Int = 7): Resultat<List<PointSolde>>
 
+    /**
+     * Correction d'une transaction VALIDÉE : contre-écriture (jamais une modification ni une suppression).
+     * Enfilée puis synchronisée avec clé d'idempotence ; le serveur revalide droits, état et période close.
+     */
+    suspend fun contrePasser(transactionId: Int, motif: String): Resultat<Unit>
+
+    fun idsAvecOperationEnAttente(): kotlinx.coroutines.flow.Flow<Set<Int>>
+
     suspend fun creer(
         secteurId: Int,
         type: String,

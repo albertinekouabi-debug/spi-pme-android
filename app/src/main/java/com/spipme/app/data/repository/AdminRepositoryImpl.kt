@@ -1,4 +1,4 @@
-﻿package com.spipme.app.data.repository
+package com.spipme.app.data.repository
 
 import com.spipme.app.core.network.executerAppelApi
 import com.spipme.app.core.util.Resultat
@@ -87,5 +87,6 @@ private fun UtilisateurDto.versDomaine() = Utilisateur(
     secteurPrincipalNom = secteurPrincipalNom,
     secteurs = secteurs,
     actif = actif,
+    permissions = permissions,
 )
 

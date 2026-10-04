@@ -1,13 +1,13 @@
-﻿package com.spipme.app.domain.repository
+package com.spipme.app.domain.repository
 
 import com.spipme.app.core.util.Resultat
 import com.spipme.app.domain.model.EvenementAudit
 import com.spipme.app.domain.model.ResumeAudit
 
 /**
- * Journal d'audit : LECTURE SEULE. Aucune mÃ©thode de modification ou de
- * suppression n'est dÃ©clarÃ©e volontairement â€” l'intÃ©gritÃ© du journal est
- * une exigence, pas une option (protections ORM + trigger cÃ´tÃ© serveur).
+ * Journal d'audit : LECTURE SEULE. Aucune méthode de modification ou de
+ * suppression n'est déclarée volontairement — l'intégrité du journal est
+ * une exigence, pas une option (protections ORM + trigger côté serveur).
  */
 interface AuditRepository {
     suspend fun lister(

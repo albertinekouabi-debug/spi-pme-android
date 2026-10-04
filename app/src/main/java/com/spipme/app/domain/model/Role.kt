@@ -1,4 +1,4 @@
-﻿package com.spipme.app.domain.model
+package com.spipme.app.domain.model
 
 data class Role(
     val id: Int,

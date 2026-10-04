@@ -1,4 +1,4 @@
-﻿package com.spipme.app.ui.auth.register
+package com.spipme.app.ui.auth.register
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -87,7 +87,7 @@ private fun RegisterContenu(
                 } else {
                     Spacer(Modifier.height(16.dp))
                     Text(
-                        "CrÃ©er un compte",
+                        "Créer un compte",
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold,
                     )
@@ -162,7 +162,7 @@ private fun RegisterContenu(
                     )
                     Spacer(Modifier.height(16.dp))
                     TextButton(onClick = surRetourConnexion) {
-                        Text("DÃ©jÃ  un compte ? Se connecter")
+                        Text("Déjà un compte ? Se connecter")
                     }
                     Spacer(Modifier.height(24.dp))
                 }
@@ -172,9 +172,9 @@ private fun RegisterContenu(
 }
 
 /**
- * Le compte est crÃ©Ã© INACTIF cÃ´tÃ© serveur (vÃ©rification email requise avant
- * activation, cf. dÃ©cision produit du 16/09/2026) â€” cet Ã©cran ne doit donc
- * jamais laisser croire que l'utilisateur est dÃ©jÃ  connectÃ©.
+ * Le compte est créé INACTIF côté serveur (vérification email requise avant
+ * activation, cf. décision produit du 16/09/2026) — cet écran ne doit donc
+ * jamais laisser croire que l'utilisateur est déjà connecté.
  */
 @Composable
 private fun EtatConfirmationEmail(email: String, surRetourConnexion: () -> Unit) {
@@ -187,14 +187,14 @@ private fun EtatConfirmationEmail(email: String, surRetourConnexion: () -> Unit)
         )
         Spacer(Modifier.height(16.dp))
         Text(
-            "VÃ©rifiez votre boÃ®te mail",
+            "Vérifiez votre boîte mail",
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
         )
         Spacer(Modifier.height(8.dp))
         Text(
-            "Un email de confirmation a Ã©tÃ© envoyÃ© Ã  $email. " +
+            "Un email de confirmation a été envoyé à $email. " +
                 "Cliquez sur le lien qu'il contient pour activer votre compte, " +
                 "puis revenez ici vous connecter.",
             style = MaterialTheme.typography.bodyMedium,
@@ -203,7 +203,7 @@ private fun EtatConfirmationEmail(email: String, surRetourConnexion: () -> Unit)
         )
         Spacer(Modifier.height(24.dp))
         OutlinedButton(onClick = surRetourConnexion) {
-            Text("Retour Ã  la connexion")
+            Text("Retour à la connexion")
         }
     }
 }

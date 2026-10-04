@@ -1,10 +1,10 @@
-﻿package com.spipme.app.domain.repository
+package com.spipme.app.domain.repository
 
 import com.spipme.app.core.util.Resultat
 import com.spipme.app.domain.model.Role
 import com.spipme.app.domain.model.Utilisateur
 
-/** RÃ©servÃ© aux Administrateurs â€” contrÃ´lÃ© cÃ´tÃ© serveur (EstAdministrateur), pas seulement masquÃ© cÃ´tÃ© client. */
+/** Réservé aux Administrateurs — contrôlé côté serveur (EstAdministrateur), pas seulement masqué côté client. */
 interface AdminRepository {
     suspend fun listerUtilisateurs(page: Int? = null): Resultat<Pair<List<Utilisateur>, Boolean>>
 

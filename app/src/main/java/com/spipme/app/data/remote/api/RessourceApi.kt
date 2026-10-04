@@ -1,5 +1,7 @@
 package com.spipme.app.data.remote.api
 
+import retrofit2.http.PATCH
+import retrofit2.http.Header
 import com.spipme.app.data.remote.dto.registry.PageDto
 import com.spipme.app.data.remote.dto.resources.CreerRessourceRequestDto
 import com.spipme.app.data.remote.dto.resources.PointEvolutionDto
@@ -28,6 +30,14 @@ interface RessourceApi {
     @GET("resources/{id}/evolution/")
     suspend fun evolution(@Path("id") id: Int, @Query("jours") jours: Int = 7): Response<List<PointEvolutionDto>>
 
+    /** Corps JSON brut : identique octet pour octet à celui de la file hors ligne (une seule source de payload). */
+    @PATCH("resources/{id}/")
+    suspend fun modifier(
+        @Path("id") id: Int,
+        @Header("If-Match") ifMatch: String? = null,
+        @Body corps: okhttp3.RequestBody,
+    ): Response<RessourceDto>
+
     @POST("resources/")
-    suspend fun creer(@Body body: CreerRessourceRequestDto): Response<RessourceDto>
+    suspend fun creer(@Header("Idempotency-Key") cle: String? = null, @Body body: CreerRessourceRequestDto): Response<RessourceDto>
 }

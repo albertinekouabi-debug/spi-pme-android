@@ -1,5 +1,6 @@
-﻿package com.spipme.app.ui.compliance
+package com.spipme.app.ui.compliance
 
+import com.spipme.app.core.notifications.NotificationBadgeViewModel
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -45,10 +46,10 @@ import com.spipme.app.ui.components.SpiPmeTopBar
 import com.spipme.app.ui.theme.SpiPmeTheme
 
 /**
- * ConformitÃ© rÃ©glementaire. Les deux seules transitions possibles sont
- * "dÃ©clarer" (avec rÃ©fÃ©rence obligatoire) et "exempter" (avec note
- * justificative obligatoire) â€” le serveur n'expose aucun champ modifiable,
- * ce qui garantit la traÃ§abilitÃ© de chaque dÃ©cision.
+ * Conformité réglementaire. Les deux seules transitions possibles sont
+ * "déclarer" (avec référence obligatoire) et "exempter" (avec note
+ * justificative obligatoire) — le serveur n'expose aucun champ modifiable,
+ * ce qui garantit la traçabilité de chaque décision.
  */
 @Composable
 fun ComplianceScreen(
@@ -58,6 +59,7 @@ fun ComplianceScreen(
     viewModel: ComplianceViewModel = hiltViewModel(),
 ) {
     val etat by viewModel.uiState.collectAsStateWithLifecycle()
+    val nombreNotifs by (hiltViewModel<NotificationBadgeViewModel>()).compte.collectAsStateWithLifecycle()
     val etatSnackbar = remember { SnackbarHostState() }
 
     var declarationADeclarer by remember { mutableStateOf<DeclarationConformite?>(null) }
@@ -75,7 +77,7 @@ fun ComplianceScreen(
         topBar = {
             SpiPmeTopBar(
                 secteurActifNom = etat.secteurActifNom,
-                nombreNotificationsNonLues = 0,
+                nombreNotificationsNonLues = nombreNotifs,
                 surClicSecteur = surClicSecteur,
                 surClicNotifications = surClicNotifications,
                 surClicProfil = surClicProfil,
@@ -92,9 +94,9 @@ fun ComplianceScreen(
         ) {
             item {
                 Spacer(Modifier.height(8.dp))
-                Text("ConformitÃ©", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+                Text("Conformité", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
                 Text(
-                    "OpÃ©rations nÃ©cessitant une dÃ©claration rÃ©glementaire",
+                    "Opérations nécessitant une déclaration réglementaire",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -137,9 +139,9 @@ fun ComplianceScreen(
 
     declarationADeclarer?.let { declaration ->
         DialogueSaisie(
-            titre = "DÃ©clarer l'opÃ©ration",
-            libelleChamp = "RÃ©fÃ©rence de dÃ©claration",
-            texteConfirmer = "DÃ©clarer",
+            titre = "Déclarer l'opération",
+            libelleChamp = "Référence de déclaration",
+            texteConfirmer = "Déclarer",
             surAnnuler = { declarationADeclarer = null },
             surConfirmer = { valeur ->
                 viewModel.declarer(declaration.id, valeur)
@@ -150,7 +152,7 @@ fun ComplianceScreen(
 
     declarationAExempter?.let { declaration ->
         DialogueSaisie(
-            titre = "Exempter l'opÃ©ration",
+            titre = "Exempter l'opération",
             libelleChamp = "Note justificative",
             texteConfirmer = "Exempter",
             surAnnuler = { declarationAExempter = null },
@@ -194,9 +196,9 @@ private fun DialogueSaisie(
 private fun FiltresStatut(filtre: String?, surSelection: (String?) -> Unit) {
     val options = listOf(
         null to "Toutes",
-        "a_declarer" to "Ã€ dÃ©clarer",
-        "declaree" to "DÃ©clarÃ©es",
-        "exemptee" to "ExemptÃ©es",
+        "a_declarer" to "À déclarer",
+        "declaree" to "Déclarées",
+        "exemptee" to "Exemptées",
     )
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         options.forEach { (valeur, libelle) ->
@@ -250,30 +252,30 @@ private fun LigneDeclaration(
             }
             declaration.seuilApplique?.let {
                 Text(
-                    "Seuil appliquÃ© : $it",
+                    "Seuil appliqué : $it",
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
             declaration.referenceDeclaration?.let {
-                Text("RÃ©fÃ©rence : $it", style = MaterialTheme.typography.labelSmall)
+                Text("Référence : $it", style = MaterialTheme.typography.labelSmall)
             }
             declaration.declarantNom?.let {
                 Text(
-                    "TraitÃ© par $it",
+                    "Traité par $it",
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
 
-            // Les actions ne sont proposÃ©es que sur les dossiers encore Ã  traiter.
+            // Les actions ne sont proposées que sur les dossiers encore à traiter.
             if (declaration.statut == "a_declarer") {
                 Spacer(Modifier.height(8.dp))
                 if (actionEnCours) {
                     CircularProgressIndicator(modifier = Modifier.size(20.dp))
                 } else {
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        OutlinedButton(onClick = surClicDeclarer) { Text("DÃ©clarer") }
+                        OutlinedButton(onClick = surClicDeclarer) { Text("Déclarer") }
                         OutlinedButton(onClick = surClicExempter) { Text("Exempter") }
                     }
                 }
@@ -300,7 +302,7 @@ private fun Vide() {
         )
         Spacer(Modifier.height(12.dp))
         Text(
-            "Aucune opÃ©ration Ã  dÃ©clarer pour ce filtre.",
+            "Aucune opération à déclarer pour ce filtre.",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -325,7 +327,7 @@ private fun Erreur(message: String, surReessayer: () -> Unit) {
             textAlign = TextAlign.Center,
         )
         Spacer(Modifier.height(8.dp))
-        TextButton(onClick = surReessayer) { Text("RÃ©essayer") }
+        TextButton(onClick = surReessayer) { Text("Réessayer") }
     }
 }
 

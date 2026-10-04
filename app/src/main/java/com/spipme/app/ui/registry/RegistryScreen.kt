@@ -1,5 +1,6 @@
 package com.spipme.app.ui.registry
 
+import com.spipme.app.core.notifications.NotificationBadgeViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -59,6 +60,7 @@ fun RegistryScreen(
     viewModel: RegistryViewModel = hiltViewModel(),
 ) {
     val etat by viewModel.uiState.collectAsStateWithLifecycle()
+    val nombreNotifs by (hiltViewModel<NotificationBadgeViewModel>()).compte.collectAsStateWithLifecycle()
 
     LaunchedEffect(entiteVientDetreCreee) {
         if (entiteVientDetreCreee) {
@@ -68,6 +70,7 @@ fun RegistryScreen(
     }
 
     RegistryContenu(
+        nombreNotifs = nombreNotifs,
         etat = etat,
         surClicNotifications = surClicNotifications,
         surClicProfil = surClicProfil,
@@ -87,6 +90,7 @@ private fun RegistryContenu(
     surChangementOnglet: (OngletRegistre) -> Unit,
     surChangementRecherche: (String) -> Unit,
     surClicNouvelleEntite: () -> Unit,
+    nombreNotifs: Int = 0,
 ) {
     Scaffold(
         floatingActionButton = {
@@ -96,7 +100,7 @@ private fun RegistryContenu(
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
             SpiPmeTopBar(
                 secteurActifNom = etat.secteurActifNom,
-                nombreNotificationsNonLues = 0,
+                nombreNotificationsNonLues = nombreNotifs,
                 surClicSecteur = surClicSecteur,
                 surClicNotifications = surClicNotifications,
                 surClicProfil = surClicProfil,

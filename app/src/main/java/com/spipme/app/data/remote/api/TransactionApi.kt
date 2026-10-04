@@ -1,5 +1,6 @@
 package com.spipme.app.data.remote.api
 
+import retrofit2.http.Header
 import com.spipme.app.data.remote.dto.registry.PageDto
 import com.spipme.app.data.remote.dto.treasury.CreerTransactionRequestDto
 import com.spipme.app.data.remote.dto.treasury.PointSoldeDto
@@ -28,5 +29,5 @@ interface TransactionApi {
     suspend fun evolution(@Query("secteur") secteurId: Int? = null, @Query("jours") jours: Int = 7): Response<List<PointSoldeDto>>
 
     @POST("transactions/")
-    suspend fun creer(@Body body: CreerTransactionRequestDto): Response<TransactionDto>
+    suspend fun creer(@Header("Idempotency-Key") cle: String? = null, @Body body: CreerTransactionRequestDto): Response<TransactionDto>
 }

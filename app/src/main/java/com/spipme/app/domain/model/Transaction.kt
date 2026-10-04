@@ -17,7 +17,13 @@ data class Transaction(
     val ressourceNom: String?,
     val secteurId: Int,
     val dateTransaction: String,
-)
+    val statut: String = "validee",
+    val contreEcritureDe: Int? = null,
+    val version: Int = 1,
+) {
+    /** Une contre-écriture ou une transaction déjà contre-passée ne se contre-passe pas (chaîne append-only). */
+    val contrePassable: Boolean get() = statut == "validee" && contreEcritureDe == null
+}
 
 data class ResumeTresorerie(
     val entreesMois: BigDecimal,

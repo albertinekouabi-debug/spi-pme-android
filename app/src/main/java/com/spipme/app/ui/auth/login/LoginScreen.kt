@@ -1,4 +1,4 @@
-﻿package com.spipme.app.ui.auth.login
+package com.spipme.app.ui.auth.login
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -49,6 +49,7 @@ fun LoginScreen(
     surConnexionReussie: () -> Unit,
     surClicConnexionHorsLigne: () -> Unit,
     surClicInscription: () -> Unit,
+    surClicMotDePasseOublie: () -> Unit,
     viewModel: LoginViewModel = hiltViewModel(),
 ) {
     val etat by viewModel.uiState.collectAsStateWithLifecycle()
@@ -64,6 +65,7 @@ fun LoginScreen(
         surClicConnexion = viewModel::seConnecter,
         surClicConnexionHorsLigne = surClicConnexionHorsLigne,
         surClicInscription = surClicInscription,
+        surClicMotDePasseOublie = surClicMotDePasseOublie,
     )
 }
 
@@ -75,6 +77,7 @@ private fun LoginContenu(
     surClicConnexion: () -> Unit,
     surClicConnexionHorsLigne: () -> Unit,
     surClicInscription: () -> Unit,
+    surClicMotDePasseOublie: () -> Unit,
 ) {
     Scaffold { paddingInterne ->
         Column(
@@ -104,7 +107,7 @@ private fun LoginContenu(
                         textAlign = TextAlign.Center,
                     )
                     Text(
-                        "AccÃ©dez Ã  votre espace professionnel",
+                        "Accédez à votre espace professionnel",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.fillMaxWidth(),
@@ -134,8 +137,8 @@ private fun LoginContenu(
                     )
 
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                        TextButton(onClick = { /* Ã©cran mot de passe oubliÃ© â€” module IdentitÃ© & AccÃ¨s, Ã  venir */ }) {
-                            Text("Mot de passe oubliÃ© ?")
+                        TextButton(onClick = surClicMotDePasseOublie) {
+                            Text("Mot de passe oublié ?")
                         }
                     }
 
@@ -171,7 +174,7 @@ private fun LoginContenu(
                         Text("Connexion hors ligne", fontWeight = FontWeight.SemiBold)
                     }
                     Text(
-                        "AccÃ©der en mode hors ligne",
+                        "Accéder en mode hors ligne",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
@@ -195,7 +198,7 @@ private fun LoginContenu(
                 )
                 Spacer(Modifier.width(6.dp))
                 Text(
-                    "Vos donnÃ©es sont sÃ©curisÃ©es",
+                    "Vos données sont sécurisées",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -219,14 +222,14 @@ private fun EnTeteMarque() {
         Spacer(Modifier.height(12.dp))
         Text("SPI-PME", style = MaterialTheme.typography.headlineLarge, fontWeight = FontWeight.Bold)
         Text(
-            "SystÃ¨me de Pilotage Intelligent des PME",
+            "Système de Pilotage Intelligent des PME",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
         )
         Spacer(Modifier.height(8.dp))
         Text(
-            "GÃ©rez. Analysez. Anticipez. DÃ©veloppez.",
+            "Gérez. Analysez. Anticipez. Développez.",
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.primary,
         )
@@ -244,6 +247,7 @@ private fun LoginScreenApercu() {
             surClicConnexion = {},
             surClicConnexionHorsLigne = {},
             surClicInscription = {},
+            surClicMotDePasseOublie = {},
         )
     }
 }

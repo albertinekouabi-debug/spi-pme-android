@@ -1,4 +1,4 @@
-﻿package com.spipme.app.data.remote.dto.accounts
+package com.spipme.app.data.remote.dto.accounts
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -11,7 +11,7 @@ data class RoleDto(
     @SerialName("date_creation") val dateCreation: String? = null,
 )
 
-/** Ã‰criture (POST /users) : reflÃ¨te exactement UtilisateurCreationSerializer. */
+/** Écriture (POST /users) : reflète exactement UtilisateurCreationSerializer. */
 @Serializable
 data class CreerUtilisateurRequestDto(
     @SerialName("nom_utilisateur") val nomUtilisateur: String,

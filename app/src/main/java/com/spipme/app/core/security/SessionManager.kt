@@ -32,11 +32,16 @@ class SessionManager @Inject constructor(
         val ROLE_NOM = stringPreferencesKey("role_nom")
         val SECTEUR_ACTIF_ID = intPreferencesKey("secteur_actif_id")
         val SECTEUR_ACTIF_NOM = stringPreferencesKey("secteur_actif_nom")
+        val PERMISSIONS = stringPreferencesKey("permissions")
     }
 
     val secteurActifIdFlow: Flow<Int?> = context.sessionDataStore.data.map { it[Cles.SECTEUR_ACTIF_ID] }
     val secteurActifNomFlow: Flow<String?> = context.sessionDataStore.data.map { it[Cles.SECTEUR_ACTIF_NOM] }
     val roleNomFlow: Flow<String?> = context.sessionDataStore.data.map { it[Cles.ROLE_NOM] }
+    /** Permissions du rôle (indicatives : masquent/désactivent les actions ; le serveur revérifie toujours). */
+    val permissionsFlow: Flow<Set<String>> = context.sessionDataStore.data.map {
+        it[Cles.PERMISSIONS]?.split(",")?.filter(String::isNotBlank)?.toSet().orEmpty()
+    }
     val nomUtilisateurFlow: Flow<String?> = context.sessionDataStore.data.map { it[Cles.NOM_UTILISATEUR] }
 
     suspend fun enregistrerSession(utilisateur: Utilisateur) {
@@ -44,6 +49,9 @@ class SessionManager @Inject constructor(
             prefs[Cles.UTILISATEUR_ID] = utilisateur.id
             prefs[Cles.NOM_UTILISATEUR] = utilisateur.nomUtilisateur
             utilisateur.roleNom?.let { prefs[Cles.ROLE_NOM] = it }
+            // Connexion hors ligne : le profil local n'a pas de permissions ; on conserve celles
+            // de la dernière session en ligne au lieu de les écraser par une liste vide.
+            if (utilisateur.permissions.isNotEmpty()) prefs[Cles.PERMISSIONS] = utilisateur.permissions.joinToString(",")
             utilisateur.secteurPrincipalId?.let { prefs[Cles.SECTEUR_ACTIF_ID] = it }
             utilisateur.secteurPrincipalNom?.let { prefs[Cles.SECTEUR_ACTIF_NOM] = it }
         }

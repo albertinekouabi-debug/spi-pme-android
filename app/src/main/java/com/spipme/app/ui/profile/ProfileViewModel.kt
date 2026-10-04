@@ -1,4 +1,4 @@
-﻿package com.spipme.app.ui.profile
+package com.spipme.app.ui.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -78,7 +78,7 @@ class ProfileViewModel @Inject constructor(
     fun surChangementNomComplet(valeur: String) = _uiState.update { it.copy(nomComplet = valeur) }
     fun surChangementTelephone(valeur: String) = _uiState.update { it.copy(telephone = valeur) }
 
-    /** Seuls nom_complet/telephone sont envoyÃ©s â€” le rÃ´le, le secteur et le statut ne sont jamais modifiables ici. */
+    /** Seuls nom_complet/telephone sont envoyés — le rôle, le secteur et le statut ne sont jamais modifiables ici. */
     fun enregistrer() {
         viewModelScope.launch {
             _uiState.update { it.copy(enregistrementEnCours = true, messageErreur = null) }
@@ -89,7 +89,7 @@ class ProfileViewModel @Inject constructor(
                         enregistrementEnCours = false,
                         enEdition = false,
                         utilisateur = resultat.donnees,
-                        messageSucces = "Profil mis Ã  jour.",
+                        messageSucces = "Profil mis à jour.",
                     )
                 }
                 is Resultat.Echec -> _uiState.update {
@@ -106,7 +106,7 @@ class ProfileViewModel @Inject constructor(
     fun changerMotDePasse() {
         val etat = _uiState.value
         if (etat.nouveauMotDePasse.length < 8) {
-            _uiState.update { it.copy(messageErreur = "Le nouveau mot de passe doit contenir au moins 8 caractÃ¨res.") }
+            _uiState.update { it.copy(messageErreur = "Le nouveau mot de passe doit contenir au moins 8 caractères.") }
             return
         }
         if (etat.nouveauMotDePasse != etat.confirmationNouveauMotDePasse) {
@@ -122,7 +122,7 @@ class ProfileViewModel @Inject constructor(
                         ancienMotDePasse = "",
                         nouveauMotDePasse = "",
                         confirmationNouveauMotDePasse = "",
-                        messageSucces = "Mot de passe modifiÃ©.",
+                        messageSucces = "Mot de passe modifié.",
                     )
                 }
                 is Resultat.Echec -> _uiState.update {

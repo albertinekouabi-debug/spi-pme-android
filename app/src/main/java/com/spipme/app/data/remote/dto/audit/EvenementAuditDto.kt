@@ -1,9 +1,9 @@
-﻿package com.spipme.app.data.remote.dto.audit
+package com.spipme.app.data.remote.dto.audit
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-/** ReflÃ¨te exactement JournalAuditSerializer cÃ´tÃ© backend (lecture seule). */
+/** Reflète exactement JournalAuditSerializer côté backend (lecture seule). */
 @Serializable
 data class EvenementAuditDto(
     val id: Int,
@@ -18,7 +18,7 @@ data class EvenementAuditDto(
     @SerialName("date_action") val dateAction: String,
 )
 
-/** ReflÃ¨te exactement l'agrÃ©gat de GET /audit-log/summary (total, reussies, avertissements, echecs). */
+/** Reflète exactement l'agrégat de GET /audit-log/summary (total, reussies, avertissements, echecs). */
 @Serializable
 data class ResumeAuditDto(
     val total: Int,

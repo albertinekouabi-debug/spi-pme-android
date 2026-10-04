@@ -1,4 +1,4 @@
-﻿package com.spipme.app.ui.audit
+package com.spipme.app.ui.audit
 
 import com.spipme.app.domain.model.EvenementAudit
 import com.spipme.app.domain.model.ResumeAudit

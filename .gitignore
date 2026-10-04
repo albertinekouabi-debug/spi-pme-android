@@ -9,4 +9,13 @@
 .cxx
 local.properties
 app/schemas/
+
+# Artefacts de build et fichiers locaux (ne doivent jamais être versionnés) — audit AN-001
+app/build/
+**/build/
+.kotlin/
+local.properties
+*.bak
 *.bak_*
+capture*.jpg
+startup-log.txt

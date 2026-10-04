@@ -1,5 +1,9 @@
 package com.spipme.app.ui.treasury
 
+import kotlinx.coroutines.flow.combine
+import com.spipme.app.ui.sync.versElementEnAttente
+import com.spipme.app.domain.model.Transaction
+import com.spipme.app.core.sync.android.SynchronisationRepository
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.spipme.app.core.security.SessionManager
@@ -19,6 +23,7 @@ import javax.inject.Inject
 class TreasuryViewModel @Inject constructor(
     private val transactionRepository: TransactionRepository,
     private val sessionManager: SessionManager,
+    private val synchronisation: SynchronisationRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(TreasuryUiState())
@@ -33,6 +38,54 @@ class TreasuryViewModel @Inject constructor(
             secteurActifId = secteurId
             _uiState.update { it.copy(secteurActifNom = secteurNom) }
             chargerTout()
+        }
+
+        viewModelScope.launch {
+            combine(sessionManager.permissionsFlow, sessionManager.roleNomFlow) { permissions, role ->
+                role == "Administrateur" || "treasury.write" in permissions
+            }.collect { autorise -> _uiState.update { it.copy(peutCorriger = autorise) } }
+        }
+        viewModelScope.launch {
+            var precedent = emptySet<Int>()
+            transactionRepository.idsAvecOperationEnAttente().collect { ids ->
+                _uiState.update { it.copy(idsEnAttente = ids) }
+                if ((precedent - ids).isNotEmpty() && secteurActifId != null) rafraichir()
+                precedent = ids
+            }
+        }
+        viewModelScope.launch {
+            var precedent = 0
+            synchronisation.operationsEnAttente("CREER_TRANSACTION").collect { operations ->
+                _uiState.update { it.copy(creationsEnAttente = operations.map { op -> op.versElementEnAttente() }) }
+                if (operations.size < precedent && secteurActifId != null) rafraichir()
+                precedent = operations.size
+            }
+        }
+    }
+
+    /** Seule une transaction VALIDÉE, qui n'est pas déjà corrigée ni une contre-écriture, se contre-passe. */
+    fun peutEtreContrePassee(transaction: Transaction): Boolean {
+        val etat = _uiState.value
+        return etat.peutCorriger && transaction.contrePassable && transaction.id !in etat.idsEnAttente
+    }
+
+    fun demanderContrePassation(transaction: Transaction) {
+        if (peutEtreContrePassee(transaction)) _uiState.update { it.copy(transactionAContrePasser = transaction, erreurContrePassation = null) }
+    }
+
+    fun abandonnerContrePassation() { _uiState.update { it.copy(transactionAContrePasser = null, erreurContrePassation = null) } }
+
+    fun confirmerContrePassation(motif: String) {
+        val transaction = _uiState.value.transactionAContrePasser ?: return
+        if (motif.isBlank()) { _uiState.update { it.copy(erreurContrePassation = "Le motif est obligatoire.") }; return }
+        viewModelScope.launch {
+            when (val resultat = transactionRepository.contrePasser(transaction.id, motif)) {
+                is Resultat.Succes -> _uiState.update {
+                    it.copy(transactionAContrePasser = null, erreurContrePassation = null,
+                        messageInfo = "Contre-écriture enregistrée : elle sera synchronisée dès que possible.")
+                }
+                is Resultat.Echec -> _uiState.update { it.copy(erreurContrePassation = resultat.message) }
+            }
         }
     }
 

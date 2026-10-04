@@ -1,4 +1,4 @@
-﻿package com.spipme.app.ui.dashboard
+package com.spipme.app.ui.dashboard
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -38,18 +38,18 @@ data class DashboardUiState(
     val resumeSuggestions: ResumeSuggestions? = null,
     val messageErreur: String? = null,
 ) {
-    /** Vrai uniquement si TOUS les summaries ont Ã©chouÃ© â€” un Ã©chec partiel n'empÃªche pas d'afficher le reste. */
+    /** Vrai uniquement si TOUS les summaries ont échoué — un échec partiel n'empêche pas d'afficher le reste. */
     val echecComplet: Boolean get() =
         !chargement && listOf(resumeTresorerie, resumeRegistre, resumeRessources, resumeTaches, resumeAlertes, resumeSuggestions)
             .all { it == null }
 }
 
 /**
- * Dashboard = agrÃ©gation CLIENT des `summary` dÃ©jÃ  existants et testÃ©s
- * (registry/resources/treasury/tasks/alerts/intelligence). DÃ©cision prise
- * lors du gap analysis initial : pas de nouvel endpoint /dashboard cÃ´tÃ©
- * serveur, pour Ã©viter un point de duplication de logique mÃ©tier â€” chaque
- * module reste seul responsable de son propre rÃ©sumÃ©.
+ * Dashboard = agrégation CLIENT des `summary` déjà existants et testés
+ * (registry/resources/treasury/tasks/alerts/intelligence). Décision prise
+ * lors du gap analysis initial : pas de nouvel endpoint /dashboard côté
+ * serveur, pour éviter un point de duplication de logique métier — chaque
+ * module reste seul responsable de son propre résumé.
  */
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
@@ -75,8 +75,8 @@ class DashboardViewModel @Inject constructor(
             val secteurNom = sessionManager.secteurActifNomFlow.first().orEmpty()
             _uiState.update { it.copy(chargement = true, secteurActifNom = secteurNom, messageErreur = null) }
 
-            // Chaque summary est chargÃ© indÃ©pendamment : l'Ã©chec d'un module
-            // (ex. droits insuffisants sur Alertes) n'empÃªche jamais
+            // Chaque summary est chargé indépendamment : l'échec d'un module
+            // (ex. droits insuffisants sur Alertes) n'empêche jamais
             // l'affichage des autres cartes.
             coroutineScope {
                 launch {

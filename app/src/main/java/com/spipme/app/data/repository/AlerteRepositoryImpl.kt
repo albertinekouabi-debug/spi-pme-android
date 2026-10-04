@@ -1,5 +1,7 @@
 package com.spipme.app.data.repository
 
+import com.spipme.app.data.remote.dto.registry.PageDto
+import com.spipme.app.data.local.CacheLecture
 import com.spipme.app.core.network.executerAppelApi
 import com.spipme.app.core.util.Resultat
 import com.spipme.app.data.remote.api.AlerteApi
@@ -14,13 +16,17 @@ import javax.inject.Singleton
 
 @Singleton
 class AlerteRepositoryImpl @Inject constructor(
+    private val cacheLecture: CacheLecture,
     private val alerteApi: AlerteApi,
     private val json: Json,
 ) : AlerteRepository {
 
     override suspend fun lister(secteurId: Int, statut: String?, niveau: String?): Resultat<List<Alerte>> {
-        val resultat = executerAppelApi(json) {
-            alerteApi.lister(secteurId = secteurId, statut = statut, niveau = niveau)
+        val cle = "alertes:$secteurId:${statut ?: "-"}:${niveau ?: "-"}"
+        val resultat = cacheLecture.lire(cle, PageDto.serializer(AlerteDto.serializer())) {
+            executerAppelApi(json) {
+                alerteApi.lister(secteurId = secteurId, statut = statut, niveau = niveau)
+            }
         }
         return when (resultat) {
             is Resultat.Succes -> Resultat.Succes(resultat.donnees.results.map { it.versDomaine() })

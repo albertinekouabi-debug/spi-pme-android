@@ -1,4 +1,4 @@
-﻿package com.spipme.app.ui.treasury.creation
+package com.spipme.app.ui.treasury.creation
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -87,7 +87,7 @@ private fun CreerTransactionContenu(
             Text("Type", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.SemiBold)
             Spacer(Modifier.height(8.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                listOf("entree" to "EntrÃ©e", "sortie" to "Sortie").forEach { (valeur, libelle) ->
+                listOf("entree" to "Entrée", "sortie" to "Sortie").forEach { (valeur, libelle) ->
                     FilterChip(
                         selected = etat.type == valeur,
                         onClick = { surChangementType(valeur) },

@@ -1,4 +1,4 @@
-﻿package com.spipme.app.ui.profile
+package com.spipme.app.ui.profile
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -91,8 +91,8 @@ fun ProfileScreen(
                     etat.utilisateur?.let { utilisateur ->
                         ChampLectureSeule("Nom d'utilisateur", utilisateur.nomUtilisateur)
                         ChampLectureSeule("Email", utilisateur.email)
-                        ChampLectureSeule("RÃ´le", utilisateur.roleNom ?: "â€”")
-                        ChampLectureSeule("Secteur principal", utilisateur.secteurPrincipalNom ?: "â€”")
+                        ChampLectureSeule("Rôle", utilisateur.roleNom ?: "—")
+                        ChampLectureSeule("Secteur principal", utilisateur.secteurPrincipalNom ?: "—")
                     }
 
                     Spacer(Modifier.height(8.dp))
@@ -106,7 +106,7 @@ fun ProfileScreen(
                         SpiPmeTextField(
                             valeur = etat.telephone,
                             surChangement = viewModel::surChangementTelephone,
-                            libelle = "TÃ©lÃ©phone",
+                            libelle = "Téléphone",
                         )
                         Spacer(Modifier.height(12.dp))
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -118,8 +118,8 @@ fun ProfileScreen(
                             OutlinedButton(onClick = viewModel::annulerEdition) { Text("Annuler") }
                         }
                     } else {
-                        ChampLectureSeule("Nom complet", etat.nomComplet.ifBlank { "â€”" })
-                        ChampLectureSeule("TÃ©lÃ©phone", etat.telephone.ifBlank { "â€”" })
+                        ChampLectureSeule("Nom complet", etat.nomComplet.ifBlank { "—" })
+                        ChampLectureSeule("Téléphone", etat.telephone.ifBlank { "—" })
                     }
                 }
             }
@@ -163,7 +163,7 @@ fun ProfileScreen(
             HorizontalDivider()
             Spacer(Modifier.height(16.dp))
             OutlinedButton(onClick = viewModel::seDeconnecter, modifier = Modifier.fillMaxWidth()) {
-                Text("Se dÃ©connecter")
+                Text("Se déconnecter")
             }
             Spacer(Modifier.height(24.dp))
         }

@@ -1,4 +1,4 @@
-﻿package com.spipme.app.data.repository
+package com.spipme.app.data.repository
 
 import com.spipme.app.core.network.executerAppelApi
 import com.spipme.app.core.security.HachageMotDePasse
@@ -8,6 +8,8 @@ import com.spipme.app.data.local.dao.UtilisateurLocalDao
 import com.spipme.app.data.local.entity.UtilisateurLocalEntity
 import com.spipme.app.data.remote.api.AuthApi
 import com.spipme.app.data.remote.dto.UtilisateurDto
+import com.spipme.app.data.remote.dto.auth.ConfirmationReinitialisationRequestDto
+import com.spipme.app.data.remote.dto.auth.DemandeReinitialisationRequestDto
 import com.spipme.app.data.remote.dto.auth.InscriptionRequestDto
 import com.spipme.app.data.remote.dto.auth.LoginRequestDto
 import com.spipme.app.data.remote.dto.auth.LogoutRequestDto
@@ -47,7 +49,7 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun connexionHorsLigne(identifiant: String, motDePasse: String): Resultat<Utilisateur> {
         val entite = utilisateurLocalDao.trouverParIdentifiant(identifiant)
-            ?: return Resultat.Echec("Aucun compte synchronisÃ© sur cet appareil pour cet identifiant. Une premiÃ¨re connexion en ligne est nÃ©cessaire.")
+            ?: return Resultat.Echec("Aucun compte synchronisé sur cet appareil pour cet identifiant. Une première connexion en ligne est nécessaire.")
 
         val motDePasseValide = HachageMotDePasse.verifier(motDePasse.toCharArray(), entite.hashMotDePasse)
         if (!motDePasseValide) {
@@ -70,9 +72,9 @@ class AuthRepositoryImpl @Inject constructor(
         sessionManager.enregistrerSession(utilisateurDomaine)
         return Resultat.Succes(utilisateurDomaine)
         // Note : le mode hors ligne complet (file de synchronisation des actions
-        // effectuÃ©es sans rÃ©seau) est du ressort du futur module Offline â€” ici,
-        // seule l'authentification hors ligne est couverte, pÃ©rimÃ¨tre du module
-        // IdentitÃ© & AccÃ¨s.
+        // effectuées sans réseau) est du ressort du futur module Offline — ici,
+        // seule l'authentification hors ligne est couverte, périmètre du module
+        // Identité & Accès.
     }
 
     override suspend fun inscription(
@@ -101,11 +103,31 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun demanderReinitialisationMotDePasse(email: String): Resultat<Unit> {
+        val resultat = executerAppelApi(json) {
+            authApi.demanderReinitialisation(DemandeReinitialisationRequestDto(email))
+        }
+        return when (resultat) {
+            is Resultat.Succes -> Resultat.Succes(Unit)
+            is Resultat.Echec -> resultat
+        }
+    }
+
+    override suspend fun confirmerReinitialisationMotDePasse(token: String, nouveauMotDePasse: String): Resultat<Unit> {
+        val resultat = executerAppelApi(json) {
+            authApi.confirmerReinitialisation(ConfirmationReinitialisationRequestDto(token, nouveauMotDePasse))
+        }
+        return when (resultat) {
+            is Resultat.Succes -> Resultat.Succes(Unit)
+            is Resultat.Echec -> resultat
+        }
+    }
+
     override suspend fun deconnexion() {
         val refresh = tokenManager.refreshTokenActuel()
         if (refresh != null) {
-            // Best-effort : la rÃ©vocation cÃ´tÃ© serveur ne doit pas bloquer la
-            // dÃ©connexion locale si le rÃ©seau est indisponible.
+            // Best-effort : la révocation côté serveur ne doit pas bloquer la
+            // déconnexion locale si le réseau est indisponible.
             executerAppelApi(json) { authApi.logout(LogoutRequestDto(refresh)) }
         }
         tokenManager.effacerTokens()
@@ -141,5 +163,6 @@ private fun UtilisateurDto.versDomaine() = Utilisateur(
     secteurPrincipalNom = secteurPrincipalNom,
     secteurs = secteurs,
     actif = actif,
+    permissions = permissions,
 )
 

@@ -1,5 +1,6 @@
-﻿package com.spipme.app.ui.tasks
+package com.spipme.app.ui.tasks
 
+import com.spipme.app.core.notifications.NotificationBadgeViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -57,6 +58,7 @@ fun TasksScreen(
     viewModel: TasksViewModel = hiltViewModel(),
 ) {
     val etat by viewModel.uiState.collectAsStateWithLifecycle()
+    val nombreNotifs by (hiltViewModel<NotificationBadgeViewModel>()).compte.collectAsStateWithLifecycle()
 
     LaunchedEffect(tacheVientDetreCreee) {
         if (tacheVientDetreCreee) {
@@ -66,6 +68,7 @@ fun TasksScreen(
     }
 
     TasksContenu(
+        nombreNotifs = nombreNotifs,
         etat = etat,
         surClicNotifications = surClicNotifications,
         surClicProfil = surClicProfil,
@@ -85,20 +88,21 @@ private fun TasksContenu(
     surChangementOnglet: (OngletTaches) -> Unit,
     surClicNouvelleTache: () -> Unit,
     surClicMarquerTerminee: (Int) -> Unit,
+    nombreNotifs: Int = 0,
 ) {
     Scaffold(
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 onClick = surClicNouvelleTache,
                 icon = { Icon(Icons.Filled.Add, null) },
-                text = { Text("Nouvelle tÃ¢che") },
+                text = { Text("Nouvelle tâche") },
             )
         },
     ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
             SpiPmeTopBar(
                 secteurActifNom = etat.secteurActifNom,
-                nombreNotificationsNonLues = 0,
+                nombreNotificationsNonLues = nombreNotifs,
                 surClicSecteur = surClicSecteur,
                 surClicNotifications = surClicNotifications,
                 surClicProfil = surClicProfil,
@@ -110,9 +114,9 @@ private fun TasksContenu(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 item {
-                    Text("TÃ¢ches", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+                    Text("Tâches", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
                     Text(
-                        "Organisez, suivez et accomplissez vos tÃ¢ches",
+                        "Organisez, suivez et accomplissez vos tâches",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -145,7 +149,7 @@ private fun TasksContenu(
                 } else if (etat.taches.isEmpty()) {
                     item {
                         Text(
-                            "Aucune tÃ¢che trouvÃ©e.",
+                            "Aucune tâche trouvée.",
                             modifier = Modifier.fillMaxWidth().padding(32.dp),
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -172,7 +176,7 @@ private fun TasksContenu(
 private fun CartesResume(resume: ResumeTaches) {
     val donnees = listOf(
         Triple("Toutes", resume.total, MaterialTheme.colorScheme.onSurface),
-        Triple("TerminÃ©es", resume.terminees, SpiPmeTheme.extendedColors.succes),
+        Triple("Terminées", resume.terminees, SpiPmeTheme.extendedColors.succes),
         Triple("En cours", resume.enCours, SpiPmeTheme.extendedColors.avertissement),
         Triple("En retard", resume.enRetard, MaterialTheme.colorScheme.error),
     )
@@ -212,7 +216,7 @@ private fun CarteTache(tache: Tache, surClicMarquerTerminee: () -> Unit) {
             IconButton(onClick = surClicMarquerTerminee, enabled = !estTerminee) {
                 Icon(
                     if (estTerminee) Icons.Filled.CheckCircle else Icons.Filled.RadioButtonUnchecked,
-                    contentDescription = if (estTerminee) "TerminÃ©e" else "Marquer comme terminÃ©e",
+                    contentDescription = if (estTerminee) "Terminée" else "Marquer comme terminée",
                     tint = if (estTerminee) SpiPmeTheme.extendedColors.succes else MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
@@ -226,7 +230,7 @@ private fun CarteTache(tache: Tache, surClicMarquerTerminee: () -> Unit) {
                 )
                 if (tache.categorie.isNotBlank()) {
                     Text(
-                        "CatÃ©gorie : ${tache.categorie}",
+                        "Catégorie : ${tache.categorie}",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )

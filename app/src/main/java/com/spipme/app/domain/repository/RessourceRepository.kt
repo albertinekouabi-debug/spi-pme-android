@@ -13,6 +13,15 @@ interface RessourceRepository {
 
     suspend fun obtenirEvolution(ressourceId: Int, jours: Int = 7): Resultat<List<PointEvolution>>
 
+    /**
+     * Modification (nom, emplacement, seuils) avec contrôle de version : refusée par le serveur (412) si la
+     * ressource a changé depuis la lecture. Hors ligne, enfilée avec la version lue. Le NIVEAU de stock ne se
+     * modifie jamais directement : il ne bouge que par mouvements de stock tracés.
+     */
+    suspend fun modifier(
+        ressource: Ressource, nom: String, emplacement: String?, seuilCritique: BigDecimal?, seuilAlerte: BigDecimal?,
+    ): Resultat<Ressource>
+
     suspend fun creer(
         secteurId: Int,
         type: String,

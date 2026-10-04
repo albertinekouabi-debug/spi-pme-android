@@ -15,6 +15,7 @@ data class Ressource(
     val emplacement: String,
     val secteurId: Int,
     val secteurNom: String?,
+    val version: Int = 1,
 ) {
     /** Progression pour la barre visuelle (0f..1f), bornée à l'intervalle même si niveau > seuil_alerte. */
     val progression: Float

@@ -1,9 +1,9 @@
-﻿package com.spipme.app.data.remote.dto.treasury
+package com.spipme.app.data.remote.dto.treasury
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-/** ReflÃ¨te exactement FactureSerializer. Montants en String : Decimal sÃ©rialisÃ© par DRF. */
+/** Reflète exactement FactureSerializer. Montants en String : Decimal sérialisé par DRF. */
 @Serializable
 data class FactureDto(
     val id: Int,
@@ -12,8 +12,11 @@ data class FactureDto(
     val entite: Int? = null,
     @SerialName("entite_nom") val entiteNom: String? = null,
     val montant: String,
-    @SerialName("taux_tva") val tauxTva: String,
-    @SerialName("montant_tva") val montantTva: String,
+    // La TVA est optionnelle côté serveur : sans taux, taux_tva ET montant_tva valent null
+    // (contrat verrouillé par apps/treasury/tests/test_contrat_facture.py). Sans défaut
+    // nullable, kotlinx.serialization rejetterait toute la liste de factures.
+    @SerialName("taux_tva") val tauxTva: String? = null,
+    @SerialName("montant_tva") val montantTva: String? = null,
     @SerialName("montant_ttc") val montantTtc: String,
     val statut: String,
     @SerialName("date_echeance") val dateEcheance: String? = null,
@@ -22,7 +25,7 @@ data class FactureDto(
     @SerialName("date_creation") val dateCreation: String,
 )
 
-/** ReflÃ¨te exactement DeclarationConformiteSerializer (read_only_fields = fields). */
+/** Reflète exactement DeclarationConformiteSerializer (read_only_fields = fields). */
 @Serializable
 data class DeclarationConformiteDto(
     val id: Int,

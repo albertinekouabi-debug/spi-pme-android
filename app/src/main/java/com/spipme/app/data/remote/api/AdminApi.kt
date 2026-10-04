@@ -1,4 +1,4 @@
-﻿package com.spipme.app.data.remote.api
+package com.spipme.app.data.remote.api
 
 import com.spipme.app.data.remote.dto.UtilisateurDto
 import com.spipme.app.data.remote.dto.accounts.CreerUtilisateurRequestDto
@@ -12,7 +12,7 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 
-/** Administration â€” RÃ‰SERVÃ‰ aux Administrateurs cÃ´tÃ© serveur (EstAdministrateur). */
+/** Administration — RÉSERVÉ aux Administrateurs côté serveur (EstAdministrateur). */
 interface AdminApi {
     @GET("users/")
     suspend fun listerUtilisateurs(@Query("page") page: Int? = null): Response<PageDto<UtilisateurDto>>
@@ -20,7 +20,7 @@ interface AdminApi {
     @POST("users/")
     suspend fun creerUtilisateur(@Body body: CreerUtilisateurRequestDto): Response<UtilisateurDto>
 
-    /** DÃ©sactivation (soft delete) â€” jamais de suppression physique, prÃ©serve l'intÃ©gritÃ© rÃ©fÃ©rentielle. */
+    /** Désactivation (soft delete) — jamais de suppression physique, préserve l'intégrité référentielle. */
     @DELETE("users/{id}/")
     suspend fun desactiverUtilisateur(@Path("id") id: Int): Response<Unit>
 

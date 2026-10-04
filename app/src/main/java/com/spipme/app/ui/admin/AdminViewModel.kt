@@ -1,4 +1,4 @@
-﻿package com.spipme.app.ui.admin
+package com.spipme.app.ui.admin
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -113,7 +113,7 @@ class AdminViewModel @Inject constructor(
         telephone: String,
     ) {
         if (nomUtilisateur.isBlank() || email.isBlank() || motDePasse.length < 8) {
-            _uiState.update { it.copy(messageErreur = "Nom d'utilisateur, email et mot de passe (8 caractÃ¨res min.) sont requis.") }
+            _uiState.update { it.copy(messageErreur = "Nom d'utilisateur, email et mot de passe (8 caractères min.) sont requis.") }
             return
         }
         viewModelScope.launch {
@@ -133,7 +133,7 @@ class AdminViewModel @Inject constructor(
                         creationEnCours = false,
                         afficherFormulaireCreation = false,
                         utilisateurs = listOf(resultat.donnees) + it.utilisateurs,
-                        messageSucces = "Compte crÃ©Ã©.",
+                        messageSucces = "Compte créé.",
                     )
                 }
                 is Resultat.Echec -> _uiState.update {
@@ -143,7 +143,7 @@ class AdminViewModel @Inject constructor(
         }
     }
 
-    /** DÃ©sactivation (soft delete cÃ´tÃ© serveur) â€” jamais de suppression physique. */
+    /** Désactivation (soft delete côté serveur) — jamais de suppression physique. */
     fun desactiverUtilisateur(id: Int) {
         viewModelScope.launch {
             _uiState.update { it.copy(actionEnCoursSurId = id, messageErreur = null) }
@@ -151,7 +151,7 @@ class AdminViewModel @Inject constructor(
                 is Resultat.Succes -> _uiState.update { etat ->
                     etat.copy(
                         actionEnCoursSurId = null,
-                        messageSucces = "Compte dÃ©sactivÃ©.",
+                        messageSucces = "Compte désactivé.",
                         utilisateurs = etat.utilisateurs.map { if (it.id == id) it.copy(actif = false) else it },
                     )
                 }

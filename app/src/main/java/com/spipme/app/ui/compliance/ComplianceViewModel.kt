@@ -1,4 +1,4 @@
-﻿package com.spipme.app.ui.compliance
+package com.spipme.app.ui.compliance
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -101,19 +101,19 @@ class ComplianceViewModel @Inject constructor(
         }
     }
 
-    /** POST /compliance-declarations/{id}/declare â€” la rÃ©fÃ©rence est obligatoire cÃ´tÃ© serveur. */
+    /** POST /compliance-declarations/{id}/declare — la référence est obligatoire côté serveur. */
     fun declarer(id: Int, referenceDeclaration: String) {
         if (referenceDeclaration.isBlank()) {
-            _uiState.update { it.copy(messageErreur = "La rÃ©fÃ©rence de dÃ©claration est obligatoire.") }
+            _uiState.update { it.copy(messageErreur = "La référence de déclaration est obligatoire.") }
             return
         }
         viewModelScope.launch {
             _uiState.update { it.copy(actionEnCoursSurId = id, messageErreur = null) }
-            traiterResultatAction(conformiteRepository.declarer(id, referenceDeclaration.trim()), "DÃ©claration enregistrÃ©e.")
+            traiterResultatAction(conformiteRepository.declarer(id, referenceDeclaration.trim()), "Déclaration enregistrée.")
         }
     }
 
-    /** POST /compliance-declarations/{id}/exempt â€” la note justificative est obligatoire cÃ´tÃ© serveur. */
+    /** POST /compliance-declarations/{id}/exempt — la note justificative est obligatoire côté serveur. */
     fun exempter(id: Int, note: String) {
         if (note.isBlank()) {
             _uiState.update { it.copy(messageErreur = "La note justificative est obligatoire.") }
@@ -121,11 +121,11 @@ class ComplianceViewModel @Inject constructor(
         }
         viewModelScope.launch {
             _uiState.update { it.copy(actionEnCoursSurId = id, messageErreur = null) }
-            traiterResultatAction(conformiteRepository.exempter(id, note.trim()), "Exemption enregistrÃ©e.")
+            traiterResultatAction(conformiteRepository.exempter(id, note.trim()), "Exemption enregistrée.")
         }
     }
 
-    /** Remplace l'Ã©lÃ©ment en place plutÃ´t que de recharger toute la liste. */
+    /** Remplace l'élément en place plutôt que de recharger toute la liste. */
     private fun traiterResultatAction(resultat: Resultat<DeclarationConformite>, messageSucces: String) {
         when (resultat) {
             is Resultat.Succes -> _uiState.update { etat ->

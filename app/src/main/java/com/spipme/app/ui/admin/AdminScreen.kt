@@ -1,5 +1,6 @@
-﻿package com.spipme.app.ui.admin
+package com.spipme.app.ui.admin
 
+import com.spipme.app.core.notifications.NotificationBadgeViewModel
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -54,10 +55,10 @@ import com.spipme.app.ui.components.SpiPmeTopBar
 import com.spipme.app.ui.theme.SpiPmeTheme
 
 /**
- * Administration des comptes. RÃ©servÃ© au rÃ´le Administrateur â€” contrÃ´lÃ©
- * CÃ”TÃ‰ SERVEUR (EstAdministrateur sur UtilisateurViewSet), pas seulement
- * masquÃ© ici : cet Ã©cran n'est qu'une commoditÃ©, jamais la barriÃ¨re de
- * sÃ©curitÃ©.
+ * Administration des comptes. Réservé au rôle Administrateur — contrôlé
+ * CÔTÉ SERVEUR (EstAdministrateur sur UtilisateurViewSet), pas seulement
+ * masqué ici : cet écran n'est qu'une commodité, jamais la barrière de
+ * sécurité.
  */
 @Composable
 fun AdminScreen(
@@ -67,6 +68,7 @@ fun AdminScreen(
     viewModel: AdminViewModel = hiltViewModel(),
 ) {
     val etat by viewModel.uiState.collectAsStateWithLifecycle()
+    val nombreNotifs by (hiltViewModel<NotificationBadgeViewModel>()).compte.collectAsStateWithLifecycle()
     val etatSnackbar = remember { SnackbarHostState() }
 
     LaunchedEffect(etat.messageSucces, etat.messageErreur) {
@@ -81,7 +83,7 @@ fun AdminScreen(
         topBar = {
             SpiPmeTopBar(
                 secteurActifNom = "",
-                nombreNotificationsNonLues = 0,
+                nombreNotificationsNonLues = nombreNotifs,
                 surClicSecteur = surClicSecteur,
                 surClicNotifications = surClicNotifications,
                 surClicProfil = surClicProfil,
@@ -178,8 +180,8 @@ private fun LigneUtilisateur(
                 Text(utilisateur.email, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Text(
                     buildString {
-                        append(utilisateur.roleNom ?: "â€”")
-                        utilisateur.secteurPrincipalNom?.let { append(" Â· $it") }
+                        append(utilisateur.roleNom ?: "—")
+                        utilisateur.secteurPrincipalNom?.let { append(" · $it") }
                     },
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -187,14 +189,14 @@ private fun LigneUtilisateur(
             }
             if (!utilisateur.actif) {
                 Text(
-                    "DÃ©sactivÃ©",
+                    "Désactivé",
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.error,
                 )
             } else if (actionEnCours) {
                 CircularProgressIndicator(modifier = Modifier.size(20.dp))
             } else {
-                TextButton(onClick = surClicDesactiver) { Text("DÃ©sactiver") }
+                TextButton(onClick = surClicDesactiver) { Text("Désactiver") }
             }
         }
     }
@@ -229,7 +231,7 @@ private fun DialogueCreationUtilisateur(
 
     AlertDialog(
         onDismissRequest = surAnnuler,
-        title = { Text("CrÃ©er un compte") },
+        title = { Text("Créer un compte") },
         text = {
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 SpiPmeTextField(valeur = nomUtilisateur, surChangement = { nomUtilisateur = it }, libelle = "Nom d'utilisateur")
@@ -240,14 +242,14 @@ private fun DialogueCreationUtilisateur(
                 Spacer(Modifier.height(8.dp))
                 SpiPmeTextField(valeur = nomComplet, surChangement = { nomComplet = it }, libelle = "Nom complet")
                 Spacer(Modifier.height(8.dp))
-                SpiPmeTextField(valeur = telephone, surChangement = { telephone = it }, libelle = "TÃ©lÃ©phone")
+                SpiPmeTextField(valeur = telephone, surChangement = { telephone = it }, libelle = "Téléphone")
                 Spacer(Modifier.height(8.dp))
 
                 ExposedDropdownMenuBox(expanded = menuRoleOuvert, onExpandedChange = { menuRoleOuvert = it }) {
                     SpiPmeTextField(
                         valeur = roleSelectionne?.nom.orEmpty(),
                         surChangement = {},
-                        libelle = "RÃ´le",
+                        libelle = "Rôle",
                         modifier = Modifier.menuAnchor(),
                     )
                     ExposedDropdownMenu(expanded = menuRoleOuvert, onDismissRequest = { menuRoleOuvert = false }) {
@@ -290,7 +292,7 @@ private fun DialogueCreationUtilisateur(
                         surConfirmer(nomUtilisateur, email, motDePasse, role.id, secteur.id, nomComplet, telephone)
                     },
                     enabled = roleSelectionne != null && secteurSelectionne != null,
-                ) { Text("CrÃ©er") }
+                ) { Text("Créer") }
             }
         },
         dismissButton = { TextButton(onClick = surAnnuler) { Text("Annuler") } },
@@ -311,7 +313,7 @@ private fun Erreur(message: String, surReessayer: () -> Unit) {
         Spacer(Modifier.height(12.dp))
         Text(message, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.error, textAlign = TextAlign.Center)
         Spacer(Modifier.height(8.dp))
-        TextButton(onClick = surReessayer) { Text("RÃ©essayer") }
+        TextButton(onClick = surReessayer) { Text("Réessayer") }
     }
 }
 

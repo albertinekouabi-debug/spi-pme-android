@@ -1,4 +1,4 @@
-﻿package com.spipme.app.ui.auth.register
+package com.spipme.app.ui.auth.register
 
 data class RegisterUiState(
     val nomUtilisateur: String = "",

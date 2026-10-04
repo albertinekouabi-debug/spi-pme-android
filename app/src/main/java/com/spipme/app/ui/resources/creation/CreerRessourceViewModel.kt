@@ -93,7 +93,12 @@ class CreerRessourceViewModel @Inject constructor(
             )
             when (resultat) {
                 is Resultat.Succes -> _uiState.update { it.copy(enCoursDEnvoi = false, creationReussie = true) }
-                is Resultat.Echec -> _uiState.update { it.copy(enCoursDEnvoi = false, messageErreur = resultat.message) }
+                is Resultat.Echec -> _uiState.update {
+                    // Saisie conservée hors ligne : c'est un SUCCÈS pour l'utilisateur (le bandeau de synchronisation
+                    // indique qu'elle attend le réseau). Seul un vrai refus (validation, droits...) est une erreur.
+                    if (resultat.enFile) it.copy(enCoursDEnvoi = false, creationReussie = true)
+                    else it.copy(enCoursDEnvoi = false, messageErreur = resultat.message)
+                }
             }
         }
     }

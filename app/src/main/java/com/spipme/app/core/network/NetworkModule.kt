@@ -1,4 +1,4 @@
-﻿package com.spipme.app.core.network
+package com.spipme.app.core.network
 
 import com.spipme.app.BuildConfig
 import com.spipme.app.data.remote.api.AuthApi
@@ -31,10 +31,14 @@ object NetworkModule {
     @Singleton
     fun fournirLoggingInterceptor(): HttpLoggingInterceptor =
         HttpLoggingInterceptor().apply {
-            level = if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE
+            // Jamais BODY : les corps de /auth/login et /auth/refresh contiennent mot de passe et
+            // tokens, qui finiraient dans logcat (lisible via adb). HEADERS suffit au diagnostic.
+            level = if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.HEADERS else HttpLoggingInterceptor.Level.NONE
+            redactHeader("Authorization")
+            redactHeader("Cookie")
         }
 
-    /** Client SANS AuthInterceptor ni TokenAuthenticator â€” rÃ©servÃ© Ã  /auth/login et /auth/refresh. */
+    /** Client SANS AuthInterceptor ni TokenAuthenticator — réservé à /auth/login et /auth/refresh. */
     @Provides
     @Singleton
     @ClientBrut
@@ -60,7 +64,7 @@ object NetworkModule {
     @ClientBrut
     fun fournirAuthApiBrut(@ClientBrut retrofit: Retrofit): AuthApi = retrofit.create(AuthApi::class.java)
 
-    /** Client AVEC AuthInterceptor + TokenAuthenticator â€” utilisÃ© pour tous les autres endpoints mÃ©tier. */
+    /** Client AVEC AuthInterceptor + TokenAuthenticator — utilisé pour tous les autres endpoints métier. */
     @Provides
     @Singleton
     @ClientAuthentifie
@@ -75,9 +79,9 @@ object NetworkModule {
             .addInterceptor(logging)
             .connectTimeout(15, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
-            // Ce client gÃ¨re l'upload multipart du module imports (fichiers
-            // CSV/XLSX pouvant atteindre plusieurs Mo) â€” le dÃ©faut OkHttp
-            // (10s) serait trop court sur un rÃ©seau lent.
+            // Ce client gère l'upload multipart du module imports (fichiers
+            // CSV/XLSX pouvant atteindre plusieurs Mo) — le défaut OkHttp
+            // (10s) serait trop court sur un réseau lent.
             .writeTimeout(60, TimeUnit.SECONDS)
             .build()
 
@@ -92,8 +96,8 @@ object NetworkModule {
             .build()
 
     /**
-     * AuthApi exposÃ© aussi via le client authentifiÃ©, pour /auth/logout
-     * (qui exige d'Ãªtre connectÃ© â€” contrairement Ã  login/refresh).
+     * AuthApi exposé aussi via le client authentifié, pour /auth/logout
+     * (qui exige d'être connecté — contrairement à login/refresh).
      */
     @Provides
     @Singleton
@@ -103,6 +107,11 @@ object NetworkModule {
     @Singleton
     fun fournirEntiteApi(@ClientAuthentifie retrofit: Retrofit): com.spipme.app.data.remote.api.EntiteApi =
         retrofit.create(com.spipme.app.data.remote.api.EntiteApi::class.java)
+
+    @Provides
+    @Singleton
+    fun fournirAnalyticsApi(@ClientAuthentifie retrofit: Retrofit): com.spipme.app.data.remote.api.AnalyticsApi =
+        retrofit.create(com.spipme.app.data.remote.api.AnalyticsApi::class.java)
 
     @Provides
     @Singleton

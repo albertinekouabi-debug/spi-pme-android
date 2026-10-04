@@ -1,4 +1,4 @@
-﻿package com.spipme.app.data.remote.api
+package com.spipme.app.data.remote.api
 
 import com.spipme.app.data.remote.dto.registry.PageDto
 import com.spipme.app.data.remote.dto.treasury.DeclarationConformiteDto
@@ -23,9 +23,9 @@ interface FactureApi {
 }
 
 /**
- * ConformitÃ© rÃ©glementaire. Les transitions d'Ã©tat passent EXCLUSIVEMENT par
+ * Conformité réglementaire. Les transitions d'état passent EXCLUSIVEMENT par
  * /declare et /exempt (le serializer est en lecture seule sur tous ses champs) :
- * aucune modification gÃ©nÃ©rique n'est possible, et c'est volontaire.
+ * aucune modification générique n'est possible, et c'est volontaire.
  */
 interface ConformiteApi {
     @GET("compliance-declarations/")

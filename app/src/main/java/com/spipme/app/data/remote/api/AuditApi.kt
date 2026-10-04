@@ -1,4 +1,4 @@
-﻿package com.spipme.app.data.remote.api
+package com.spipme.app.data.remote.api
 
 import com.spipme.app.data.remote.dto.audit.EvenementAuditDto
 import com.spipme.app.data.remote.dto.audit.ResumeAuditDto
@@ -8,10 +8,10 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 /**
- * Journal d'audit â€” LECTURE SEULE cÃ´tÃ© serveur (ReadOnlyModelViewSet +
- * protections ORM et trigger PostgreSQL). Aucune mÃ©thode d'Ã©criture n'est
- * exposÃ©e ici volontairement : les logs ne doivent pas pouvoir Ãªtre altÃ©rÃ©s.
- * Filtres conformes au contrat rÃ©el du backend (apps/audit/views.py).
+ * Journal d'audit — LECTURE SEULE côté serveur (ReadOnlyModelViewSet +
+ * protections ORM et trigger PostgreSQL). Aucune méthode d'écriture n'est
+ * exposée ici volontairement : les logs ne doivent pas pouvoir être altérés.
+ * Filtres conformes au contrat réel du backend (apps/audit/views.py).
  */
 interface AuditApi {
     @GET("audit-log/")

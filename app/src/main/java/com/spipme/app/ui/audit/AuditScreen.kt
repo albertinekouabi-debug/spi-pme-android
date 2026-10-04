@@ -1,5 +1,6 @@
-﻿package com.spipme.app.ui.audit
+package com.spipme.app.ui.audit
 
+import com.spipme.app.core.notifications.NotificationBadgeViewModel
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -42,11 +43,11 @@ import com.spipme.app.ui.components.SpiPmeTopBar
 import com.spipme.app.ui.theme.SpiPmeTheme
 
 /**
- * Journal d'audit â€” LECTURE SEULE. Aucune action de modification ou de
- * suppression n'est proposÃ©e : le journal doit rester inaltÃ©rable (garanti
- * cÃ´tÃ© serveur par ReadOnlyModelViewSet + protections ORM + trigger).
- * AccÃ¨s restreint par la permission `audit.read` (rÃ´les Administrateur et
- * Auditeur) â€” contrÃ´le appliquÃ© cÃ´tÃ© serveur, pas seulement masquÃ© ici.
+ * Journal d'audit — LECTURE SEULE. Aucune action de modification ou de
+ * suppression n'est proposée : le journal doit rester inaltérable (garanti
+ * côté serveur par ReadOnlyModelViewSet + protections ORM + trigger).
+ * Accès restreint par la permission `audit.read` (rôles Administrateur et
+ * Auditeur) — contrôle appliqué côté serveur, pas seulement masqué ici.
  */
 @Composable
 fun AuditScreen(
@@ -56,12 +57,13 @@ fun AuditScreen(
     viewModel: AuditViewModel = hiltViewModel(),
 ) {
     val etat by viewModel.uiState.collectAsStateWithLifecycle()
+    val nombreNotifs by (hiltViewModel<NotificationBadgeViewModel>()).compte.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
             SpiPmeTopBar(
                 secteurActifNom = etat.secteurActifNom,
-                nombreNotificationsNonLues = 0,
+                nombreNotificationsNonLues = nombreNotifs,
                 surClicSecteur = surClicSecteur,
                 surClicNotifications = surClicNotifications,
                 surClicProfil = surClicProfil,
@@ -83,7 +85,7 @@ fun AuditScreen(
                     fontWeight = FontWeight.Bold,
                 )
                 Text(
-                    "Consultation en lecture seule des Ã©vÃ©nements du systÃ¨me",
+                    "Consultation en lecture seule des événements du système",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -125,7 +127,7 @@ fun AuditScreen(
                                 TextButton(
                                     onClick = viewModel::chargerPageSuivante,
                                     modifier = Modifier.fillMaxWidth(),
-                                ) { Text("Charger plus d'Ã©vÃ©nements") }
+                                ) { Text("Charger plus d'événements") }
                             }
                         }
                     }
@@ -143,9 +145,9 @@ private fun CartesResumeAudit(resume: ResumeAudit) {
     // lambda LazyListScope), cf. correctif COMPILE-KOTLIN-002.
     val donnees = listOf(
         Triple("Total", resume.total, MaterialTheme.colorScheme.onSurface),
-        Triple("RÃ©ussies", resume.reussies, SpiPmeTheme.extendedColors.succes),
+        Triple("Réussies", resume.reussies, SpiPmeTheme.extendedColors.succes),
         Triple("Avertissements", resume.avertissements, SpiPmeTheme.extendedColors.avertissement),
-        Triple("Ã‰checs", resume.echecs, MaterialTheme.colorScheme.error),
+        Triple("Échecs", resume.echecs, MaterialTheme.colorScheme.error),
     )
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -177,7 +179,7 @@ private fun CartesResumeAudit(resume: ResumeAudit) {
 
 @Composable
 private fun FiltresAudit(filtreResultat: String?, surSelectionResultat: (String?) -> Unit) {
-    val options = listOf(null to "Tous", "reussi" to "RÃ©ussis", "avertissement" to "Avertissements", "echec" to "Ã‰checs")
+    val options = listOf(null to "Tous", "reussi" to "Réussis", "avertissement" to "Avertissements", "echec" to "Échecs")
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         options.forEach { (valeur, libelle) ->
             FilterChip(
@@ -223,7 +225,7 @@ private fun LigneEvenementAudit(evenement: EvenementAudit) {
                     buildString {
                         append(evenement.module)
                         if (evenement.cibleType.isNotBlank()) {
-                            append(" Â· ")
+                            append(" · ")
                             append(evenement.cibleType)
                             if (evenement.cibleId.isNotBlank()) append(" #${evenement.cibleId}")
                         }
@@ -234,7 +236,7 @@ private fun LigneEvenementAudit(evenement: EvenementAudit) {
                 Text(
                     buildString {
                         append(evenement.dateAction)
-                        evenement.auteurNom?.let { append(" Â· $it") }
+                        evenement.auteurNom?.let { append(" · $it") }
                     },
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -268,7 +270,7 @@ private fun EtatVide() {
         )
         Spacer(Modifier.height(12.dp))
         Text(
-            "Aucun Ã©vÃ©nement d'audit ne correspond Ã  ces critÃ¨res.",
+            "Aucun événement d'audit ne correspond à ces critères.",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -296,7 +298,7 @@ private fun EtatErreur(message: String, surReessayer: () -> Unit) {
             textAlign = TextAlign.Center,
         )
         Spacer(Modifier.height(8.dp))
-        TextButton(onClick = surReessayer) { Text("RÃ©essayer") }
+        TextButton(onClick = surReessayer) { Text("Réessayer") }
     }
 }
 
