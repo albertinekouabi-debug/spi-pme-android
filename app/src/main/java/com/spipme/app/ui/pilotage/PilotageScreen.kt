@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -59,7 +60,12 @@ fun PilotageScreen(
     val nombreNotifs by (hiltViewModel<NotificationBadgeViewModel>()).compte.collectAsStateWithLifecycle()
 
     Scaffold { padding ->
-        Column(modifier = Modifier.fillMaxSize().padding(padding)) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .imePadding(),
+        ) {
             SpiPmeTopBar(
                 secteurActifNom = etat.secteurActifNom,
                 nombreNotificationsNonLues = nombreNotifs,
@@ -67,8 +73,9 @@ fun PilotageScreen(
                 surClicNotifications = surClicNotifications,
                 surClicProfil = surClicProfil,
             )
+
             LazyColumn(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.weight(1f).fillMaxWidth(),
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
@@ -126,21 +133,25 @@ fun PilotageScreen(
                     }
                 }
                 items(etat.messages) { message -> BulleCopilote(message) }
-                item {
-                    Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
-                        OutlinedTextField(
-                            value = etat.question,
-                            onValueChange = viewModel::surChangementQuestion,
-                            label = { Text("Posez une question") },
-                            modifier = Modifier.weight(1f),
-                            singleLine = true,
-                        )
-                        IconButton(onClick = { viewModel.poser() }, enabled = etat.question.isNotBlank()) {
-                            Icon(Icons.Filled.Send, contentDescription = "Envoyer la question")
-                        }
-                    }
+                item { Spacer(Modifier.height(8.dp)) }
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+            ) {
+                OutlinedTextField(
+                    value = etat.question,
+                    onValueChange = viewModel::surChangementQuestion,
+                    label = { Text("Posez une question") },
+                    modifier = Modifier.weight(1f),
+                    singleLine = true,
+                )
+                IconButton(onClick = { viewModel.poser() }, enabled = etat.question.isNotBlank()) {
+                    Icon(Icons.Filled.Send, contentDescription = "Envoyer la question")
                 }
-                item { Spacer(Modifier.height(24.dp)) }
             }
         }
     }

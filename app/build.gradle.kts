@@ -26,7 +26,7 @@ android {
 
     buildTypes {
         debug {
-            buildConfigField("String", "API_BASE_URL", "\"https://api-staging.spipme.example.com/api/v1/\"")
+            buildConfigField("String", "API_BASE_URL", "\"http://127.0.0.1:8000/api/v1/\"")
             isDebuggable = true
         }
         release {

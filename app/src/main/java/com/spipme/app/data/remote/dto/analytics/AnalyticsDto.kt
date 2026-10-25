@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 
-/** Contrat de /analytics/* (backend apps/analytics). Les montants restent des chaînes (précision décimale). */
+/** Contrat des endpoints analytics du backend apps/analytics. Les montants restent des chaines decimales. */
 @Serializable
 data class MesureDto(
     val valeur: String? = null,
@@ -34,10 +34,17 @@ data class KpisDto(
 )
 
 @Serializable
-data class FaitDto(val libelle: String = "", val valeur: JsonElement? = null, val source: String = "")
+data class FaitDto(
+    val libelle: String = "",
+    val valeur: JsonElement? = null,
+    val source: String = "",
+)
 
 @Serializable
-data class OptionDto(val option: String = "", val justification: String = "")
+data class OptionDto(
+    val option: String = "",
+    val justification: String = "",
+)
 
 @Serializable
 data class InsightDto(
@@ -60,7 +67,10 @@ data class InsightsReponseDto(
 )
 
 @Serializable
-data class CopiloteRequestDto(val question: String, val secteur: Int? = null)
+data class CopiloteRequestDto(
+    val question: String,
+    val secteur: Int? = null,
+)
 
 @Serializable
 data class CopiloteReponseDto(

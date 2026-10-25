@@ -1,0 +1,902 @@
+﻿
+===== audit\AuditScreen.kt | lignes 140 à 230 / 304 =====
+ 140: }
+ 141: 
+ 142: @Composable
+ 143: private fun CartesResumeAudit(resume: ResumeAudit) {
+ 144:     // Couleurs lues ici, dans un contexte @Composable valide (pas dans un
+ 145:     // lambda LazyListScope), cf. correctif COMPILE-KOTLIN-002.
+ 146:     val donnees = listOf(
+ 147:         Triple("Total", resume.total, MaterialTheme.colorScheme.onSurface),
+ 148:         Triple("RÃ©ussies", resume.reussies, SpiPmeTheme.extendedColors.succes),
+ 149:         Triple("Avertissements", resume.avertissements, SpiPmeTheme.extendedColors.avertissement),
+ 150:         Triple("Ã‰checs", resume.echecs, MaterialTheme.colorScheme.error),
+ 151:     )
+ 152:     Row(
+ 153:         modifier = Modifier.fillMaxWidth(),
+ 154:         horizontalArrangement = Arrangement.spacedBy(8.dp),
+ 155:     ) {
+ 156:         donnees.forEach { (libelle, valeur, couleur) ->
+ 157:             Card(modifier = Modifier.weight(1f), colors = CardDefaults.cardColors()) {
+ 158:                 Column(
+ 159:                     modifier = Modifier.padding(12.dp),
+ 160:                     horizontalAlignment = Alignment.CenterHorizontally,
+ 161:                 ) {
+ 162:                     Text(
+ 163:                         valeur.toString(),
+ 164:                         style = MaterialTheme.typography.titleLarge,
+ 165:                         fontWeight = FontWeight.Bold,
+ 166:                         color = couleur,
+ 167:                     )
+ 168:                     Text(
+ 169:                         libelle,
+ 170:                         style = MaterialTheme.typography.labelSmall,
+ 171:                         color = MaterialTheme.colorScheme.onSurfaceVariant,
+ 172:                         textAlign = TextAlign.Center,
+ 173:                     )
+ 174:                 }
+ 175:             }
+ 176:         }
+ 177:     }
+ 178: }
+ 179: 
+ 180: @Composable
+ 181: private fun FiltresAudit(filtreResultat: String?, surSelectionResultat: (String?) -> Unit) {
+ 182:     val options = listOf(null to "Tous", "reussi" to "RÃ©ussis", "avertissement" to "Avertissements", "echec" to "Ã‰checs")
+ 183:     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+ 184:         options.forEach { (valeur, libelle) ->
+ 185:             FilterChip(
+ 186:                 selected = filtreResultat == valeur,
+ 187:                 onClick = { surSelectionResultat(valeur) },
+ 188:                 label = { Text(libelle, style = MaterialTheme.typography.labelMedium) },
+ 189:             )
+ 190:         }
+ 191:     }
+ 192: }
+ 193: 
+ 194: @Composable
+ 195: private fun LigneEvenementAudit(evenement: EvenementAudit) {
+ 196:     val couleurResultat = when (evenement.resultat) {
+ 197:         "reussi" -> SpiPmeTheme.extendedColors.succes
+ 198:         "avertissement" -> SpiPmeTheme.extendedColors.avertissement
+ 199:         else -> MaterialTheme.colorScheme.error
+ 200:     }
+ 201:     val iconeResultat = when (evenement.resultat) {
+ 202:         "reussi" -> Icons.Filled.CheckCircle
+ 203:         "avertissement" -> Icons.Filled.WarningAmber
+ 204:         else -> Icons.Filled.ErrorOutline
+ 205:     }
+ 206: 
+ 207:     Card(modifier = Modifier.fillMaxWidth()) {
+ 208:         Row(
+ 209:             modifier = Modifier.padding(12.dp).fillMaxWidth(),
+ 210:             verticalAlignment = Alignment.CenterVertically,
+ 211:         ) {
+ 212:             Icon(
+ 213:                 imageVector = iconeResultat,
+ 214:                 contentDescription = evenement.resultat,
+ 215:                 tint = couleurResultat,
+ 216:                 modifier = Modifier.size(20.dp),
+ 217:             )
+ 218:             Column(modifier = Modifier.padding(start = 12.dp).weight(1f)) {
+ 219:                 Text(
+ 220:                     evenement.action,
+ 221:                     style = MaterialTheme.typography.bodyMedium,
+ 222:                     fontWeight = FontWeight.SemiBold,
+ 223:                 )
+ 224:                 Text(
+ 225:                     buildString {
+ 226:                         append(evenement.module)
+ 227:                         if (evenement.cibleType.isNotBlank()) {
+ 228:                             append(" Â· ")
+ 229:                             append(evenement.cibleType)
+ 230:                             if (evenement.cibleId.isNotBlank()) append(" #${evenement.cibleId}")
+
+===== alerts\AlertsScreen.kt | autour de la ligne 17 =====
+   9: import androidx.compose.foundation.layout.Row
+  10: import androidx.compose.foundation.layout.Spacer
+  11: import androidx.compose.foundation.layout.fillMaxSize
+  12: import androidx.compose.foundation.layout.fillMaxWidth
+  13: import androidx.compose.foundation.layout.height
+  14: import androidx.compose.foundation.layout.padding
+  15: import androidx.compose.foundation.layout.width
+  16: import androidx.compose.foundation.lazy.LazyColumn
+  17: import androidx.compose.foundation.lazy.LazyRow
+  18: import androidx.compose.foundation.lazy.items
+  19: import androidx.compose.foundation.shape.RoundedCornerShape
+  20: import androidx.compose.material.icons.Icons
+  21: import androidx.compose.material.icons.filled.CheckCircle
+  22: import androidx.compose.material.icons.filled.Info
+  23: import androidx.compose.material.icons.filled.NotificationsActive
+  24: import androidx.compose.material.icons.filled.Warning
+  25: import androidx.compose.material3.Card
+  26: import androidx.compose.material3.CardDefaults
+  27: import androidx.compose.material3.CircularProgressIndicator
+  28: import androidx.compose.material3.ExtendedFloatingActionButton
+  29: import androidx.compose.material3.FilterChip
+  30: import androidx.compose.material3.FilterChipDefaults
+  31: import androidx.compose.material3.Icon
+  32: import androidx.compose.material3.MaterialTheme
+  33: import androidx.compose.material3.OutlinedButton
+  34: import androidx.compose.material3.Scaffold
+  35: import androidx.compose.material3.Text
+  36: import androidx.compose.material3.TextButton
+  37: import androidx.compose.runtime.Composable
+  38: import androidx.compose.runtime.getValue
+  39: import androidx.compose.ui.Alignment
+  40: import androidx.compose.ui.Modifier
+  41: import androidx.compose.ui.text.font.FontWeight
+  42: import androidx.compose.ui.unit.dp
+  43: import androidx.hilt.navigation.compose.hiltViewModel
+  44: import androidx.lifecycle.compose.collectAsStateWithLifecycle
+  45: import com.spipme.app.domain.model.Alerte
+  46: import com.spipme.app.domain.model.ResumeAlertes
+  47: import com.spipme.app.ui.components.SpiPmeTopBar
+  48: import com.spipme.app.ui.theme.SpiPmeAppTheme
+  49: import com.spipme.app.ui.theme.SpiPmeTheme
+  50: 
+  51: @Composable
+  52: fun AlertsScreen(
+  53:     surClicNotifications: () -> Unit,
+  54:     surClicProfil: () -> Unit,
+  55:     surClicSecteur: () -> Unit,
+
+===== alerts\AlertsScreen.kt | autour de la ligne 29 =====
+  21: import androidx.compose.material.icons.filled.CheckCircle
+  22: import androidx.compose.material.icons.filled.Info
+  23: import androidx.compose.material.icons.filled.NotificationsActive
+  24: import androidx.compose.material.icons.filled.Warning
+  25: import androidx.compose.material3.Card
+  26: import androidx.compose.material3.CardDefaults
+  27: import androidx.compose.material3.CircularProgressIndicator
+  28: import androidx.compose.material3.ExtendedFloatingActionButton
+  29: import androidx.compose.material3.FilterChip
+  30: import androidx.compose.material3.FilterChipDefaults
+  31: import androidx.compose.material3.Icon
+  32: import androidx.compose.material3.MaterialTheme
+  33: import androidx.compose.material3.OutlinedButton
+  34: import androidx.compose.material3.Scaffold
+  35: import androidx.compose.material3.Text
+  36: import androidx.compose.material3.TextButton
+  37: import androidx.compose.runtime.Composable
+  38: import androidx.compose.runtime.getValue
+  39: import androidx.compose.ui.Alignment
+  40: import androidx.compose.ui.Modifier
+  41: import androidx.compose.ui.text.font.FontWeight
+  42: import androidx.compose.ui.unit.dp
+  43: import androidx.hilt.navigation.compose.hiltViewModel
+  44: import androidx.lifecycle.compose.collectAsStateWithLifecycle
+  45: import com.spipme.app.domain.model.Alerte
+  46: import com.spipme.app.domain.model.ResumeAlertes
+  47: import com.spipme.app.ui.components.SpiPmeTopBar
+  48: import com.spipme.app.ui.theme.SpiPmeAppTheme
+  49: import com.spipme.app.ui.theme.SpiPmeTheme
+  50: 
+  51: @Composable
+  52: fun AlertsScreen(
+  53:     surClicNotifications: () -> Unit,
+  54:     surClicProfil: () -> Unit,
+  55:     surClicSecteur: () -> Unit,
+  56:     viewModel: AlertsViewModel = hiltViewModel(),
+  57: ) {
+  58:     val etat by viewModel.uiState.collectAsStateWithLifecycle()
+  59:     val nombreNotifs by (hiltViewModel<NotificationBadgeViewModel>()).compte.collectAsStateWithLifecycle()
+  60: 
+  61:     AlertsContenu(
+  62:         nombreNotifs = nombreNotifs,
+  63:         etat = etat,
+  64:         surClicNotifications = surClicNotifications,
+  65:         surClicProfil = surClicProfil,
+  66:         surClicSecteur = surClicSecteur,
+  67:         surChangementOnglet = viewModel::surChangementOnglet,
+
+===== alerts\AlertsScreen.kt | autour de la ligne 30 =====
+  22: import androidx.compose.material.icons.filled.Info
+  23: import androidx.compose.material.icons.filled.NotificationsActive
+  24: import androidx.compose.material.icons.filled.Warning
+  25: import androidx.compose.material3.Card
+  26: import androidx.compose.material3.CardDefaults
+  27: import androidx.compose.material3.CircularProgressIndicator
+  28: import androidx.compose.material3.ExtendedFloatingActionButton
+  29: import androidx.compose.material3.FilterChip
+  30: import androidx.compose.material3.FilterChipDefaults
+  31: import androidx.compose.material3.Icon
+  32: import androidx.compose.material3.MaterialTheme
+  33: import androidx.compose.material3.OutlinedButton
+  34: import androidx.compose.material3.Scaffold
+  35: import androidx.compose.material3.Text
+  36: import androidx.compose.material3.TextButton
+  37: import androidx.compose.runtime.Composable
+  38: import androidx.compose.runtime.getValue
+  39: import androidx.compose.ui.Alignment
+  40: import androidx.compose.ui.Modifier
+  41: import androidx.compose.ui.text.font.FontWeight
+  42: import androidx.compose.ui.unit.dp
+  43: import androidx.hilt.navigation.compose.hiltViewModel
+  44: import androidx.lifecycle.compose.collectAsStateWithLifecycle
+  45: import com.spipme.app.domain.model.Alerte
+  46: import com.spipme.app.domain.model.ResumeAlertes
+  47: import com.spipme.app.ui.components.SpiPmeTopBar
+  48: import com.spipme.app.ui.theme.SpiPmeAppTheme
+  49: import com.spipme.app.ui.theme.SpiPmeTheme
+  50: 
+  51: @Composable
+  52: fun AlertsScreen(
+  53:     surClicNotifications: () -> Unit,
+  54:     surClicProfil: () -> Unit,
+  55:     surClicSecteur: () -> Unit,
+  56:     viewModel: AlertsViewModel = hiltViewModel(),
+  57: ) {
+  58:     val etat by viewModel.uiState.collectAsStateWithLifecycle()
+  59:     val nombreNotifs by (hiltViewModel<NotificationBadgeViewModel>()).compte.collectAsStateWithLifecycle()
+  60: 
+  61:     AlertsContenu(
+  62:         nombreNotifs = nombreNotifs,
+  63:         etat = etat,
+  64:         surClicNotifications = surClicNotifications,
+  65:         surClicProfil = surClicProfil,
+  66:         surClicSecteur = surClicSecteur,
+  67:         surChangementOnglet = viewModel::surChangementOnglet,
+  68:         surClicGenerer = viewModel::genererAlertes,
+
+===== alerts\AlertsScreen.kt | autour de la ligne 121 =====
+ 113:                         style = MaterialTheme.typography.bodyMedium,
+ 114:                         color = MaterialTheme.colorScheme.onSurfaceVariant,
+ 115:                     )
+ 116:                 }
+ 117: 
+ 118:                 etat.resume?.let { resume -> item { CartesResume(resume) } }
+ 119: 
+ 120:                 item {
+ 121:                     LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+ 122:                         items(OngletAlertes.values().toList()) { onglet ->
+ 123:                             FilterChip(
+ 124:                                 selected = etat.ongletActif == onglet,
+ 125:                                 onClick = { surChangementOnglet(onglet) },
+ 126:                                 label = { Text(onglet.libelle) },
+ 127:                                 colors = FilterChipDefaults.filterChipColors(
+ 128:                                     selectedContainerColor = MaterialTheme.colorScheme.primary,
+ 129:                                     selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
+ 130:                                 ),
+ 131:                             )
+ 132:                         }
+ 133:                     }
+ 134:                 }
+ 135: 
+ 136:                 etat.messageInfo?.let { message ->
+ 137:                     item {
+ 138:                         Card(
+ 139:                             colors = CardDefaults.cardColors(containerColor = SpiPmeTheme.extendedColors.information.copy(alpha = 0.1f)),
+ 140:                             shape = RoundedCornerShape(12.dp),
+ 141:                         ) {
+ 142:                             Text(message, modifier = Modifier.padding(12.dp), style = MaterialTheme.typography.bodySmall)
+ 143:                         }
+ 144:                     }
+ 145:                 }
+ 146: 
+ 147:                 if (etat.enChargement) {
+ 148:                     item {
+ 149:                         Box(modifier = Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
+ 150:                             CircularProgressIndicator()
+ 151:                         }
+ 152:                     }
+ 153:                 } else if (etat.alertes.isEmpty()) {
+ 154:                     item {
+ 155:                         Text(
+ 156:                             "Aucune alerte dans cette catÃ©gorie.",
+ 157:                             modifier = Modifier.fillMaxWidth().padding(32.dp),
+ 158:                             color = MaterialTheme.colorScheme.onSurfaceVariant,
+ 159:                         )
+
+===== invoices\InvoicesScreen.kt | lignes 115 à 235 / 283 =====
+ 115:                                     modifier = Modifier.fillMaxWidth(),
+ 116:                                 ) { Text("Charger plus de factures") }
+ 117:                             }
+ 118:                         }
+ 119:                     }
+ 120:                 }
+ 121:             }
+ 122:             item { Spacer(Modifier.height(16.dp)) }
+ 123:         }
+ 124:     }
+ 125: }
+ 126: 
+ 127: @Composable
+ 128: private fun FiltresStatut(filtre: String?, surSelection: (String?) -> Unit) {
+ 129:     val options = listOf(
+ 130:         null to "Toutes",
+ 131:         "emise" to "Ã‰mises",
+ 132:         "payee" to "PayÃ©es",
+ 133:         "impayee" to "ImpayÃ©es",
+ 134:         "relancee" to "RelancÃ©es",
+ 135:         "annulee" to "AnnulÃ©es",
+ 136:         "avoir" to "Avoirs",
+ 137:     )
+ 138:     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+ 139:         options.forEach { (valeur, libelle) ->
+ 140:             FilterChip(
+ 141:                 selected = filtre == valeur,
+ 142:                 onClick = { surSelection(valeur) },
+ 143:                 label = { Text(libelle, style = MaterialTheme.typography.labelMedium) },
+ 144:             )
+ 145:         }
+ 146:     }
+ 147: }
+ 148: 
+ 149: /** Motif obligatoire : l'annulation est tracÃ©e (qui, quand, pourquoi) et ne supprime jamais la facture. */
+ 150: @Composable
+ 151: private fun DialogueAnnulation(
+ 152:     facture: Facture,
+ 153:     messageErreur: String?,
+ 154:     surConfirmer: (String) -> Unit,
+ 155:     surAbandonner: () -> Unit,
+ 156: ) {
+ 157:     var motif by rememberSaveable { mutableStateOf("") }
+ 158:     AlertDialog(
+ 159:         onDismissRequest = surAbandonner,
+ 160:         title = { Text("Annuler la facture ${facture.numero} ?") },
+ 161:         text = {
+ 162:             Column {
+ 163:                 Text(
+ 164:                     "Un avoir du montant total sera Ã©mis ; la facture reste consultable dans l'historique. " +
+ 165:                         "Cette action est tracÃ©e et ne peut pas Ãªtre supprimÃ©e.",
+ 166:                     style = MaterialTheme.typography.bodySmall,
+ 167:                 )
+ 168:                 Spacer(Modifier.height(12.dp))
+ 169:                 OutlinedTextField(
+ 170:                     value = motif,
+ 171:                     onValueChange = { motif = it },
+ 172:                     label = { Text("Motif (obligatoire)") },
+ 173:                     isError = messageErreur != null,
+ 174:                     supportingText = messageErreur?.let { { Text(it) } },
+ 175:                     modifier = Modifier.fillMaxWidth(),
+ 176:                 )
+ 177:             }
+ 178:         },
+ 179:         confirmButton = { TextButton(onClick = { surConfirmer(motif) }) { Text("Annuler la facture") } },
+ 180:         dismissButton = { TextButton(onClick = surAbandonner) { Text("Retour") } },
+ 181:     )
+ 182: }
+ 183: 
+ 184: @Composable
+ 185: private fun LigneFacture(facture: Facture, annulable: Boolean, enAttente: Boolean, surAnnuler: () -> Unit) {
+ 186:     val couleurStatut = when (facture.statut) {
+ 187:         "payee" -> SpiPmeTheme.extendedColors.succes
+ 188:         "impayee" -> MaterialTheme.colorScheme.error
+ 189:         "relancee" -> SpiPmeTheme.extendedColors.avertissement
+ 190:         "emise" -> SpiPmeTheme.extendedColors.information
+ 191:         else -> MaterialTheme.colorScheme.onSurfaceVariant
+ 192:     }
+ 193:     Card(modifier = Modifier.fillMaxWidth()) {
+ 194:         Column(modifier = Modifier.padding(12.dp)) {
+ 195:             Row(
+ 196:                 modifier = Modifier.fillMaxWidth(),
+ 197:                 horizontalArrangement = Arrangement.SpaceBetween,
+ 198:                 verticalAlignment = Alignment.CenterVertically,
+ 199:             ) {
+ 200:                 Text(facture.numero, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold)
+ 201:                 Text(
+ 202:                     facture.statut.replace('_', ' '),
+ 203:                     style = MaterialTheme.typography.labelMedium,
+ 204:                     color = couleurStatut,
+ 205:                     fontWeight = FontWeight.SemiBold,
+ 206:                 )
+ 207:             }
+ 208:             facture.entiteNom?.let {
+ 209:                 Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+ 210:             }
+ 211:             Spacer(Modifier.height(6.dp))
+ 212:             Text(
+ 213:                 "HT ${facture.montant}  Â·  TVA ${facture.montantTva}  Â·  TTC ${facture.montantTtc}",
+ 214:                 style = MaterialTheme.typography.bodySmall,
+ 215:             )
+ 216:             facture.dateEcheance?.let {
+ 217:                 Text(
+ 218:                     "Ã‰chÃ©ance : $it",
+ 219:                     style = MaterialTheme.typography.labelSmall,
+ 220:                     color = MaterialTheme.colorScheme.onSurfaceVariant,
+ 221:                 )
+ 222:             }
+ 223:             if (enAttente) {
+ 224:                 Text(
+ 225:                     "Annulation en attente de synchronisation",
+ 226:                     style = MaterialTheme.typography.labelMedium,
+ 227:                     color = SpiPmeTheme.extendedColors.avertissement,
+ 228:                     fontWeight = FontWeight.SemiBold,
+ 229:                 )
+ 230:             } else if (annulable) {
+ 231:                 TextButton(onClick = surAnnuler) { Text("Annuler la facture") }
+ 232:             }
+ 233:         }
+ 234:     }
+ 235: }
+
+===== components\SpiPmeTopBar.kt | lignes 40 à 105 / 213 =====
+  40: import androidx.lifecycle.compose.collectAsStateWithLifecycle
+  41: import com.spipme.app.domain.model.Secteur
+  42: import com.spipme.app.ui.sync.BandeauSynchronisation
+  43: 
+  44: /**
+  45:  * En-tÃªte prÃ©sent sur les 16 maquettes : sÃ©lecteur "Secteur actif",
+  46:  * notifications (badge = nombre non lues), avatar utilisateur. Un seul
+  47:  * composant rÃ©utilisÃ© partout plutÃ´t que rÃ©implÃ©mentÃ© Ã©cran par Ã©cran.
+  48:  *
+  49:  * Le sÃ©lecteur de secteur est AUTO-CONTENU (SecteurSelectorViewModel) : le
+  50:  * clic ouvre directement le dialogue de choix, chargÃ© depuis GET /secteurs
+  51:  * (jamais une liste inventÃ©e). Aucun Ã©cran appelant n'a besoin d'Ãªtre
+  52:  * modifiÃ© â€” surClicSecteur reste appelÃ© en plus, pour un usage futur
+  53:  * (analytics...), mais n'est plus le seul dÃ©clencheur du sÃ©lecteur.
+  54:  */
+  55: @Composable
+  56: fun SpiPmeTopBar(
+  57:     secteurActifNom: String,
+  58:     nombreNotificationsNonLues: Int,
+  59:     surClicSecteur: () -> Unit,
+  60:     surClicNotifications: () -> Unit,
+  61:     surClicProfil: () -> Unit,
+  62:     modifier: Modifier = Modifier,
+  63:     selecteurViewModel: SecteurSelectorViewModel = hiltViewModel(),
+  64: ) {
+  65:     val etatSelecteur by selecteurViewModel.uiState.collectAsStateWithLifecycle()
+  66: 
+  67:     Column {
+  68:         Row(
+  69:             modifier = modifier
+  70:                 .fillMaxWidth()
+  71:                 .padding(horizontal = 16.dp, vertical = 12.dp),
+  72:             verticalAlignment = Alignment.CenterVertically,
+  73:         ) {
+  74:             SelecteurSecteur(
+  75:                 secteurActifNom = secteurActifNom,
+  76:                 surClic = {
+  77:                     surClicSecteur()
+  78:                     selecteurViewModel.ouvrir()
+  79:                 },
+  80:                 modifier = Modifier.weight(1f),
+  81:             )
+  82:             Spacer(Modifier.width(12.dp))
+  83:             BoutonNotifications(nombreNotificationsNonLues, surClicNotifications)
+  84:             Spacer(Modifier.width(12.dp))
+  85:             AvatarUtilisateur(surClicProfil)
+  86:         }
+  87:         BandeauSynchronisation()
+  88:     }
+  89: 
+  90:     if (etatSelecteur.ouvert) {
+  91:         DialogueSelecteurSecteur(
+  92:             etat = etatSelecteur,
+  93:             secteurActifNom = secteurActifNom,
+  94:             surSelection = selecteurViewModel::selectionner,
+  95:             surFermer = selecteurViewModel::fermer,
+  96:         )
+  97:     }
+  98: }
+  99: 
+ 100: @Composable
+ 101: private fun DialogueSelecteurSecteur(
+ 102:     etat: SecteurSelectorUiState,
+ 103:     secteurActifNom: String,
+ 104:     surSelection: (Secteur) -> Unit,
+ 105:     surFermer: () -> Unit,
+
+===== components\SpiPmeTopBar.kt | lignes 185 à 213 / 213 =====
+ 185: private fun BoutonNotifications(nombreNonLues: Int, surClic: () -> Unit) {
+ 186:     BadgedBox(
+ 187:         badge = {
+ 188:             if (nombreNonLues > 0) {
+ 189:                 Badge(containerColor = MaterialTheme.colorScheme.error) {
+ 190:                     Text(if (nombreNonLues > 99) "99+" else nombreNonLues.toString())
+ 191:                 }
+ 192:             }
+ 193:         }
+ 194:     ) {
+ 195:         IconButton(onClick = surClic) {
+ 196:             Icon(Icons.Filled.Notifications, contentDescription = "Notifications")
+ 197:         }
+ 198:     }
+ 199: }
+ 200: 
+ 201: @Composable
+ 202: private fun AvatarUtilisateur(surClic: () -> Unit) {
+ 203:     Box(
+ 204:         modifier = Modifier
+ 205:             .size(40.dp)
+ 206:             .clickable(onClick = surClic)
+ 207:             .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f), CircleShape),
+ 208:         contentAlignment = Alignment.Center,
+ 209:     ) {
+ 210:         Icon(Icons.Filled.Person, contentDescription = "Profil", tint = MaterialTheme.colorScheme.primary)
+ 211:     }
+ 212: }
+ 213: 
+
+===== dashboard\DashboardScreen.kt | autour de la ligne 64 =====
+  56: import androidx.lifecycle.compose.collectAsStateWithLifecycle
+  57: import com.spipme.app.core.notifications.NotificationBadgeViewModel
+  58: import com.spipme.app.domain.model.PointSolde
+  59: import com.spipme.app.domain.model.Suggestion
+  60: import com.spipme.app.ui.components.SpiPmeTopBar
+  61: import com.spipme.app.ui.theme.SpiPmeAppTheme
+  62: import com.spipme.app.ui.theme.SpiPmeTheme
+  63: 
+  64: private data class IndicateurDashboard(
+  65:     val cle: String,
+  66:     val titre: String,
+  67:     val valeur: String,
+  68:     val detail: String,
+  69:     val icone: ImageVector,
+  70:     val couleur: Color,
+  71:     val action: () -> Unit,
+  72: )
+  73: 
+  74: @Composable
+  75: fun DashboardScreen(
+  76:     surClicNotifications: () -> Unit,
+  77:     surClicProfil: () -> Unit,
+  78:     surClicSecteur: () -> Unit,
+  79:     surClicTresorerie: () -> Unit,
+  80:     surClicRegistre: () -> Unit,
+  81:     surClicRessources: () -> Unit,
+  82:     surClicTaches: () -> Unit,
+  83:     surClicAlertes: () -> Unit,
+  84:     surClicSuggestions: () -> Unit,
+  85:     surClicImports: () -> Unit,
+  86:     surClicAudit: () -> Unit,
+  87:     surClicFactures: () -> Unit,
+  88:     surClicConformite: () -> Unit,
+  89:     surClicAdministration: () -> Unit,
+  90:     surClicPilotage: () -> Unit,
+  91:     surClicNouvelleTransaction: () -> Unit,
+  92:     surClicNouvelleRessource: () -> Unit,
+  93:     surClicNouvelleTache: () -> Unit,
+  94:     viewModel: DashboardViewModel = hiltViewModel(),
+  95: ) {
+  96:     val etat by viewModel.uiState.collectAsStateWithLifecycle()
+
+===== dashboard\DashboardScreen.kt | autour de la ligne 102 =====
+  94:     viewModel: DashboardViewModel = hiltViewModel(),
+  95: ) {
+  96:     val etat by viewModel.uiState.collectAsStateWithLifecycle()
+  97:     val badgeViewModel: NotificationBadgeViewModel = hiltViewModel()
+  98:     val nombreNotifs by badgeViewModel.compte.collectAsStateWithLifecycle()
+  99: 
+ 100:     val indicateurs = listOfNotNull(
+ 101:         etat.resumeRessources?.let { resume ->
+ 102:             IndicateurDashboard(
+ 103:                 cle = "ressources",
+ 104:                 titre = "Ressources critiques",
+ 105:                 valeur = resume.critiques.toString(),
+ 106:                 detail = if (resume.critiques == 1) "Ã€ surveiller" else "Ã€ traiter",
+ 107:                 icone = Icons.Filled.Inventory,
+ 108:                 couleur = if (resume.critiques > 0) MaterialTheme.colorScheme.error else SpiPmeTheme.extendedColors.succes,
+ 109:                 action = surClicRessources,
+ 110:             )
+ 111:         },
+ 112:         etat.resumeTaches?.let { resume ->
+ 113:             IndicateurDashboard(
+ 114:                 cle = "taches",
+ 115:                 titre = "TÃ¢ches en cours",
+ 116:                 valeur = resume.enCours.toString(),
+ 117:                 detail = if (resume.enRetard > 0) "${resume.enRetard} en retard" else "Aucun retard signalÃ©",
+ 118:                 icone = Icons.Filled.Assignment,
+ 119:                 couleur = if (resume.enRetard > 0) MaterialTheme.colorScheme.error else SpiPmeTheme.extendedColors.avertissement,
+ 120:                 action = surClicTaches,
+ 121:             )
+ 122:         },
+ 123:         etat.resumeAlertes?.let { resume ->
+ 124:             val actives = resume.critiques + resume.elevees + resume.moderees
+ 125:             IndicateurDashboard(
+ 126:                 cle = "alertes",
+ 127:                 titre = "Alertes actives",
+ 128:                 valeur = actives.toString(),
+ 129:                 detail = "${resume.critiques} critique(s)",
+ 130:                 icone = Icons.Filled.NotificationsActive,
+ 131:                 couleur = if (resume.critiques > 0) MaterialTheme.colorScheme.error else SpiPmeTheme.extendedColors.information,
+ 132:                 action = surClicAlertes,
+ 133:             )
+ 134:         },
+
+===== dashboard\DashboardScreen.kt | autour de la ligne 104 =====
+  96:     val etat by viewModel.uiState.collectAsStateWithLifecycle()
+  97:     val badgeViewModel: NotificationBadgeViewModel = hiltViewModel()
+  98:     val nombreNotifs by badgeViewModel.compte.collectAsStateWithLifecycle()
+  99: 
+ 100:     val indicateurs = listOfNotNull(
+ 101:         etat.resumeRessources?.let { resume ->
+ 102:             IndicateurDashboard(
+ 103:                 cle = "ressources",
+ 104:                 titre = "Ressources critiques",
+ 105:                 valeur = resume.critiques.toString(),
+ 106:                 detail = if (resume.critiques == 1) "Ã€ surveiller" else "Ã€ traiter",
+ 107:                 icone = Icons.Filled.Inventory,
+ 108:                 couleur = if (resume.critiques > 0) MaterialTheme.colorScheme.error else SpiPmeTheme.extendedColors.succes,
+ 109:                 action = surClicRessources,
+ 110:             )
+ 111:         },
+ 112:         etat.resumeTaches?.let { resume ->
+ 113:             IndicateurDashboard(
+ 114:                 cle = "taches",
+ 115:                 titre = "TÃ¢ches en cours",
+ 116:                 valeur = resume.enCours.toString(),
+ 117:                 detail = if (resume.enRetard > 0) "${resume.enRetard} en retard" else "Aucun retard signalÃ©",
+ 118:                 icone = Icons.Filled.Assignment,
+ 119:                 couleur = if (resume.enRetard > 0) MaterialTheme.colorScheme.error else SpiPmeTheme.extendedColors.avertissement,
+ 120:                 action = surClicTaches,
+ 121:             )
+ 122:         },
+ 123:         etat.resumeAlertes?.let { resume ->
+ 124:             val actives = resume.critiques + resume.elevees + resume.moderees
+ 125:             IndicateurDashboard(
+ 126:                 cle = "alertes",
+ 127:                 titre = "Alertes actives",
+ 128:                 valeur = actives.toString(),
+ 129:                 detail = "${resume.critiques} critique(s)",
+ 130:                 icone = Icons.Filled.NotificationsActive,
+ 131:                 couleur = if (resume.critiques > 0) MaterialTheme.colorScheme.error else SpiPmeTheme.extendedColors.information,
+ 132:                 action = surClicAlertes,
+ 133:             )
+ 134:         },
+ 135:         etat.resumeSuggestions?.let { resume ->
+ 136:             IndicateurDashboard(
+
+===== dashboard\DashboardScreen.kt | autour de la ligne 113 =====
+ 105:                 valeur = resume.critiques.toString(),
+ 106:                 detail = if (resume.critiques == 1) "Ã€ surveiller" else "Ã€ traiter",
+ 107:                 icone = Icons.Filled.Inventory,
+ 108:                 couleur = if (resume.critiques > 0) MaterialTheme.colorScheme.error else SpiPmeTheme.extendedColors.succes,
+ 109:                 action = surClicRessources,
+ 110:             )
+ 111:         },
+ 112:         etat.resumeTaches?.let { resume ->
+ 113:             IndicateurDashboard(
+ 114:                 cle = "taches",
+ 115:                 titre = "TÃ¢ches en cours",
+ 116:                 valeur = resume.enCours.toString(),
+ 117:                 detail = if (resume.enRetard > 0) "${resume.enRetard} en retard" else "Aucun retard signalÃ©",
+ 118:                 icone = Icons.Filled.Assignment,
+ 119:                 couleur = if (resume.enRetard > 0) MaterialTheme.colorScheme.error else SpiPmeTheme.extendedColors.avertissement,
+ 120:                 action = surClicTaches,
+ 121:             )
+ 122:         },
+ 123:         etat.resumeAlertes?.let { resume ->
+ 124:             val actives = resume.critiques + resume.elevees + resume.moderees
+ 125:             IndicateurDashboard(
+ 126:                 cle = "alertes",
+ 127:                 titre = "Alertes actives",
+ 128:                 valeur = actives.toString(),
+ 129:                 detail = "${resume.critiques} critique(s)",
+ 130:                 icone = Icons.Filled.NotificationsActive,
+ 131:                 couleur = if (resume.critiques > 0) MaterialTheme.colorScheme.error else SpiPmeTheme.extendedColors.information,
+ 132:                 action = surClicAlertes,
+ 133:             )
+ 134:         },
+ 135:         etat.resumeSuggestions?.let { resume ->
+ 136:             IndicateurDashboard(
+ 137:                 cle = "ia",
+ 138:                 titre = "Suggestions IA",
+ 139:                 valeur = resume.enAttente.toString(),
+ 140:                 detail = "En attente de dÃ©cision",
+ 141:                 icone = Icons.Filled.AutoAwesome,
+ 142:                 couleur = SpiPmeTheme.extendedColors.ia,
+ 143:                 action = surClicSuggestions,
+ 144:             )
+ 145:         },
+
+===== dashboard\DashboardScreen.kt | autour de la ligne 125 =====
+ 117:                 detail = if (resume.enRetard > 0) "${resume.enRetard} en retard" else "Aucun retard signalÃ©",
+ 118:                 icone = Icons.Filled.Assignment,
+ 119:                 couleur = if (resume.enRetard > 0) MaterialTheme.colorScheme.error else SpiPmeTheme.extendedColors.avertissement,
+ 120:                 action = surClicTaches,
+ 121:             )
+ 122:         },
+ 123:         etat.resumeAlertes?.let { resume ->
+ 124:             val actives = resume.critiques + resume.elevees + resume.moderees
+ 125:             IndicateurDashboard(
+ 126:                 cle = "alertes",
+ 127:                 titre = "Alertes actives",
+ 128:                 valeur = actives.toString(),
+ 129:                 detail = "${resume.critiques} critique(s)",
+ 130:                 icone = Icons.Filled.NotificationsActive,
+ 131:                 couleur = if (resume.critiques > 0) MaterialTheme.colorScheme.error else SpiPmeTheme.extendedColors.information,
+ 132:                 action = surClicAlertes,
+ 133:             )
+ 134:         },
+ 135:         etat.resumeSuggestions?.let { resume ->
+ 136:             IndicateurDashboard(
+ 137:                 cle = "ia",
+ 138:                 titre = "Suggestions IA",
+ 139:                 valeur = resume.enAttente.toString(),
+ 140:                 detail = "En attente de dÃ©cision",
+ 141:                 icone = Icons.Filled.AutoAwesome,
+ 142:                 couleur = SpiPmeTheme.extendedColors.ia,
+ 143:                 action = surClicSuggestions,
+ 144:             )
+ 145:         },
+ 146:     )
+ 147: 
+ 148:     Scaffold(
+ 149:         containerColor = MaterialTheme.colorScheme.background,
+ 150:         topBar = {
+ 151:             SpiPmeTopBar(
+ 152:                 secteurActifNom = etat.secteurActifNom,
+ 153:                 nombreNotificationsNonLues = nombreNotifs,
+ 154:                 surClicSecteur = surClicSecteur,
+ 155:                 surClicNotifications = surClicNotifications,
+ 156:                 surClicProfil = surClicProfil,
+ 157:             )
+
+===== dashboard\DashboardScreen.kt | autour de la ligne 136 =====
+ 128:                 valeur = actives.toString(),
+ 129:                 detail = "${resume.critiques} critique(s)",
+ 130:                 icone = Icons.Filled.NotificationsActive,
+ 131:                 couleur = if (resume.critiques > 0) MaterialTheme.colorScheme.error else SpiPmeTheme.extendedColors.information,
+ 132:                 action = surClicAlertes,
+ 133:             )
+ 134:         },
+ 135:         etat.resumeSuggestions?.let { resume ->
+ 136:             IndicateurDashboard(
+ 137:                 cle = "ia",
+ 138:                 titre = "Suggestions IA",
+ 139:                 valeur = resume.enAttente.toString(),
+ 140:                 detail = "En attente de dÃ©cision",
+ 141:                 icone = Icons.Filled.AutoAwesome,
+ 142:                 couleur = SpiPmeTheme.extendedColors.ia,
+ 143:                 action = surClicSuggestions,
+ 144:             )
+ 145:         },
+ 146:     )
+ 147: 
+ 148:     Scaffold(
+ 149:         containerColor = MaterialTheme.colorScheme.background,
+ 150:         topBar = {
+ 151:             SpiPmeTopBar(
+ 152:                 secteurActifNom = etat.secteurActifNom,
+ 153:                 nombreNotificationsNonLues = nombreNotifs,
+ 154:                 surClicSecteur = surClicSecteur,
+ 155:                 surClicNotifications = surClicNotifications,
+ 156:                 surClicProfil = surClicProfil,
+ 157:             )
+ 158:         },
+ 159:     ) { paddingInterne ->
+ 160:         when {
+ 161:             etat.chargement -> Box(
+ 162:                 modifier = Modifier.fillMaxSize().padding(paddingInterne),
+ 163:                 contentAlignment = Alignment.Center,
+ 164:             ) {
+ 165:                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
+ 166:                     CircularProgressIndicator()
+ 167:                     Spacer(Modifier.height(12.dp))
+ 168:                     Text(
+
+===== profile\ProfileScreen.kt | lignes 35 à 165 / 180 =====
+  35: import androidx.lifecycle.compose.collectAsStateWithLifecycle
+  36: import com.spipme.app.ui.components.SpiPmeBoutonPrincipal
+  37: import com.spipme.app.ui.components.SpiPmeTextField
+  38: 
+  39: @OptIn(ExperimentalMaterial3Api::class)
+  40: @Composable
+  41: fun ProfileScreen(
+  42:     surRetour: () -> Unit,
+  43:     surDeconnexion: () -> Unit,
+  44:     viewModel: ProfileViewModel = hiltViewModel(),
+  45: ) {
+  46:     val etat by viewModel.uiState.collectAsStateWithLifecycle()
+  47:     val etatSnackbar = remember { SnackbarHostState() }
+  48: 
+  49:     LaunchedEffect(etat.deconnecte) {
+  50:         if (etat.deconnecte) surDeconnexion()
+  51:     }
+  52:     LaunchedEffect(etat.messageSucces, etat.messageErreur) {
+  53:         val message = etat.messageSucces ?: etat.messageErreur
+  54:         if (message != null) {
+  55:             etatSnackbar.showSnackbar(message)
+  56:             viewModel.messageConsomme()
+  57:         }
+  58:     }
+  59: 
+  60:     Scaffold(
+  61:         topBar = { TopAppBar(title = { Text("Profil") }) },
+  62:         snackbarHost = { SnackbarHost(etatSnackbar) },
+  63:     ) { paddingInterne ->
+  64:         if (etat.chargement) {
+  65:             Box(Modifier.fillMaxSize().padding(paddingInterne), contentAlignment = Alignment.Center) {
+  66:                 CircularProgressIndicator()
+  67:             }
+  68:             return@Scaffold
+  69:         }
+  70: 
+  71:         Column(
+  72:             modifier = Modifier
+  73:                 .fillMaxSize()
+  74:                 .padding(paddingInterne)
+  75:                 .verticalScroll(rememberScrollState())
+  76:                 .padding(16.dp),
+  77:         ) {
+  78:             Card(modifier = Modifier.fillMaxWidth()) {
+  79:                 Column(Modifier.padding(16.dp)) {
+  80:                     Row(
+  81:                         modifier = Modifier.fillMaxWidth(),
+  82:                         horizontalArrangement = Arrangement.SpaceBetween,
+  83:                     ) {
+  84:                         Text("Informations", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+  85:                         if (!etat.enEdition) {
+  86:                             TextButton(onClick = viewModel::activerEdition) { Text("Modifier") }
+  87:                         }
+  88:                     }
+  89:                     Spacer(Modifier.height(8.dp))
+  90: 
+  91:                     etat.utilisateur?.let { utilisateur ->
+  92:                         ChampLectureSeule("Nom d'utilisateur", utilisateur.nomUtilisateur)
+  93:                         ChampLectureSeule("Email", utilisateur.email)
+  94:                         ChampLectureSeule("RÃ´le", utilisateur.roleNom ?: "â€”")
+  95:                         ChampLectureSeule("Secteur principal", utilisateur.secteurPrincipalNom ?: "â€”")
+  96:                     }
+  97: 
+  98:                     Spacer(Modifier.height(8.dp))
+  99:                     if (etat.enEdition) {
+ 100:                         SpiPmeTextField(
+ 101:                             valeur = etat.nomComplet,
+ 102:                             surChangement = viewModel::surChangementNomComplet,
+ 103:                             libelle = "Nom complet",
+ 104:                         )
+ 105:                         Spacer(Modifier.height(8.dp))
+ 106:                         SpiPmeTextField(
+ 107:                             valeur = etat.telephone,
+ 108:                             surChangement = viewModel::surChangementTelephone,
+ 109:                             libelle = "TÃ©lÃ©phone",
+ 110:                         )
+ 111:                         Spacer(Modifier.height(12.dp))
+ 112:                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+ 113:                             SpiPmeBoutonPrincipal(
+ 114:                                 texte = "Enregistrer",
+ 115:                                 surClic = viewModel::enregistrer,
+ 116:                                 enCours = etat.enregistrementEnCours,
+ 117:                             )
+ 118:                             OutlinedButton(onClick = viewModel::annulerEdition) { Text("Annuler") }
+ 119:                         }
+ 120:                     } else {
+ 121:                         ChampLectureSeule("Nom complet", etat.nomComplet.ifBlank { "â€”" })
+ 122:                         ChampLectureSeule("TÃ©lÃ©phone", etat.telephone.ifBlank { "â€”" })
+ 123:                     }
+ 124:                 }
+ 125:             }
+ 126: 
+ 127:             Spacer(Modifier.height(16.dp))
+ 128: 
+ 129:             Card(modifier = Modifier.fillMaxWidth()) {
+ 130:                 Column(Modifier.padding(16.dp)) {
+ 131:                     Text("Changer le mot de passe", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+ 132:                     Spacer(Modifier.height(8.dp))
+ 133:                     SpiPmeTextField(
+ 134:                         valeur = etat.ancienMotDePasse,
+ 135:                         surChangement = viewModel::surChangementAncienMotDePasse,
+ 136:                         libelle = "Mot de passe actuel",
+ 137:                         motDePasse = true,
+ 138:                     )
+ 139:                     Spacer(Modifier.height(8.dp))
+ 140:                     SpiPmeTextField(
+ 141:                         valeur = etat.nouveauMotDePasse,
+ 142:                         surChangement = viewModel::surChangementNouveauMotDePasse,
+ 143:                         libelle = "Nouveau mot de passe",
+ 144:                         motDePasse = true,
+ 145:                     )
+ 146:                     Spacer(Modifier.height(8.dp))
+ 147:                     SpiPmeTextField(
+ 148:                         valeur = etat.confirmationNouveauMotDePasse,
+ 149:                         surChangement = viewModel::surChangementConfirmationNouveauMotDePasse,
+ 150:                         libelle = "Confirmer le nouveau mot de passe",
+ 151:                         motDePasse = true,
+ 152:                     )
+ 153:                     Spacer(Modifier.height(12.dp))
+ 154:                     SpiPmeBoutonPrincipal(
+ 155:                         texte = "Changer le mot de passe",
+ 156:                         surClic = viewModel::changerMotDePasse,
+ 157:                         enCours = etat.changementMotDePasseEnCours,
+ 158:                     )
+ 159:                 }
+ 160:             }
+ 161: 
+ 162:             Spacer(Modifier.height(24.dp))
+ 163:             HorizontalDivider()
+ 164:             Spacer(Modifier.height(16.dp))
+ 165:             OutlinedButton(onClick = viewModel::seDeconnecter, modifier = Modifier.fillMaxWidth()) {

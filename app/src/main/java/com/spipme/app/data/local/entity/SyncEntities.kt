@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 /** File persistante des écritures hors ligne (miroir de core.sync.OperationEnAttente). */
 @Entity(
     tableName = "operation_en_attente",
-    indices = [Index(value = ["idempotencyKey"], unique = true), Index(value = ["statut"])],
+    indices = [Index(value = ["idempotencyKey"], unique = true), Index(value = ["statut"]), Index(value = ["utilisateurId"])],
 )
 data class OperationEnAttenteEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
@@ -27,6 +27,7 @@ data class OperationEnAttenteEntity(
     val statut: String,
     val messageErreur: String?,
     val conflitJson: String?,
+    val utilisateurId: Long,
 )
 
 /** `@local:<uuid>` → id serveur, conservé pour les opérations qui se référencent entre elles. */

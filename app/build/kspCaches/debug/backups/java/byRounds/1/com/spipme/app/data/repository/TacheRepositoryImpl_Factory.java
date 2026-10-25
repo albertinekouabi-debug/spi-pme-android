@@ -1,5 +1,7 @@
 package com.spipme.app.data.repository;
 
+import com.spipme.app.core.sync.android.EcritureHorsLigne;
+import com.spipme.app.data.local.CacheLecture;
 import com.spipme.app.data.remote.api.TacheApi;
 import dagger.internal.DaggerGenerated;
 import dagger.internal.Factory;
@@ -25,27 +27,36 @@ import kotlinx.serialization.json.Json;
     "deprecation"
 })
 public final class TacheRepositoryImpl_Factory implements Factory<TacheRepositoryImpl> {
+  private final Provider<EcritureHorsLigne> ecritureProvider;
+
+  private final Provider<CacheLecture> cacheLectureProvider;
+
   private final Provider<TacheApi> tacheApiProvider;
 
   private final Provider<Json> jsonProvider;
 
-  public TacheRepositoryImpl_Factory(Provider<TacheApi> tacheApiProvider,
+  public TacheRepositoryImpl_Factory(Provider<EcritureHorsLigne> ecritureProvider,
+      Provider<CacheLecture> cacheLectureProvider, Provider<TacheApi> tacheApiProvider,
       Provider<Json> jsonProvider) {
+    this.ecritureProvider = ecritureProvider;
+    this.cacheLectureProvider = cacheLectureProvider;
     this.tacheApiProvider = tacheApiProvider;
     this.jsonProvider = jsonProvider;
   }
 
   @Override
   public TacheRepositoryImpl get() {
-    return newInstance(tacheApiProvider.get(), jsonProvider.get());
+    return newInstance(ecritureProvider.get(), cacheLectureProvider.get(), tacheApiProvider.get(), jsonProvider.get());
   }
 
-  public static TacheRepositoryImpl_Factory create(Provider<TacheApi> tacheApiProvider,
+  public static TacheRepositoryImpl_Factory create(Provider<EcritureHorsLigne> ecritureProvider,
+      Provider<CacheLecture> cacheLectureProvider, Provider<TacheApi> tacheApiProvider,
       Provider<Json> jsonProvider) {
-    return new TacheRepositoryImpl_Factory(tacheApiProvider, jsonProvider);
+    return new TacheRepositoryImpl_Factory(ecritureProvider, cacheLectureProvider, tacheApiProvider, jsonProvider);
   }
 
-  public static TacheRepositoryImpl newInstance(TacheApi tacheApi, Json json) {
-    return new TacheRepositoryImpl(tacheApi, json);
+  public static TacheRepositoryImpl newInstance(EcritureHorsLigne ecriture,
+      CacheLecture cacheLecture, TacheApi tacheApi, Json json) {
+    return new TacheRepositoryImpl(ecriture, cacheLecture, tacheApi, json);
   }
 }

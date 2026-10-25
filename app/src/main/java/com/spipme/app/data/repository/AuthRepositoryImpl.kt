@@ -27,6 +27,7 @@ class AuthRepositoryImpl @Inject constructor(
     private val tokenManager: TokenManager,
     private val sessionManager: SessionManager,
     private val utilisateurLocalDao: UtilisateurLocalDao,
+    private val cacheDao: com.spipme.app.data.local.dao.CacheDao,
     private val json: Json,
 ) : AuthRepository {
 
@@ -132,6 +133,9 @@ class AuthRepositoryImpl @Inject constructor(
         }
         tokenManager.effacerTokens()
         sessionManager.effacerSession()
+        // Lectures mémorisées : effacées (simples copies du serveur). Les écritures NON synchronisées sont
+        // CONSERVÉES (données de l'utilisateur, jamais détruites) mais ne repartent que sous son propre compte.
+        cacheDao.supprimerTout()
     }
 
     private suspend fun mettreEnCachePourHorsLigne(utilisateur: UtilisateurDto, motDePasse: String) {

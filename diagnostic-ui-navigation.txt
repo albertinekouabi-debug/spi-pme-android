@@ -1,0 +1,876 @@
+DIAGNOSTIC SPI PME - NAVIGATION ET AFFICHAGE
+Date : 2026-10-21 07:29:13
+Racine : C:\Android\spi_pme_android
+
+
+==========================================================================================
+FICHIER PRIORITAIRE : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\navigation\SpiPmeNavGraph.kt
+==========================================================================================
+package com.spipme.app.ui.navigation
+import androidx.activity.compose.BackHandler
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.runtime.saveable.rememberSaveable
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Assignment
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Inventory
+import androidx.compose.material.icons.filled.MoreHoriz
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.currentBackStackEntryAsState
+
+import androidx.compose.runtime.Composable
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.spipme.app.ui.auth.login.LoginScreen
+import com.spipme.app.ui.pilotage.PilotageScreen
+import com.spipme.app.ui.auth.motdepasseoublie.MotDePasseOublieScreen
+import com.spipme.app.ui.auth.offline.OfflineLoginScreen
+import com.spipme.app.ui.audit.AuditScreen
+import com.spipme.app.ui.compliance.ComplianceScreen
+import com.spipme.app.ui.admin.AdminScreen
+import com.spipme.app.ui.dashboard.DashboardScreen
+import com.spipme.app.ui.profile.ProfileScreen
+import com.spipme.app.ui.invoices.InvoicesScreen
+import com.spipme.app.ui.auth.register.RegisterScreen
+import com.spipme.app.ui.home.HomeScreen
+import com.spipme.app.ui.registry.RegistryScreen
+import com.spipme.app.ui.registry.creation.CreerEntiteScreen
+import com.spipme.app.ui.resources.ResourcesScreen
+import com.spipme.app.ui.resources.creation.CreerRessourceScreen
+import com.spipme.app.ui.treasury.TreasuryScreen
+import com.spipme.app.ui.treasury.creation.CreerTransactionScreen
+import com.spipme.app.ui.tasks.TasksScreen
+import com.spipme.app.ui.tasks.creation.CreerTacheScreen
+import com.spipme.app.ui.intelligence.IntelligenceScreen
+import com.spipme.app.ui.alerts.AlertsScreen
+import com.spipme.app.ui.imports.ImportsScreen
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+
+@Composable
+fun SpiPmeNavGraph(
+    navController: NavHostController = rememberNavController(),
+    ecranDepart: String = Ecran.Connexion.route,
+) {
+    val entreeCourante by navController.currentBackStackEntryAsState()
+    val routeActuelle = entreeCourante?.destination?.route
+    var plusOuvert by rememberSaveable { mutableStateOf(false) }
+
+    val routesAvecNavigation = setOf(
+        Ecran.Accueil.route,
+        Ecran.Dashboard.route,
+        Ecran.Registre.route,
+        Ecran.Ressources.route,
+        Ecran.Tresorerie.route,
+        Ecran.Taches.route,
+        Ecran.Suggestions.route,
+        Ecran.Alertes.route,
+        Ecran.Imports.route,
+        Ecran.Audit.route,
+        Ecran.Factures.route,
+        Ecran.Conformite.route,
+        Ecran.Profil.route,
+        Ecran.Administration.route,
+        Ecran.Pilotage.route,
+    )
+Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
+        bottomBar = {
+            if (routeActuelle in routesAvecNavigation) {
+                val accueilSelectionne = routeActuelle == Ecran.Accueil.route || routeActuelle == Ecran.Dashboard.route
+                val plusSelectionne = plusOuvert || (
+                    routeActuelle != Ecran.Accueil.route &&
+                    routeActuelle != Ecran.Dashboard.route &&
+                    routeActuelle != Ecran.Alertes.route &&
+                    routeActuelle != Ecran.Ressources.route &&
+                    routeActuelle != Ecran.Taches.route
+                )
+                NavigationBar(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    tonalElevation = 0.dp,
+                ) {
+                    NavigationBarItem(
+                        selected = accueilSelectionne && !plusOuvert,
+                        onClick = {
+                            plusOuvert = false
+                            val destination = if (routeActuelle == Ecran.Accueil.route) Ecran.Accueil.route else Ecran.Dashboard.route
+                            if (routeActuelle != destination) navController.navigate(destination) { launchSingleTop = true }
+                        },
+                        icon = { Icon(Icons.Filled.Home, contentDescription = null) },
+                        label = { Text("Accueil") },
+                    )
+                    NavigationBarItem(
+                        selected = routeActuelle == Ecran.Alertes.route && !plusOuvert,
+                        onClick = {
+                            plusOuvert = false
+                            if (routeActuelle != Ecran.Alertes.route) navController.navigate(Ecran.Alertes.route) { launchSingleTop = true }
+                        },
+                        icon = { Icon(Icons.Filled.Notifications, contentDescription = null) },
+                        label = { Text("Alertes") },
+                    )
+                    NavigationBarItem(
+                        selected = routeActuelle == Ecran.Ressources.route && !plusOuvert,
+                        onClick = {
+                            plusOuvert = false
+                            if (routeActuelle != Ecran.Ressources.route) navController.navigate(Ecran.Ressources.route) { launchSingleTop = true }
+                        },
+                        icon = { Icon(Icons.Filled.Inventory, contentDescription = null) },
+                        label = { Text("Stocks", maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                    )
+                    NavigationBarItem(
+                        selected = routeActuelle == Ecran.Taches.route && !plusOuvert,
+                        onClick = {
+                            plusOuvert = false
+                            if (routeActuelle != Ecran.Taches.route) navController.navigate(Ecran.Taches.route) { launchSingleTop = true }
+                        },
+                        icon = { Icon(Icons.Filled.Assignment, contentDescription = null) },
+                        label = { Text("TÃ¢ches") },
+                    )
+                    NavigationBarItem(
+                        selected = plusSelectionne,
+                        onClick = { plusOuvert = true },
+                        icon = { Icon(Icons.Filled.MoreHoriz, contentDescription = null) },
+                        label = { Text("Plus") },
+                    )
+                }
+            }
+        },
+    ) { paddingRacine ->
+        NavHost(
+            navController = navController,
+            startDestination = ecranDepart,
+            modifier = Modifier.fillMaxSize().padding(paddingRacine),
+        ) {
+        composable(Ecran.Connexion.route) {
+            LoginScreen(
+                surConnexionReussie = {
+                    navController.navigate(Ecran.Dashboard.route) {
+                        popUpTo(Ecran.Connexion.route) { inclusive = true }
+                    }
+                },
+                surClicConnexionHorsLigne = { navController.navigate(Ecran.ConnexionHorsLigne.route) },
+                surClicInscription = { navController.navigate(Ecran.Inscription.route) },
+                surClicMotDePasseOublie = { navController.navigate(Ecran.MotDePasseOublie.route) },
+            )
+        }
+
+        composable(Ecran.Inscription.route) {
+            RegisterScreen(
+                surRetourConnexion = { navController.popBackStack() },
+            )
+        }
+
+        composable(Ecran.MotDePasseOublie.route) {
+            MotDePasseOublieScreen(
+                surRetour = { navController.popBackStack() },
+                surReinitialisationReussie = {
+                    navController.popBackStack(Ecran.Connexion.route, inclusive = false)
+                },
+            )
+        }
+
+        composable(Ecran.ConnexionHorsLigne.route) {
+            OfflineLoginScreen(
+                surRetour = { navController.popBackStack() },
+                surConnexionReussie = {
+                    navController.navigate(Ecran.Accueil.route) {
+                        popUpTo(Ecran.Connexion.route) { inclusive = true }
+                    }
+                },
+            )
+        }
+
+        composable(Ecran.Accueil.route) {
+            HomeScreen(
+                surDeconnexion = {
+                    navController.navigate(Ecran.Connexion.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                },
+                surClicRegistre = { navController.navigate(Ecran.Registre.route) },
+                surClicRessources = { navController.navigate(Ecran.Ressources.route) },
+                surClicTresorerie = { navController.navigate(Ecran.Tresorerie.route) },
+                surClicTaches = { navController.navigate(Ecran.Taches.route) },
+                surClicSuggestions = { navController.navigate(Ecran.Suggestions.route) },
+                surClicAlertes = { navController.navigate(Ecran.Alertes.route) },
+                surClicImports = { navController.navigate(Ecran.Imports.route) },
+                surClicAudit = { navController.navigate(Ecran.Audit.route) },
+                surClicFactures = { navController.navigate(Ecran.Factures.route) },
+                surClicConformite = { navController.navigate(Ecran.Conformite.route) },
+                surClicAdministration = { navController.navigate(Ecran.Administration.route) },
+                surClicDashboard = { navController.navigate(Ecran.Dashboard.route) },
+                surClicPilotage = { navController.navigate(Ecran.Pilotage.route) },
+            )
+        }
+
+        composable(Ecran.Pilotage.route) {
+            PilotageScreen(
+                surClicNotifications = { navController.navigate(Ecran.Alertes.route) },
+                surClicProfil = { navController.navigate(Ecran.Profil.route) },
+                surClicSecteur = { /* le sÃ©lecteur de secteur s'ouvre depuis la barre supÃ©rieure */ },
+            )
+        }
+
+        composable(Ecran.Registre.route) { backStackEntry ->
+            val entiteCreeeFlow = backStackEntry.savedStateHandle.getStateFlow("entite_creee", false)
+            val entiteCreee by entiteCreeeFlow.collectAsStateWithLifecycle()
+
+            RegistryScreen(
+                entiteVientDetreCreee = entiteCreee,
+                surEntiteCreeeConsommee = { backStackEntry.savedStateHandle["entite_creee"] = false },
+                surClicNotifications = { navController.navigate(Ecran.Alertes.route) },
+                surClicProfil = { navController.navigate(Ecran.Profil.route) },
+                surClicSecteur = { /* sÃ©lecteur de secteur â€” module Ã  venir */ },
+                surClicNouvelleEntite = { navController.navigate(Ecran.CreationEntite.route) },
+            )
+        }
+
+        composable(Ecran.CreationEntite.route) {
+            CreerEntiteScreen(
+                surRetour = { navController.popBackStack() },
+                surCreationReussie = {
+                    navController.previousBackStackEntry?.savedStateHandle?.set("entite_creee", true)
+                    navController.popBackStack()
+                },
+            )
+        }
+
+        composable(Ecran.Ressources.route) { backStackEntry ->
+            val ressourceCreeeFlow = backStackEntry.savedStateHandle.getStateFlow("ressource_creee", false)
+            val ressourceCreee by ressourceCreeeFlow.collectAsStateWithLifecycle()
+
+            ResourcesScreen(
+                ressourceVientDetreCreee = ressourceCreee,
+                surRessourceCreeeConsommee = { backStackEntry.savedStateHandle["ressource_creee"] = false },
+                surClicNotifications = { navController.navigate(Ecran.Alertes.route) },
+                surClicProfil = { navController.navigate(Ecran.Profil.route) },
+                surClicSecteur = { /* sÃ©lecteur de secteur â€” module Ã  venir */ },
+                surClicNouvelleRessource = { navController.navigate(Ecran.CreationRessource.route) },
+            )
+        }
+
+        composable(Ecran.CreationRessource.route) {
+            CreerRessourceScreen(
+                surRetour = { navController.popBackStack() },
+                surCreationReussie = {
+                    navController.previousBackStackEntry?.savedStateHandle?.set("ressource_creee", true)
+                    navController.popBackStack()
+                },
+            )
+        }
+
+        composable(Ecran.Tresorerie.route) { backStackEntry ->
+            val transactionCreeeFlow = backStackEntry.savedStateHandle.getStateFlow("transaction_creee", false)
+            val transactionCreee by transactionCreeeFlow.collectAsStateWithLifecycle()
+
+            TreasuryScreen(
+                transactionVientDetreCreee = transactionCreee,
+                surTransactionCreeeConsommee = { backStackEntry.savedStateHandle["transaction_creee"] = false },
+                surClicNotifications = { navController.navigate(Ecran.Alertes.route) },
+                surClicProfil = { navController.navigate(Ecran.Profil.route) },
+                surClicSecteur = { /* sÃ©lecteur de secteur â€” module Ã  venir */ },
+                surClicNouvelleTransaction = { navController.navigate(Ecran.CreationTransaction.route) },
+            )
+        }
+
+        composable(Ecran.CreationTransaction.route) {
+            CreerTransactionScreen(
+                surRetour = { navController.popBackStack() },
+                surCreationReussie = {
+                    navController.previousBackStackEntry?.savedStateHandle?.set("transaction_creee", true)
+                    navController.popBackStack()
+                },
+            )
+        }
+
+        composable(Ecran.Taches.route) { backStackEntry ->
+            val tacheCreeeFlow = backStackEntry.savedStateHandle.getStateFlow("tache_creee", false)
+            val tacheCreee by tacheCreeeFlow.collectAsStateWithLifecycle()
+
+            TasksScreen(
+                tacheVientDetreCreee = tacheCreee,
+                surTacheCreeeConsommee = { backStackEntry.savedStateHandle["tache_creee"] = false },
+                surClicNotifications = { navController.navigate(Ecran.Alertes.route) },
+                surClicProfil = { navController.navigate(Ecran.Profil.route) },
+                surClicSecteur = { /* sÃ©lecteur de secteur â€” module Ã  venir */ },
+                surClicNouvelleTache = { navController.navigate(Ecran.CreationTache.route) },
+            )
+        }
+
+        composable(Ecran.CreationTache.route) {
+            CreerTacheScreen(
+                surRetour = { navController.popBackStack() },
+                surCreationReussie = {
+                    navController.previousBackStackEntry?.savedStateHandle?.set("tache_creee", true)
+                    navController.popBackStack()
+                },
+            )
+        }
+
+        composable(Ecran.Suggestions.route) {
+            IntelligenceScreen(
+                surClicNotifications = { navController.navigate(Ecran.Alertes.route) },
+                surClicProfil = { navController.navigate(Ecran.Profil.route) },
+                surClicSecteur = { /* sÃ©lecteur de secteur â€” module Ã  venir */ },
+            )
+        }
+
+        composable(Ecran.Alertes.route) {
+            AlertsScreen(
+                surClicNotifications = {},  // dÃ©jÃ  sur l'Ã©cran Alertes : rien Ã  faire
+                surClicProfil = { navController.navigate(Ecran.Profil.route) },
+                surClicSecteur = { /* sÃ©lecteur de secteur â€” module Ã  venir */ },
+            )
+        }
+
+        composable(Ecran.Imports.route) {
+            ImportsScreen(
+                surClicNotifications = { navController.navigate(Ecran.Alertes.route) },
+                surClicProfil = { navController.navigate(Ecran.Profil.route) },
+                surClicSecteur = { /* sÃ©lecteur de secteur â€” module Ã  venir */ },
+            )
+        }
+
+        composable(Ecran.Audit.route) {
+            AuditScreen(
+                surClicNotifications = { navController.navigate(Ecran.Alertes.route) },
+                surClicProfil = { navController.navigate(Ecran.Profil.route) },
+                surClicSecteur = { /* sÃ©lecteur de secteur â€” module Ã  venir */ },
+            )
+        }
+
+        composable(Ecran.Factures.route) {
+            InvoicesScreen(
+                surClicNotifications = { navController.navigate(Ecran.Alertes.route) },
+                surClicProfil = { navController.navigate(Ecran.Profil.route) },
+                surClicSecteur = { /* sÃ©lecteur de secteur â€” module Ã  venir */ },
+            )
+        }
+
+        composable(Ecran.Conformite.route) {
+            ComplianceScreen(
+                surClicNotifications = { navController.navigate(Ecran.Alertes.route) },
+                surClicProfil = { navController.navigate(Ecran.Profil.route) },
+                surClicSecteur = { /* sÃ©lecteur de secteur â€” module Ã  venir */ },
+            )
+        }
+
+        composable(Ecran.Profil.route) {
+            ProfileScreen(
+                surRetour = { navController.popBackStack() },
+                surDeconnexion = {
+                    navController.navigate(Ecran.Connexion.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                },
+            )
+        }
+
+        composable(Ecran.Administration.route) {
+            AdminScreen(
+                surClicNotifications = { navController.navigate(Ecran.Alertes.route) },
+                surClicProfil = { navController.navigate(Ecran.Profil.route) },
+                surClicSecteur = { /* auto-contenu dans SpiPmeTopBar */ },
+            )
+        }
+
+        composable(Ecran.Dashboard.route) {
+            DashboardScreen(
+                surClicNotifications = { navController.navigate(Ecran.Alertes.route) },
+                surClicProfil = { navController.navigate(Ecran.Profil.route) },
+                surClicSecteur = { /* auto-contenu dans SpiPmeTopBar */ },
+                surClicTresorerie = { navController.navigate(Ecran.Tresorerie.route) },
+                surClicRegistre = { navController.navigate(Ecran.Registre.route) },
+                surClicRessources = { navController.navigate(Ecran.Ressources.route) },
+                surClicTaches = { navController.navigate(Ecran.Taches.route) },
+                surClicAlertes = { navController.navigate(Ecran.Alertes.route) },
+                surClicSuggestions = { navController.navigate(Ecran.Suggestions.route) },
+                surClicImports = { navController.navigate(Ecran.Imports.route) },
+                surClicAudit = { navController.navigate(Ecran.Audit.route) },
+                surClicFactures = { navController.navigate(Ecran.Factures.route) },
+                surClicConformite = { navController.navigate(Ecran.Conformite.route) },
+                surClicAdministration = { navController.navigate(Ecran.Administration.route) },
+                surClicPilotage = { navController.navigate(Ecran.Pilotage.route) },
+                surClicNouvelleTransaction = { navController.navigate(Ecran.CreationTransaction.route) },
+                surClicNouvelleRessource = { navController.navigate(Ecran.CreationRessource.route) },
+                surClicNouvelleTache = { navController.navigate(Ecran.CreationTache.route) },
+            )
+        }
+        }
+    }
+
+    BackHandler(
+        enabled = plusOuvert || (
+            routeActuelle != null &&
+            routeActuelle !in setOf(
+                Ecran.Connexion.route,
+                Ecran.ConnexionHorsLigne.route,
+                Ecran.Inscription.route,
+                Ecran.MotDePasseOublie.route,
+            ) &&
+            routeActuelle != Ecran.Dashboard.route &&
+            routeActuelle != Ecran.Accueil.route
+        ),
+    ) {
+        if (plusOuvert) {
+            plusOuvert = false
+        } else {
+            navController.navigate(Ecran.Dashboard.route) {
+                popUpTo(navController.graph.findStartDestination().id) {
+                    inclusive = true
+                }
+                launchSingleTop = true
+            }
+        }
+    }
+    if (plusOuvert) {
+        val optionsPlus = listOf(
+            "Registre" to Ecran.Registre.route,
+            "TrÃ©sorerie" to Ecran.Tresorerie.route,
+            "Suggestions IA" to Ecran.Suggestions.route,
+            "Imports" to Ecran.Imports.route,
+            "Journal dâ€™audit" to Ecran.Audit.route,
+            "Factures" to Ecran.Factures.route,
+            "ConformitÃ©" to Ecran.Conformite.route,
+            "Administration" to Ecran.Administration.route,
+            "Pilotage intelligent" to Ecran.Pilotage.route,
+            "Profil" to Ecran.Profil.route,
+        )
+        AlertDialog(
+            onDismissRequest = { plusOuvert = false },
+            title = { Text("Autres modules") },
+            text = {
+                Column(
+                    modifier = Modifier.fillMaxWidth().heightIn(max = 420.dp).verticalScroll(rememberScrollState()),
+                ) {
+                    optionsPlus.forEach { (libelle, destination) ->
+                        TextButton(
+                            onClick = {
+                                plusOuvert = false
+                                navController.navigate(destination) { launchSingleTop = true }
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            Text(libelle, modifier = Modifier.fillMaxWidth())
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { plusOuvert = false }) { Text("Fermer") }
+            },
+        )
+    }
+}
+
+==========================================================================================
+FICHIER PRIORITAIRE : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\MainActivity.kt
+==========================================================================================
+package com.spipme.app
+
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.spipme.app.ui.navigation.SpiPmeNavGraph
+import com.spipme.app.ui.theme.SpiPmeAppTheme
+import dagger.hilt.android.AndroidEntryPoint
+
+@AndroidEntryPoint
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        setContent {
+            SpiPmeAppTheme {
+                Surface(modifier = Modifier.fillMaxSize()) {
+                    val appViewModel: AppViewModel = hiltViewModel()
+                    val ecranDepart by appViewModel.ecranDepart.collectAsStateWithLifecycle()
+
+                    val ecran = ecranDepart
+                    if (ecran == null) {
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            CircularProgressIndicator()
+                        }
+                    } else {
+                        SpiPmeNavGraph(ecranDepart = ecran)
+                    }
+                }
+            }
+        }
+    }
+}
+
+==========================================================================================
+FICHIER PRIORITAIRE : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\AppViewModel.kt
+==========================================================================================
+
+--- Lignes 17-25 ---
+  17:     authRepository: AuthRepository,
+  18: ) : ViewModel() {
+  19: 
+  20:     private val _ecranDepart = MutableStateFlow<String?>(null)
+  21:     val ecranDepart: StateFlow<String?> = _ecranDepart.asStateFlow()
+  22: 
+  23:     init {
+  24:         viewModelScope.launch {
+  25:             val estConnecte = authRepository.estConnecteFlow.first()
+
+--- Lignes 18-26 ---
+  18: ) : ViewModel() {
+  19: 
+  20:     private val _ecranDepart = MutableStateFlow<String?>(null)
+  21:     val ecranDepart: StateFlow<String?> = _ecranDepart.asStateFlow()
+  22: 
+  23:     init {
+  24:         viewModelScope.launch {
+  25:             val estConnecte = authRepository.estConnecteFlow.first()
+  26:             _ecranDepart.value = if (estConnecte) Ecran.Dashboard.route else Ecran.Connexion.route
+
+--- Lignes 23-29 ---
+  23:     init {
+  24:         viewModelScope.launch {
+  25:             val estConnecte = authRepository.estConnecteFlow.first()
+  26:             _ecranDepart.value = if (estConnecte) Ecran.Dashboard.route else Ecran.Connexion.route
+  27:         }
+  28:     }
+  29: }
+
+==========================================================================================
+FICHIER PRIORITAIRE : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\pilotage\PilotageScreen.kt
+==========================================================================================
+
+--- Lignes 6-14 ---
+   6: import androidx.compose.foundation.layout.Row
+   7: import androidx.compose.foundation.layout.Spacer
+   8: import androidx.compose.foundation.layout.fillMaxSize
+   9: import androidx.compose.foundation.layout.imePadding
+  10: import androidx.compose.foundation.layout.fillMaxWidth
+  11: import androidx.compose.foundation.layout.height
+  12: import androidx.compose.foundation.layout.padding
+  13: import androidx.compose.foundation.layout.width
+  14: import androidx.compose.foundation.lazy.LazyColumn
+
+--- Lignes 24-32 ---
+  24: import androidx.compose.material3.Icon
+  25: import androidx.compose.material3.IconButton
+  26: import androidx.compose.material3.MaterialTheme
+  27: import androidx.compose.material3.OutlinedTextField
+  28: import androidx.compose.material3.Scaffold
+  29: import androidx.compose.material3.Text
+  30: import androidx.compose.material3.TextButton
+  31: import androidx.compose.runtime.Composable
+  32: import androidx.compose.runtime.getValue
+
+--- Lignes 64-72 ---
+  64:             modifier = Modifier
+  65:                 .fillMaxSize()
+  66:                 .padding(padding)
+  67:                 .imePadding(),
+  68:         ) {
+  69:             SpiPmeTopBar(
+  70:                 secteurActifNom = etat.secteurActifNom,
+  71:                 nombreNotificationsNonLues = nombreNotifs,
+  72:                 surClicSecteur = surClicSecteur,
+
+--- Lignes 75-83 ---
+  75:             )
+  76: 
+  77:             LazyColumn(
+  78:                 modifier = Modifier.weight(1f).fillMaxWidth(),
+  79:                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+  80:                 verticalArrangement = Arrangement.spacedBy(12.dp),
+  81:             ) {
+  82:                 item {
+  83:                     Text("Pilotage", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+
+--- Lignes 142-150 ---
+ 142:                     .padding(horizontal = 16.dp, vertical = 8.dp),
+ 143:                 verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+ 144:             ) {
+ 145:                 OutlinedTextField(
+ 146:                     value = etat.question,
+ 147:                     onValueChange = viewModel::surChangementQuestion,
+ 148:                     label = { Text("Posez une question") },
+ 149:                     modifier = Modifier.weight(1f),
+ 150:                     singleLine = true,
+
+--- Lignes 146-154 ---
+ 146:                     value = etat.question,
+ 147:                     onValueChange = viewModel::surChangementQuestion,
+ 148:                     label = { Text("Posez une question") },
+ 149:                     modifier = Modifier.weight(1f),
+ 150:                     singleLine = true,
+ 151:                 )
+ 152:                 IconButton(onClick = { viewModel.poser() }, enabled = etat.question.isNotBlank()) {
+ 153:                     Icon(Icons.Filled.Send, contentDescription = "Envoyer la question")
+ 154:                 }
+
+==========================================================================================
+REPÉRAGE DES COMPOSANTS UI À RISQUE
+==========================================================================================
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\network\NetworkModule.kt | LIGNE : 158
+ 158:     fun fournirConformiteApi(@ClientAuthentifie retrofit: Retrofit): com.spipme.app.data.remote.api.ConformiteApi =
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\network\NetworkModule.kt | LIGNE : 159
+ 159:         retrofit.create(com.spipme.app.data.remote.api.ConformiteApi::class.java)
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\remote\api\FactureApi.kt | LIGNE : 4
+   4: import com.spipme.app.data.remote.dto.treasury.DeclarationConformiteDto
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\remote\api\FactureApi.kt | LIGNE : 30
+  30: interface ConformiteApi {
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\remote\api\FactureApi.kt | LIGNE : 37
+  37:     ): Response<PageDto<DeclarationConformiteDto>>
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\remote\api\FactureApi.kt | LIGNE : 43
+  43:     ): Response<DeclarationConformiteDto>
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\remote\api\FactureApi.kt | LIGNE : 49
+  49:     ): Response<DeclarationConformiteDto>
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\remote\dto\treasury\FactureDto.kt | LIGNE : 28
+  28: /** ReflÃ¨te exactement DeclarationConformiteSerializer (read_only_fields = fields). */
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\remote\dto\treasury\FactureDto.kt | LIGNE : 30
+  30: data class DeclarationConformiteDto(
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\FactureRepositoryImpl.kt | LIGNE : 10
+  10: import com.spipme.app.data.remote.api.ConformiteApi
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\FactureRepositoryImpl.kt | LIGNE : 12
+  12: import com.spipme.app.data.remote.dto.treasury.DeclarationConformiteDto
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\FactureRepositoryImpl.kt | LIGNE : 16
+  16: import com.spipme.app.domain.model.DeclarationConformite
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\FactureRepositoryImpl.kt | LIGNE : 18
+  18: import com.spipme.app.domain.repository.ConformiteRepository
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\FactureRepositoryImpl.kt | LIGNE : 67
+  67: class ConformiteRepositoryImpl @Inject constructor(
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\FactureRepositoryImpl.kt | LIGNE : 68
+  68:     private val conformiteApi: ConformiteApi,
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\FactureRepositoryImpl.kt | LIGNE : 70
+  70: ) : ConformiteRepository {
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\FactureRepositoryImpl.kt | LIGNE : 76
+  76:     ): Resultat<Pair<List<DeclarationConformite>, Boolean>> {
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\FactureRepositoryImpl.kt | LIGNE : 78
+  78:             conformiteApi.lister(secteurId = secteurId, statut = statut, page = page)
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\FactureRepositoryImpl.kt | LIGNE : 88
+  88:     override suspend fun declarer(id: Int, referenceDeclaration: String): Resultat<DeclarationConformite> {
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\FactureRepositoryImpl.kt | LIGNE : 90
+  90:             conformiteApi.declarer(id, DeclarerRequestDto(referenceDeclaration = referenceDeclaration))
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\FactureRepositoryImpl.kt | LIGNE : 98
+  98:     override suspend fun exempter(id: Int, note: String): Resultat<DeclarationConformite> {
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\FactureRepositoryImpl.kt | LIGNE : 100
+ 100:             conformiteApi.exempter(id, ExempterRequestDto(note = note))
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\FactureRepositoryImpl.kt | LIGNE : 126
+ 126: private fun DeclarationConformiteDto.versDomaine() = DeclarationConformite(
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\di\RepositoryModule.kt | LIGNE : 5
+   5: import com.spipme.app.data.repository.ConformiteRepositoryImpl
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\di\RepositoryModule.kt | LIGNE : 19
+  19: import com.spipme.app.domain.repository.ConformiteRepository
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\di\RepositoryModule.kt | LIGNE : 87
+  87:     abstract fun lierConformiteRepository(impl: ConformiteRepositoryImpl): ConformiteRepository
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\domain\model\Facture.kt | LIGNE : 19
+  19: data class DeclarationConformite(
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\domain\repository\FactureRepository.kt | LIGNE : 4
+   4: import com.spipme.app.domain.model.DeclarationConformite
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\domain\repository\FactureRepository.kt | LIGNE : 32
+  32: interface ConformiteRepository {
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\domain\repository\FactureRepository.kt | LIGNE : 37
+  37:     ): Resultat<Pair<List<DeclarationConformite>, Boolean>>
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\domain\repository\FactureRepository.kt | LIGNE : 39
+  39:     suspend fun declarer(id: Int, referenceDeclaration: String): Resultat<DeclarationConformite>
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\domain\repository\FactureRepository.kt | LIGNE : 41
+  41:     suspend fun exempter(id: Int, note: String): Resultat<DeclarationConformite>
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\admin\AdminScreen.kt | LIGNE : 25
+  25: import androidx.compose.material3.DropdownMenu
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\admin\AdminScreen.kt | LIGNE : 26
+  26: import androidx.compose.material3.DropdownMenuItem
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\admin\AdminScreen.kt | LIGNE : 28
+  28: import androidx.compose.material3.ExposedDropdownMenuBox
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\admin\AdminScreen.kt | LIGNE : 249
+ 249:                 ExposedDropdownMenuBox(expanded = menuRoleOuvert, onExpandedChange = { menuRoleOuvert = it }) {
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\admin\AdminScreen.kt | LIGNE : 256
+ 256:                     ExposedDropdownMenu(expanded = menuRoleOuvert, onDismissRequest = { menuRoleOuvert = false }) {
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\admin\AdminScreen.kt | LIGNE : 258
+ 258:                             DropdownMenuItem(
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\admin\AdminScreen.kt | LIGNE : 267
+ 267:                 ExposedDropdownMenuBox(expanded = menuSecteurOuvert, onExpandedChange = { menuSecteurOuvert = it }) {
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\admin\AdminScreen.kt | LIGNE : 274
+ 274:                     ExposedDropdownMenu(expanded = menuSecteurOuvert, onDismissRequest = { menuSecteurOuvert = false }) {
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\admin\AdminScreen.kt | LIGNE : 276
+ 276:                             DropdownMenuItem(
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\auth\login\LoginScreen.kt | LIGNE : 16
+  16: import androidx.compose.foundation.layout.imePadding
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\auth\login\LoginScreen.kt | LIGNE : 90
+  90:             modifier = Modifier.fillMaxSize().padding(paddingInterne).imePadding(),
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\auth\motdepasseoublie\MotDePasseOublieScreen.kt | LIGNE : 9
+   9: import androidx.compose.foundation.layout.imePadding
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\auth\motdepasseoublie\MotDePasseOublieScreen.kt | LIGNE : 74
+  74:                 .imePadding()
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\auth\offline\OfflineLoginScreen.kt | LIGNE : 15
+  15: import androidx.compose.foundation.layout.imePadding
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\auth\offline\OfflineLoginScreen.kt | LIGNE : 91
+  91:             modifier = Modifier.fillMaxSize().padding(paddingInterne).imePadding(),
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\auth\register\RegisterScreen.kt | LIGNE : 7
+   7: import androidx.compose.foundation.layout.WindowInsets
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\auth\register\RegisterScreen.kt | LIGNE : 10
+  10: import androidx.compose.foundation.layout.imePadding
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\auth\register\RegisterScreen.kt | LIGNE : 14
+  14: import androidx.compose.foundation.layout.windowInsetsPadding
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\auth\register\RegisterScreen.kt | LIGNE : 78
+  78:                     .windowInsetsPadding(WindowInsets.safeDrawing)
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\auth\register\RegisterScreen.kt | LIGNE : 80
+  80:                     .imePadding()
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\compliance\ComplianceScreen.kt | LIGNE : 3
+   3: import androidx.compose.foundation.horizontalScroll
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\compliance\ComplianceScreen.kt | LIGNE : 45
+  45: import com.spipme.app.domain.model.DeclarationConformite
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\compliance\ComplianceScreen.kt | LIGNE : 67
+  67:     var declarationADeclarer by remember { mutableStateOf<DeclarationConformite?>(null) }
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\compliance\ComplianceScreen.kt | LIGNE : 68
+  68:     var declarationAExempter by remember { mutableStateOf<DeclarationConformite?>(null) }
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\compliance\ComplianceScreen.kt | LIGNE : 205
+ 205:     Row(modifier = Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\compliance\ComplianceScreen.kt | LIGNE : 218
+ 218:     declaration: DeclarationConformite,
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\compliance\ComplianceViewModel.kt | LIGNE : 7
+   7: import com.spipme.app.domain.model.DeclarationConformite
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\compliance\ComplianceViewModel.kt | LIGNE : 8
+   8: import com.spipme.app.domain.repository.ConformiteRepository
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\compliance\ComplianceViewModel.kt | LIGNE : 22
+  22:     val declarations: List<DeclarationConformite> = emptyList(),
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\compliance\ComplianceViewModel.kt | LIGNE : 36
+  36:     private val conformiteRepository: ConformiteRepository,
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\compliance\ComplianceViewModel.kt | LIGNE : 67
+  67:         when (val resultat = conformiteRepository.lister(secteurId, _uiState.value.filtreStatut, page = 1)) {
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\compliance\ComplianceViewModel.kt | LIGNE : 88
+  88:             when (val resultat = conformiteRepository.lister(secteurId, etat.filtreStatut, page)) {
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\compliance\ComplianceViewModel.kt | LIGNE : 112
+ 112:             traiterResultatAction(conformiteRepository.declarer(id, referenceDeclaration.trim()), "DÃ©claration enregistrÃ©e.")
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\compliance\ComplianceViewModel.kt | LIGNE : 124
+ 124:             traiterResultatAction(conformiteRepository.exempter(id, note.trim()), "Exemption enregistrÃ©e.")
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\compliance\ComplianceViewModel.kt | LIGNE : 129
+ 129:     private fun traiterResultatAction(resultat: Resultat<DeclarationConformite>, messageSucces: String) {
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\components\SpiPmeTopBar.kt | LIGNE : 46
+  46:  * notifications (badge = nombre non lues), avatar utilisateur. Un seul
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\components\SpiPmeTopBar.kt | LIGNE : 85
+  85:             AvatarUtilisateur(surClicProfil)
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\components\SpiPmeTopBar.kt | LIGNE : 202
+ 202: private fun AvatarUtilisateur(surClic: () -> Unit) {
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\dashboard\DashboardScreen.kt | LIGNE : 88
+  88:     surClicConformite: () -> Unit,
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\dashboard\DashboardScreen.kt | LIGNE : 390
+ 390:                     }, actionSecondaire = surClicConformite)
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\home\HomeScreen.kt | LIGNE : 39
+  39:     surClicConformite: () -> Unit,
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\home\HomeScreen.kt | LIGNE : 88
+  88:             Button(onClick = surClicConformite, modifier = Modifier.padding(bottom = 12.dp)) {
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\navigation\Ecran.kt | LIGNE : 22
+  22:     data object Conformite : Ecran("conformite")
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\theme\Theme.kt | LIGNE : 87
+  87:             window.navigationBarColor = colorScheme.background.toArgb()
+
+FICHIER : C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\theme\Theme.kt | LIGNE : 90
+  90:             insetsController.isAppearanceLightNavigationBars = !darkTheme
+
+Nombre de correspondances UI : 77

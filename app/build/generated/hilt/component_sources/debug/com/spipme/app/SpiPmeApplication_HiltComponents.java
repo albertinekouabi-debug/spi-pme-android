@@ -1,18 +1,32 @@
 package com.spipme.app;
 
 import com.spipme.app.core.network.NetworkModule;
+import com.spipme.app.core.notifications.NotificationBadgeViewModel_HiltModules;
+import com.spipme.app.core.sync.android.SyncEntryPoint;
+import com.spipme.app.core.sync.android.SyncModule;
 import com.spipme.app.di.DatabaseModule;
 import com.spipme.app.di.RepositoryModule;
+import com.spipme.app.ui.admin.AdminViewModel_HiltModules;
 import com.spipme.app.ui.alerts.AlertsViewModel_HiltModules;
+import com.spipme.app.ui.audit.AuditViewModel_HiltModules;
 import com.spipme.app.ui.auth.login.LoginViewModel_HiltModules;
+import com.spipme.app.ui.auth.motdepasseoublie.MotDePasseOublieViewModel_HiltModules;
 import com.spipme.app.ui.auth.offline.OfflineLoginViewModel_HiltModules;
+import com.spipme.app.ui.auth.register.RegisterViewModel_HiltModules;
+import com.spipme.app.ui.compliance.ComplianceViewModel_HiltModules;
+import com.spipme.app.ui.components.SecteurSelectorViewModel_HiltModules;
+import com.spipme.app.ui.dashboard.DashboardViewModel_HiltModules;
 import com.spipme.app.ui.home.HomeViewModel_HiltModules;
 import com.spipme.app.ui.imports.ImportsViewModel_HiltModules;
 import com.spipme.app.ui.intelligence.IntelligenceViewModel_HiltModules;
+import com.spipme.app.ui.invoices.InvoicesViewModel_HiltModules;
+import com.spipme.app.ui.pilotage.PilotageViewModel_HiltModules;
+import com.spipme.app.ui.profile.ProfileViewModel_HiltModules;
 import com.spipme.app.ui.registry.RegistryViewModel_HiltModules;
 import com.spipme.app.ui.registry.creation.CreerEntiteViewModel_HiltModules;
 import com.spipme.app.ui.resources.ResourcesViewModel_HiltModules;
 import com.spipme.app.ui.resources.creation.CreerRessourceViewModel_HiltModules;
+import com.spipme.app.ui.sync.SyncStatusViewModel_HiltModules;
 import com.spipme.app.ui.tasks.TasksViewModel_HiltModules;
 import com.spipme.app.ui.tasks.creation.CreerTacheViewModel_HiltModules;
 import com.spipme.app.ui.treasury.TreasuryViewModel_HiltModules;
@@ -147,11 +161,13 @@ public final class SpiPmeApplication_HiltComponents {
           NetworkModule.class,
           RepositoryModule.class,
           ActivityRetainedCBuilderModule.class,
-          ServiceCBuilderModule.class
+          ServiceCBuilderModule.class,
+          SyncModule.class
       }
   )
   @Singleton
   public abstract static class SingletonC implements SpiPmeApplication_GeneratedInjector,
+      SyncEntryPoint,
       FragmentGetContextFix.FragmentGetContextFixEntryPoint,
       HiltWrapper_ActivityRetainedComponentManager_ActivityRetainedComponentBuilderEntryPoint,
       ServiceComponentManager.ServiceComponentBuilderEntryPoint,
@@ -170,23 +186,35 @@ public final class SpiPmeApplication_HiltComponents {
 
   @Subcomponent(
       modules = {
+          AdminViewModel_HiltModules.KeyModule.class,
           AlertsViewModel_HiltModules.KeyModule.class,
           AppViewModel_HiltModules.KeyModule.class,
+          AuditViewModel_HiltModules.KeyModule.class,
+          ComplianceViewModel_HiltModules.KeyModule.class,
           CreerEntiteViewModel_HiltModules.KeyModule.class,
           CreerRessourceViewModel_HiltModules.KeyModule.class,
           CreerTacheViewModel_HiltModules.KeyModule.class,
           CreerTransactionViewModel_HiltModules.KeyModule.class,
+          DashboardViewModel_HiltModules.KeyModule.class,
           HiltWrapper_ActivityRetainedComponentManager_LifecycleModule.class,
           HiltWrapper_SavedStateHandleModule.class,
           HomeViewModel_HiltModules.KeyModule.class,
           ImportsViewModel_HiltModules.KeyModule.class,
           IntelligenceViewModel_HiltModules.KeyModule.class,
+          InvoicesViewModel_HiltModules.KeyModule.class,
           LoginViewModel_HiltModules.KeyModule.class,
+          MotDePasseOublieViewModel_HiltModules.KeyModule.class,
+          NotificationBadgeViewModel_HiltModules.KeyModule.class,
           OfflineLoginViewModel_HiltModules.KeyModule.class,
+          PilotageViewModel_HiltModules.KeyModule.class,
+          ProfileViewModel_HiltModules.KeyModule.class,
+          RegisterViewModel_HiltModules.KeyModule.class,
           RegistryViewModel_HiltModules.KeyModule.class,
           ResourcesViewModel_HiltModules.KeyModule.class,
+          SecteurSelectorViewModel_HiltModules.KeyModule.class,
           ActivityCBuilderModule.class,
           ViewModelCBuilderModule.class,
+          SyncStatusViewModel_HiltModules.KeyModule.class,
           TasksViewModel_HiltModules.KeyModule.class,
           TreasuryViewModel_HiltModules.KeyModule.class
       }
@@ -224,20 +252,32 @@ public final class SpiPmeApplication_HiltComponents {
 
   @Subcomponent(
       modules = {
+          AdminViewModel_HiltModules.BindsModule.class,
           AlertsViewModel_HiltModules.BindsModule.class,
           AppViewModel_HiltModules.BindsModule.class,
+          AuditViewModel_HiltModules.BindsModule.class,
+          ComplianceViewModel_HiltModules.BindsModule.class,
           CreerEntiteViewModel_HiltModules.BindsModule.class,
           CreerRessourceViewModel_HiltModules.BindsModule.class,
           CreerTacheViewModel_HiltModules.BindsModule.class,
           CreerTransactionViewModel_HiltModules.BindsModule.class,
+          DashboardViewModel_HiltModules.BindsModule.class,
           HiltWrapper_HiltViewModelFactory_ViewModelModule.class,
           HomeViewModel_HiltModules.BindsModule.class,
           ImportsViewModel_HiltModules.BindsModule.class,
           IntelligenceViewModel_HiltModules.BindsModule.class,
+          InvoicesViewModel_HiltModules.BindsModule.class,
           LoginViewModel_HiltModules.BindsModule.class,
+          MotDePasseOublieViewModel_HiltModules.BindsModule.class,
+          NotificationBadgeViewModel_HiltModules.BindsModule.class,
           OfflineLoginViewModel_HiltModules.BindsModule.class,
+          PilotageViewModel_HiltModules.BindsModule.class,
+          ProfileViewModel_HiltModules.BindsModule.class,
+          RegisterViewModel_HiltModules.BindsModule.class,
           RegistryViewModel_HiltModules.BindsModule.class,
           ResourcesViewModel_HiltModules.BindsModule.class,
+          SecteurSelectorViewModel_HiltModules.BindsModule.class,
+          SyncStatusViewModel_HiltModules.BindsModule.class,
           TasksViewModel_HiltModules.BindsModule.class,
           TreasuryViewModel_HiltModules.BindsModule.class
       }

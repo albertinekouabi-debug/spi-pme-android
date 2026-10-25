@@ -1,5 +1,6 @@
 package com.spipme.app.core.sync.android
 
+import com.spipme.app.core.security.SessionManager
 import com.spipme.app.core.sync.CorrespondancesIds
 import com.spipme.app.core.sync.FileOperations
 import com.spipme.app.core.sync.OperationEnAttente
@@ -16,7 +17,7 @@ internal fun OperationEnAttente.versEntite() = OperationEnAttenteEntity(
     methode = methode, chemin = chemin, payloadJson = payloadJson, versionBase = versionBase,
     refLocaleCreee = refLocaleCreee, creeLe = creeLe, tentatives = tentatives,
     derniereTentativeLe = derniereTentativeLe, prochaineTentativeLe = prochaineTentativeLe,
-    statut = statut.name, messageErreur = messageErreur, conflitJson = conflitJson,
+    statut = statut.name, messageErreur = messageErreur, conflitJson = conflitJson, utilisateurId = utilisateurId,
 )
 
 internal fun OperationEnAttenteEntity.versDomaine() = OperationEnAttente(
@@ -26,12 +27,19 @@ internal fun OperationEnAttenteEntity.versDomaine() = OperationEnAttente(
     derniereTentativeLe = derniereTentativeLe, prochaineTentativeLe = prochaineTentativeLe,
     // Un statut inconnu (base d'une version future) est traité comme « en attente » plutôt que de planter.
     statut = runCatching { StatutOperation.valueOf(statut) }.getOrDefault(StatutOperation.EN_ATTENTE),
-    messageErreur = messageErreur, conflitJson = conflitJson,
+    messageErreur = messageErreur, conflitJson = conflitJson, utilisateurId = utilisateurId,
 )
 
 @Singleton
-class RoomFileOperations @Inject constructor(private val dao: OperationDao) : FileOperations {
-    override suspend fun operationsAEnvoyer() = dao.aEnvoyer().map { it.versDomaine() }
+class RoomFileOperations @Inject constructor(
+    private val dao: OperationDao,
+    private val sessionManager: SessionManager,
+) : FileOperations {
+    /** Seules les opérations du compte actuellement connecté partent ; les autres restent intactes en base. */
+    override suspend fun operationsAEnvoyer(): List<OperationEnAttente> {
+        val proprietaire = sessionManager.utilisateurId() ?: return emptyList()
+        return dao.aEnvoyer(proprietaire).map { it.versDomaine() }
+    }
     override suspend fun mettreAJour(operation: OperationEnAttente) = dao.mettreAJour(operation.versEntite())
     override suspend fun supprimer(id: Long) = dao.supprimer(id)
     override suspend fun recupererOrphelines() = dao.recupererOrphelines()

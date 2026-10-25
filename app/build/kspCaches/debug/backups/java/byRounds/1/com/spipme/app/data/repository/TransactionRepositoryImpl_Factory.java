@@ -1,5 +1,8 @@
 package com.spipme.app.data.repository;
 
+import com.spipme.app.core.sync.android.EcritureHorsLigne;
+import com.spipme.app.core.sync.android.SynchronisationRepository;
+import com.spipme.app.data.local.CacheLecture;
 import com.spipme.app.data.remote.api.TransactionApi;
 import dagger.internal.DaggerGenerated;
 import dagger.internal.Factory;
@@ -25,27 +28,42 @@ import kotlinx.serialization.json.Json;
     "deprecation"
 })
 public final class TransactionRepositoryImpl_Factory implements Factory<TransactionRepositoryImpl> {
+  private final Provider<SynchronisationRepository> synchronisationProvider;
+
+  private final Provider<EcritureHorsLigne> ecritureProvider;
+
+  private final Provider<CacheLecture> cacheLectureProvider;
+
   private final Provider<TransactionApi> transactionApiProvider;
 
   private final Provider<Json> jsonProvider;
 
-  public TransactionRepositoryImpl_Factory(Provider<TransactionApi> transactionApiProvider,
-      Provider<Json> jsonProvider) {
+  public TransactionRepositoryImpl_Factory(
+      Provider<SynchronisationRepository> synchronisationProvider,
+      Provider<EcritureHorsLigne> ecritureProvider, Provider<CacheLecture> cacheLectureProvider,
+      Provider<TransactionApi> transactionApiProvider, Provider<Json> jsonProvider) {
+    this.synchronisationProvider = synchronisationProvider;
+    this.ecritureProvider = ecritureProvider;
+    this.cacheLectureProvider = cacheLectureProvider;
     this.transactionApiProvider = transactionApiProvider;
     this.jsonProvider = jsonProvider;
   }
 
   @Override
   public TransactionRepositoryImpl get() {
-    return newInstance(transactionApiProvider.get(), jsonProvider.get());
+    return newInstance(synchronisationProvider.get(), ecritureProvider.get(), cacheLectureProvider.get(), transactionApiProvider.get(), jsonProvider.get());
   }
 
   public static TransactionRepositoryImpl_Factory create(
+      Provider<SynchronisationRepository> synchronisationProvider,
+      Provider<EcritureHorsLigne> ecritureProvider, Provider<CacheLecture> cacheLectureProvider,
       Provider<TransactionApi> transactionApiProvider, Provider<Json> jsonProvider) {
-    return new TransactionRepositoryImpl_Factory(transactionApiProvider, jsonProvider);
+    return new TransactionRepositoryImpl_Factory(synchronisationProvider, ecritureProvider, cacheLectureProvider, transactionApiProvider, jsonProvider);
   }
 
-  public static TransactionRepositoryImpl newInstance(TransactionApi transactionApi, Json json) {
-    return new TransactionRepositoryImpl(transactionApi, json);
+  public static TransactionRepositoryImpl newInstance(SynchronisationRepository synchronisation,
+      EcritureHorsLigne ecriture, CacheLecture cacheLecture, TransactionApi transactionApi,
+      Json json) {
+    return new TransactionRepositoryImpl(synchronisation, ecriture, cacheLecture, transactionApi, json);
   }
 }

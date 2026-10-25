@@ -20,6 +20,7 @@ data class Ressource(
     /** Progression pour la barre visuelle (0f..1f), bornée à l'intervalle même si niveau > seuil_alerte. */
     val progression: Float
         get() {
+            if (niveauActuel.signum() < 0) return 0f // stock négatif : barre vide, jamais « pleine » faute de seuil
             val seuil = seuilAlerte ?: return 1f // pas de seuil configuré -> pas de barre pertinente, plein par défaut
             if (seuil <= BigDecimal.ZERO) return 1f
             val ratio = niveauActuel.divide(seuil, 4, java.math.RoundingMode.HALF_UP).toFloat()

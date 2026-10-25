@@ -4,7 +4,7 @@
             "outputFile": "com.spipme.app-mergeDebugResources-2:/values-v21/values-v21.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\khond\\.gradle\\caches\\8.9\\transforms\\4d41482c42176e9309cc6fa96ed85250\\transformed\\core-1.13.1\\res\\values-v21\\values-v21.xml",
+                    "source": "C:\\Users\\khond\\.gradle\\caches\\8.9\\transforms\\5aebed016c0acf58a0b0f9aab72df19a\\transformed\\core-1.13.1\\res\\values-v21\\values-v21.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,13",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4",

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ErrorOutline
@@ -128,19 +129,26 @@ fun InvoicesScreen(
 private fun FiltresStatut(filtre: String?, surSelection: (String?) -> Unit) {
     val options = listOf(
         null to "Toutes",
-        "emise" to "Émises",
-        "payee" to "Payées",
-        "impayee" to "Impayées",
-        "relancee" to "Relancées",
-        "annulee" to "Annulées",
+        "emise" to "\u00C9mises",
+        "payee" to "Pay\u00E9es",
+        "impayee" to "Impay\u00E9es",
+        "relancee" to "Relanc\u00E9es",
+        "annulee" to "Annul\u00E9es",
         "avoir" to "Avoirs",
     )
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        options.forEach { (valeur, libelle) ->
+
+    LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        items(options) { (valeur, libelle) ->
             FilterChip(
                 selected = filtre == valeur,
                 onClick = { surSelection(valeur) },
-                label = { Text(libelle, style = MaterialTheme.typography.labelMedium) },
+                label = {
+                    Text(
+                        text = libelle,
+                        style = MaterialTheme.typography.labelMedium,
+                        maxLines = 1,
+                    )
+                },
             )
         }
     }

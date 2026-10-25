@@ -2,6 +2,7 @@ package com.spipme.app.data.repository;
 
 import com.spipme.app.core.security.SessionManager;
 import com.spipme.app.core.security.TokenManager;
+import com.spipme.app.data.local.dao.CacheDao;
 import com.spipme.app.data.local.dao.UtilisateurLocalDao;
 import com.spipme.app.data.remote.api.AuthApi;
 import dagger.internal.DaggerGenerated;
@@ -36,31 +37,37 @@ public final class AuthRepositoryImpl_Factory implements Factory<AuthRepositoryI
 
   private final Provider<UtilisateurLocalDao> utilisateurLocalDaoProvider;
 
+  private final Provider<CacheDao> cacheDaoProvider;
+
   private final Provider<Json> jsonProvider;
 
   public AuthRepositoryImpl_Factory(Provider<AuthApi> authApiProvider,
       Provider<TokenManager> tokenManagerProvider, Provider<SessionManager> sessionManagerProvider,
-      Provider<UtilisateurLocalDao> utilisateurLocalDaoProvider, Provider<Json> jsonProvider) {
+      Provider<UtilisateurLocalDao> utilisateurLocalDaoProvider,
+      Provider<CacheDao> cacheDaoProvider, Provider<Json> jsonProvider) {
     this.authApiProvider = authApiProvider;
     this.tokenManagerProvider = tokenManagerProvider;
     this.sessionManagerProvider = sessionManagerProvider;
     this.utilisateurLocalDaoProvider = utilisateurLocalDaoProvider;
+    this.cacheDaoProvider = cacheDaoProvider;
     this.jsonProvider = jsonProvider;
   }
 
   @Override
   public AuthRepositoryImpl get() {
-    return newInstance(authApiProvider.get(), tokenManagerProvider.get(), sessionManagerProvider.get(), utilisateurLocalDaoProvider.get(), jsonProvider.get());
+    return newInstance(authApiProvider.get(), tokenManagerProvider.get(), sessionManagerProvider.get(), utilisateurLocalDaoProvider.get(), cacheDaoProvider.get(), jsonProvider.get());
   }
 
   public static AuthRepositoryImpl_Factory create(Provider<AuthApi> authApiProvider,
       Provider<TokenManager> tokenManagerProvider, Provider<SessionManager> sessionManagerProvider,
-      Provider<UtilisateurLocalDao> utilisateurLocalDaoProvider, Provider<Json> jsonProvider) {
-    return new AuthRepositoryImpl_Factory(authApiProvider, tokenManagerProvider, sessionManagerProvider, utilisateurLocalDaoProvider, jsonProvider);
+      Provider<UtilisateurLocalDao> utilisateurLocalDaoProvider,
+      Provider<CacheDao> cacheDaoProvider, Provider<Json> jsonProvider) {
+    return new AuthRepositoryImpl_Factory(authApiProvider, tokenManagerProvider, sessionManagerProvider, utilisateurLocalDaoProvider, cacheDaoProvider, jsonProvider);
   }
 
   public static AuthRepositoryImpl newInstance(AuthApi authApi, TokenManager tokenManager,
-      SessionManager sessionManager, UtilisateurLocalDao utilisateurLocalDao, Json json) {
-    return new AuthRepositoryImpl(authApi, tokenManager, sessionManager, utilisateurLocalDao, json);
+      SessionManager sessionManager, UtilisateurLocalDao utilisateurLocalDao, CacheDao cacheDao,
+      Json json) {
+    return new AuthRepositoryImpl(authApi, tokenManager, sessionManager, utilisateurLocalDao, cacheDao, json);
   }
 }

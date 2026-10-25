@@ -1,0 +1,272 @@
+﻿
+===== app\src\main\java\com\spipme\app\ui\alerts\AlertsScreen.kt | autour de la ligne 184 =====
+ 180:     }
+ 181: }
+ 182: 
+ 183: @Composable
+ 184: private fun CartesResume(resume: ResumeAlertes) {
+ 185:     val donnees = listOf(
+ 186:         Triple("Critique", resume.critiques, MaterialTheme.colorScheme.error),
+ 187:         Triple("Ã‰levÃ©e", resume.elevees, SpiPmeTheme.extendedColors.avertissement),
+ 188:         Triple("ModÃ©rÃ©e", resume.moderees, SpiPmeTheme.extendedColors.information),
+ 189:         Triple("RÃ©solue", resume.resolues, SpiPmeTheme.extendedColors.succes),
+ 190:     )
+ 191:     LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+ 192:         items(donnees) { (libelle, valeur, couleur) ->
+ 193:             Card(
+ 194:                 modifier = Modifier.width(120.dp),
+ 195:                 shape = RoundedCornerShape(16.dp),
+ 196:                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+ 197:                 elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+ 198:             ) {
+ 199:                 Column(modifier = Modifier.padding(16.dp)) {
+ 200:                     Text(valeur.toString(), style = MaterialTheme.typography.headlineMedium, color = couleur, fontWeight = FontWeight.Bold)
+ 201:                     Text(libelle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+ 202:                 }
+ 203:             }
+ 204:         }
+ 205:     }
+ 206: }
+ 207: 
+ 208: @Composable
+ 209: private fun CarteAlerte(alerte: Alerte, surClicResoudre: () -> Unit, surClicIgnorer: () -> Unit) {
+ 210:     val couleur = when (alerte.niveau) {
+ 211:         "critique" -> MaterialTheme.colorScheme.error
+ 212:         "elevee" -> SpiPmeTheme.extendedColors.avertissement
+ 213:         else -> SpiPmeTheme.extendedColors.information
+ 214:     }
+
+===== app\src\main\java\com\spipme\app\ui\alerts\AlertsScreen.kt | autour de la ligne 209 =====
+ 205:     }
+ 206: }
+ 207: 
+ 208: @Composable
+ 209: private fun CarteAlerte(alerte: Alerte, surClicResoudre: () -> Unit, surClicIgnorer: () -> Unit) {
+ 210:     val couleur = when (alerte.niveau) {
+ 211:         "critique" -> MaterialTheme.colorScheme.error
+ 212:         "elevee" -> SpiPmeTheme.extendedColors.avertissement
+ 213:         else -> SpiPmeTheme.extendedColors.information
+ 214:     }
+ 215:     val icone = when (alerte.niveau) {
+ 216:         "critique" -> Icons.Filled.Warning
+ 217:         "elevee" -> Icons.Filled.Warning
+ 218:         else -> Icons.Filled.Info
+ 219:     }
+ 220: 
+ 221:     Card(
+ 222:         modifier = Modifier.fillMaxWidth(),
+ 223:         shape = RoundedCornerShape(16.dp),
+ 224:         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+ 225:         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+ 226:     ) {
+ 227:         Row(modifier = Modifier.padding(16.dp)) {
+ 228:             Box(
+ 229:                 modifier = Modifier
+ 230:                     .background(couleur.copy(alpha = 0.12f), RoundedCornerShape(12.dp))
+ 231:                     .padding(10.dp),
+ 232:             ) {
+ 233:                 Icon(
+ 234:                     if (alerte.estActive) icone else Icons.Filled.CheckCircle,
+ 235:                     contentDescription = null,
+ 236:                     tint = if (alerte.estActive) couleur else SpiPmeTheme.extendedColors.succes,
+ 237:                 )
+ 238:             }
+ 239:             Spacer(Modifier.width(12.dp))
+
+===== app\src\main\java\com\spipme\app\ui\dashboard\DashboardScreen.kt | autour de la ligne 64 =====
+  59: import com.spipme.app.domain.model.Suggestion
+  60: import com.spipme.app.ui.components.SpiPmeTopBar
+  61: import com.spipme.app.ui.theme.SpiPmeAppTheme
+  62: import com.spipme.app.ui.theme.SpiPmeTheme
+  63: 
+  64: private data class IndicateurDashboard(
+  65:     val cle: String,
+  66:     val titre: String,
+  67:     val valeur: String,
+  68:     val detail: String,
+  69:     val icone: ImageVector,
+  70:     val couleur: Color,
+  71:     val action: () -> Unit,
+  72: )
+  73: 
+  74: @Composable
+  75: fun DashboardScreen(
+  76:     surClicNotifications: () -> Unit,
+  77:     surClicProfil: () -> Unit,
+  78:     surClicSecteur: () -> Unit,
+  79:     surClicTresorerie: () -> Unit,
+  80:     surClicRegistre: () -> Unit,
+  81:     surClicRessources: () -> Unit,
+  82:     surClicTaches: () -> Unit,
+  83:     surClicAlertes: () -> Unit,
+  84:     surClicSuggestions: () -> Unit,
+  85:     surClicImports: () -> Unit,
+  86:     surClicAudit: () -> Unit,
+  87:     surClicFactures: () -> Unit,
+  88:     surClicConformite: () -> Unit,
+  89:     surClicAdministration: () -> Unit,
+  90:     surClicPilotage: () -> Unit,
+  91:     surClicNouvelleTransaction: () -> Unit,
+  92:     surClicNouvelleRessource: () -> Unit,
+
+===== app\src\main\java\com\spipme\app\ui\dashboard\DashboardScreen.kt | autour de la ligne 102 =====
+  97:     val badgeViewModel: NotificationBadgeViewModel = hiltViewModel()
+  98:     val nombreNotifs by badgeViewModel.compte.collectAsStateWithLifecycle()
+  99: 
+ 100:     val indicateurs = listOfNotNull(
+ 101:         etat.resumeRessources?.let { resume ->
+ 102:             IndicateurDashboard(
+ 103:                 cle = "ressources",
+ 104:                 titre = "Ressources critiques",
+ 105:                 valeur = resume.critiques.toString(),
+ 106:                 detail = if (resume.critiques == 1) "Ã€ surveiller" else "Ã€ traiter",
+ 107:                 icone = Icons.Filled.Inventory,
+ 108:                 couleur = if (resume.critiques > 0) MaterialTheme.colorScheme.error else SpiPmeTheme.extendedColors.succes,
+ 109:                 action = surClicRessources,
+ 110:             )
+ 111:         },
+ 112:         etat.resumeTaches?.let { resume ->
+ 113:             IndicateurDashboard(
+ 114:                 cle = "taches",
+ 115:                 titre = "TÃ¢ches en cours",
+ 116:                 valeur = resume.enCours.toString(),
+ 117:                 detail = if (resume.enRetard > 0) "${resume.enRetard} en retard" else "Aucun retard signalÃ©",
+ 118:                 icone = Icons.Filled.Assignment,
+ 119:                 couleur = if (resume.enRetard > 0) MaterialTheme.colorScheme.error else SpiPmeTheme.extendedColors.avertissement,
+ 120:                 action = surClicTaches,
+ 121:             )
+ 122:         },
+ 123:         etat.resumeAlertes?.let { resume ->
+ 124:             val actives = resume.critiques + resume.elevees + resume.moderees
+ 125:             IndicateurDashboard(
+ 126:                 cle = "alertes",
+ 127:                 titre = "Alertes actives",
+ 128:                 valeur = actives.toString(),
+ 129:                 detail = "${resume.critiques} critique(s)",
+ 130:                 icone = Icons.Filled.NotificationsActive,
+
+===== app\src\main\java\com\spipme\app\ui\dashboard\DashboardScreen.kt | autour de la ligne 113 =====
+ 108:                 couleur = if (resume.critiques > 0) MaterialTheme.colorScheme.error else SpiPmeTheme.extendedColors.succes,
+ 109:                 action = surClicRessources,
+ 110:             )
+ 111:         },
+ 112:         etat.resumeTaches?.let { resume ->
+ 113:             IndicateurDashboard(
+ 114:                 cle = "taches",
+ 115:                 titre = "TÃ¢ches en cours",
+ 116:                 valeur = resume.enCours.toString(),
+ 117:                 detail = if (resume.enRetard > 0) "${resume.enRetard} en retard" else "Aucun retard signalÃ©",
+ 118:                 icone = Icons.Filled.Assignment,
+ 119:                 couleur = if (resume.enRetard > 0) MaterialTheme.colorScheme.error else SpiPmeTheme.extendedColors.avertissement,
+ 120:                 action = surClicTaches,
+ 121:             )
+ 122:         },
+ 123:         etat.resumeAlertes?.let { resume ->
+ 124:             val actives = resume.critiques + resume.elevees + resume.moderees
+ 125:             IndicateurDashboard(
+ 126:                 cle = "alertes",
+ 127:                 titre = "Alertes actives",
+ 128:                 valeur = actives.toString(),
+ 129:                 detail = "${resume.critiques} critique(s)",
+ 130:                 icone = Icons.Filled.NotificationsActive,
+ 131:                 couleur = if (resume.critiques > 0) MaterialTheme.colorScheme.error else SpiPmeTheme.extendedColors.information,
+ 132:                 action = surClicAlertes,
+ 133:             )
+ 134:         },
+ 135:         etat.resumeSuggestions?.let { resume ->
+ 136:             IndicateurDashboard(
+ 137:                 cle = "ia",
+ 138:                 titre = "Suggestions IA",
+ 139:                 valeur = resume.enAttente.toString(),
+ 140:                 detail = "En attente de dÃ©cision",
+ 141:                 icone = Icons.Filled.AutoAwesome,
+
+===== app\src\main\java\com\spipme\app\ui\dashboard\DashboardScreen.kt | autour de la ligne 125 =====
+ 120:                 action = surClicTaches,
+ 121:             )
+ 122:         },
+ 123:         etat.resumeAlertes?.let { resume ->
+ 124:             val actives = resume.critiques + resume.elevees + resume.moderees
+ 125:             IndicateurDashboard(
+ 126:                 cle = "alertes",
+ 127:                 titre = "Alertes actives",
+ 128:                 valeur = actives.toString(),
+ 129:                 detail = "${resume.critiques} critique(s)",
+ 130:                 icone = Icons.Filled.NotificationsActive,
+ 131:                 couleur = if (resume.critiques > 0) MaterialTheme.colorScheme.error else SpiPmeTheme.extendedColors.information,
+ 132:                 action = surClicAlertes,
+ 133:             )
+ 134:         },
+ 135:         etat.resumeSuggestions?.let { resume ->
+ 136:             IndicateurDashboard(
+ 137:                 cle = "ia",
+ 138:                 titre = "Suggestions IA",
+ 139:                 valeur = resume.enAttente.toString(),
+ 140:                 detail = "En attente de dÃ©cision",
+ 141:                 icone = Icons.Filled.AutoAwesome,
+ 142:                 couleur = SpiPmeTheme.extendedColors.ia,
+ 143:                 action = surClicSuggestions,
+ 144:             )
+ 145:         },
+ 146:     )
+ 147: 
+ 148:     Scaffold(
+ 149:         containerColor = MaterialTheme.colorScheme.background,
+ 150:         topBar = {
+ 151:             SpiPmeTopBar(
+ 152:                 secteurActifNom = etat.secteurActifNom,
+ 153:                 nombreNotificationsNonLues = nombreNotifs,
+
+===== app\src\main\java\com\spipme\app\ui\dashboard\DashboardScreen.kt | autour de la ligne 136 =====
+ 131:                 couleur = if (resume.critiques > 0) MaterialTheme.colorScheme.error else SpiPmeTheme.extendedColors.information,
+ 132:                 action = surClicAlertes,
+ 133:             )
+ 134:         },
+ 135:         etat.resumeSuggestions?.let { resume ->
+ 136:             IndicateurDashboard(
+ 137:                 cle = "ia",
+ 138:                 titre = "Suggestions IA",
+ 139:                 valeur = resume.enAttente.toString(),
+ 140:                 detail = "En attente de dÃ©cision",
+ 141:                 icone = Icons.Filled.AutoAwesome,
+ 142:                 couleur = SpiPmeTheme.extendedColors.ia,
+ 143:                 action = surClicSuggestions,
+ 144:             )
+ 145:         },
+ 146:     )
+ 147: 
+ 148:     Scaffold(
+ 149:         containerColor = MaterialTheme.colorScheme.background,
+ 150:         topBar = {
+ 151:             SpiPmeTopBar(
+ 152:                 secteurActifNom = etat.secteurActifNom,
+ 153:                 nombreNotificationsNonLues = nombreNotifs,
+ 154:                 surClicSecteur = surClicSecteur,
+ 155:                 surClicNotifications = surClicNotifications,
+ 156:                 surClicProfil = surClicProfil,
+ 157:             )
+ 158:         },
+ 159:     ) { paddingInterne ->
+ 160:         when {
+ 161:             etat.chargement -> Box(
+ 162:                 modifier = Modifier.fillMaxSize().padding(paddingInterne),
+ 163:                 contentAlignment = Alignment.Center,
+ 164:             ) {
+
+===== app\src\main\java\com\spipme\app\ui\components\SpiPmeTopBar.kt | autour de la ligne 202 =====
+ 198:     }
+ 199: }
+ 200: 
+ 201: @Composable
+ 202: private fun AvatarUtilisateur(surClic: () -> Unit) {
+ 203:     Box(
+ 204:         modifier = Modifier
+ 205:             .size(40.dp)
+ 206:             .clickable(onClick = surClic)
+ 207:             .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f), CircleShape),
+ 208:         contentAlignment = Alignment.Center,
+ 209:     ) {
+ 210:         Icon(Icons.Filled.Person, contentDescription = "Profil", tint = MaterialTheme.colorScheme.primary)
+ 211:     }
+ 212: }
+ 213: 

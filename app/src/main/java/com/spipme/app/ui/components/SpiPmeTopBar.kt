@@ -34,6 +34,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -161,11 +162,21 @@ private fun RowScope.SelecteurSecteur(secteurActifNom: String, surClic: () -> Un
     ) {
         Icon(Icons.Filled.Storefront, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(Modifier.width(8.dp))
-        Column {
-            Text("Secteur actif", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            Text(secteurActifNom, style = MaterialTheme.typography.titleMedium)
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                "Secteur actif",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Text(
+                text = secteurActifNom.ifBlank { "Secteur non defini" },
+                style = MaterialTheme.typography.titleMedium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
         }
-        Spacer(Modifier.weight(1f, fill = false))
         Icon(Icons.Filled.KeyboardArrowDown, contentDescription = "Changer de secteur")
     }
 }

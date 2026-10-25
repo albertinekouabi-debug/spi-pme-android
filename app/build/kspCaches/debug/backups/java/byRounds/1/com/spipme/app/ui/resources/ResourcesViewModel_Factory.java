@@ -1,7 +1,9 @@
 package com.spipme.app.ui.resources;
 
 import com.spipme.app.core.security.SessionManager;
+import com.spipme.app.core.sync.android.SynchronisationRepository;
 import com.spipme.app.domain.repository.RessourceRepository;
+import com.spipme.app.domain.repository.TransactionRepository;
 import dagger.internal.DaggerGenerated;
 import dagger.internal.Factory;
 import dagger.internal.QualifierMetadata;
@@ -29,25 +31,36 @@ public final class ResourcesViewModel_Factory implements Factory<ResourcesViewMo
 
   private final Provider<SessionManager> sessionManagerProvider;
 
+  private final Provider<SynchronisationRepository> synchronisationProvider;
+
+  private final Provider<TransactionRepository> transactionRepositoryProvider;
+
   public ResourcesViewModel_Factory(Provider<RessourceRepository> ressourceRepositoryProvider,
-      Provider<SessionManager> sessionManagerProvider) {
+      Provider<SessionManager> sessionManagerProvider,
+      Provider<SynchronisationRepository> synchronisationProvider,
+      Provider<TransactionRepository> transactionRepositoryProvider) {
     this.ressourceRepositoryProvider = ressourceRepositoryProvider;
     this.sessionManagerProvider = sessionManagerProvider;
+    this.synchronisationProvider = synchronisationProvider;
+    this.transactionRepositoryProvider = transactionRepositoryProvider;
   }
 
   @Override
   public ResourcesViewModel get() {
-    return newInstance(ressourceRepositoryProvider.get(), sessionManagerProvider.get());
+    return newInstance(ressourceRepositoryProvider.get(), sessionManagerProvider.get(), synchronisationProvider.get(), transactionRepositoryProvider.get());
   }
 
   public static ResourcesViewModel_Factory create(
       Provider<RessourceRepository> ressourceRepositoryProvider,
-      Provider<SessionManager> sessionManagerProvider) {
-    return new ResourcesViewModel_Factory(ressourceRepositoryProvider, sessionManagerProvider);
+      Provider<SessionManager> sessionManagerProvider,
+      Provider<SynchronisationRepository> synchronisationProvider,
+      Provider<TransactionRepository> transactionRepositoryProvider) {
+    return new ResourcesViewModel_Factory(ressourceRepositoryProvider, sessionManagerProvider, synchronisationProvider, transactionRepositoryProvider);
   }
 
   public static ResourcesViewModel newInstance(RessourceRepository ressourceRepository,
-      SessionManager sessionManager) {
-    return new ResourcesViewModel(ressourceRepository, sessionManager);
+      SessionManager sessionManager, SynchronisationRepository synchronisation,
+      TransactionRepository transactionRepository) {
+    return new ResourcesViewModel(ressourceRepository, sessionManager, synchronisation, transactionRepository);
   }
 }

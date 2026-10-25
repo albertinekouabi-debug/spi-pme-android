@@ -2,7 +2,6 @@ package com.spipme.app.ui.theme
 
 import android.app.Activity
 import android.os.Build
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
@@ -49,11 +48,6 @@ private val DarkColors = darkColorScheme(
     onError = TexteSombre,
 )
 
-/**
- * Couleurs sémantiques (statuts, IA) non couvertes par le rôle Material3
- * standard — exposées séparément plutôt que détournées d'un rôle existant
- * (ex. "tertiary") qui prêterait à confusion.
- */
 data class SpiPmeExtendedColors(
     val succes: androidx.compose.ui.graphics.Color,
     val avertissement: androidx.compose.ui.graphics.Color,
@@ -76,9 +70,10 @@ object SpiPmeTheme {
         @Composable get() = LocalSpiPmeExtendedColors.current
 }
 
+/** L'application privilégie l'interface claire sur mobile, indépendamment du thème du système. */
 @Composable
 fun SpiPmeAppTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    darkTheme: Boolean = false,
     content: @Composable () -> Unit,
 ) {
     val colorScheme = if (darkTheme) DarkColors else LightColors
@@ -89,9 +84,10 @@ fun SpiPmeAppTheme(
         SideEffect {
             val window = (view.context as Activity).window
             window.statusBarColor = colorScheme.background.toArgb()
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
-            }
+            window.navigationBarColor = colorScheme.background.toArgb()
+            val insetsController = WindowCompat.getInsetsController(window, view)
+            insetsController.isAppearanceLightStatusBars = !darkTheme
+            insetsController.isAppearanceLightNavigationBars = !darkTheme
         }
     }
 

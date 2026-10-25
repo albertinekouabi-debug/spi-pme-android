@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
@@ -141,36 +142,47 @@ fun AuditScreen(
 
 @Composable
 private fun CartesResumeAudit(resume: ResumeAudit) {
-    // Couleurs lues ici, dans un contexte @Composable valide (pas dans un
-    // lambda LazyListScope), cf. correctif COMPILE-KOTLIN-002.
     val donnees = listOf(
         Triple("Total", resume.total, MaterialTheme.colorScheme.onSurface),
-        Triple("Réussies", resume.reussies, SpiPmeTheme.extendedColors.succes),
+        Triple("R\u00E9ussies", resume.reussies, SpiPmeTheme.extendedColors.succes),
         Triple("Avertissements", resume.avertissements, SpiPmeTheme.extendedColors.avertissement),
-        Triple("Échecs", resume.echecs, MaterialTheme.colorScheme.error),
+        Triple("\u00C9checs", resume.echecs, MaterialTheme.colorScheme.error),
     )
-    Row(
+
+    Column(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        donnees.forEach { (libelle, valeur, couleur) ->
-            Card(modifier = Modifier.weight(1f), colors = CardDefaults.cardColors()) {
-                Column(
-                    modifier = Modifier.padding(12.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Text(
-                        valeur.toString(),
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = couleur,
-                    )
-                    Text(
-                        libelle,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.Center,
-                    )
+        donnees.chunked(2).forEach { groupe ->
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                groupe.forEach { (libelle, valeur, couleur) ->
+                    Card(
+                        modifier = Modifier.weight(1f),
+                        colors = CardDefaults.cardColors(),
+                    ) {
+                        Column(
+                            modifier = Modifier.fillMaxWidth().padding(12.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                        ) {
+                            Text(
+                                text = valeur.toString(),
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = couleur,
+                            )
+                            Text(
+                                text = libelle,
+                                modifier = Modifier.fillMaxWidth(),
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                textAlign = TextAlign.Center,
+                                maxLines = 2,
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -179,13 +191,25 @@ private fun CartesResumeAudit(resume: ResumeAudit) {
 
 @Composable
 private fun FiltresAudit(filtreResultat: String?, surSelectionResultat: (String?) -> Unit) {
-    val options = listOf(null to "Tous", "reussi" to "Réussis", "avertissement" to "Avertissements", "echec" to "Échecs")
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        options.forEach { (valeur, libelle) ->
+    val options = listOf(
+        null to "Tous",
+        "reussi" to "R\u00E9ussis",
+        "avertissement" to "Avertissements",
+        "echec" to "\u00C9checs",
+    )
+
+    LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        items(options) { (valeur, libelle) ->
             FilterChip(
                 selected = filtreResultat == valeur,
                 onClick = { surSelectionResultat(valeur) },
-                label = { Text(libelle, style = MaterialTheme.typography.labelMedium) },
+                label = {
+                    Text(
+                        text = libelle,
+                        style = MaterialTheme.typography.labelMedium,
+                        maxLines = 1,
+                    )
+                },
             )
         }
     }

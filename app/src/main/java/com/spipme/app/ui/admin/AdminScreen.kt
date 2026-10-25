@@ -1,3 +1,5 @@
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
+
 package com.spipme.app.ui.admin
 
 import com.spipme.app.core.notifications.NotificationBadgeViewModel
@@ -23,7 +25,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenu
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon

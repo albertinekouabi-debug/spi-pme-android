@@ -23,7 +23,7 @@ class AppViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             val estConnecte = authRepository.estConnecteFlow.first()
-            _ecranDepart.value = if (estConnecte) Ecran.Accueil.route else Ecran.Connexion.route
+            _ecranDepart.value = if (estConnecte) Ecran.Dashboard.route else Ecran.Connexion.route
         }
     }
 }

@@ -1,0 +1,176 @@
+package com.spipme.app.ui.dashboard
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.spipme.app.core.security.SessionManager
+import com.spipme.app.core.util.Resultat
+import com.spipme.app.domain.model.ResumeAlertes
+import com.spipme.app.domain.model.ResumeRegistre
+import com.spipme.app.domain.model.ResumeRessources
+import com.spipme.app.domain.model.ResumeSuggestions
+import com.spipme.app.domain.model.ResumeTaches
+import com.spipme.app.domain.model.ResumeTresorerie
+import com.spipme.app.domain.repository.AlerteRepository
+import com.spipme.app.domain.repository.EntiteRepository
+import com.spipme.app.domain.repository.RessourceRepository
+import com.spipme.app.domain.repository.SuggestionRepository
+import com.spipme.app.domain.repository.TacheRepository
+import com.spipme.app.domain.repository.TransactionRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
+import javax.inject.Inject
+
+data class DashboardUiState(
+    val chargement: Boolean = true,
+    val secteurActifNom: String = "",
+    val resumeTresorerie: ResumeTresorerie? = null,
+    val resumeRegistre: ResumeRegistre? = null,
+    val resumeRessources: ResumeRessources? = null,
+    val resumeTaches: ResumeTaches? = null,
+    val resumeAlertes: ResumeAlertes? = null,
+    val resumeSuggestions: ResumeSuggestions? = null,
+    val messageErreur: String? = null,
+) {
+    val echecComplet: Boolean get() = !chargement && listOf(
+        resumeTresorerie,
+        resumeRegistre,
+        resumeRessources,
+        resumeTaches,
+        resumeAlertes,
+        resumeSuggestions,
+    ).all { it == null }
+}
+
+/** Agrège les résumés métier sans bloquer indéfiniment l'écran sur un secteur manquant. */
+@HiltViewModel
+class DashboardViewModel @Inject constructor(
+    private val transactionRepository: TransactionRepository,
+    private val entiteRepository: EntiteRepository,
+    private val ressourceRepository: RessourceRepository,
+    private val tacheRepository: TacheRepository,
+    private val alerteRepository: AlerteRepository,
+    private val suggestionRepository: SuggestionRepository,
+    private val sessionManager: SessionManager,
+) : ViewModel() {
+
+    private val _uiState = MutableStateFlow(DashboardUiState())
+    val uiState: StateFlow<DashboardUiState> = _uiState.asStateFlow()
+    private var chargementJob: Job? = null
+
+    init { charger() }
+
+    fun rafraichir() = charger()
+
+    private fun charger() {
+        if (chargementJob?.isActive == true) return
+
+        chargementJob = viewModelScope.launch {
+            _uiState.update {
+                it.copy(
+                    chargement = true,
+                    resumeTresorerie = null,
+                    resumeRegistre = null,
+                    resumeRessources = null,
+                    resumeTaches = null,
+                    resumeAlertes = null,
+                    resumeSuggestions = null,
+                    messageErreur = null,
+                )
+            }
+
+            val secteurNom = try {
+                sessionManager.secteurActifNomFlow.first().orEmpty()
+            } catch (annulation: CancellationException) {
+                throw annulation
+            } catch (_: Exception) {
+                ""
+            }
+
+            val secteurId = withTimeoutOrNull(5_000L) {
+                sessionManager.secteurActifIdFlow.filterNotNull().first()
+            }
+
+            if (secteurId == null) {
+                _uiState.update {
+                    it.copy(
+                        chargement = false,
+                        secteurActifNom = secteurNom,
+                        messageErreur = "Aucun secteur actif n'est disponible. Choisissez un secteur puis réessayez.",
+                    )
+                }
+                return@launch
+            }
+
+            _uiState.update { it.copy(secteurActifNom = secteurNom) }
+
+            coroutineScope {
+                launch {
+                    val resultat = resultatSecurise { transactionRepository.obtenirResume(secteurId) }
+                    if (resultat is Resultat.Succes) _uiState.update { it.copy(resumeTresorerie = resultat.donnees) }
+                }
+                launch {
+                    val resultat = resultatSecurise { entiteRepository.obtenirResume(secteurId) }
+                    if (resultat is Resultat.Succes) _uiState.update { it.copy(resumeRegistre = resultat.donnees) }
+                }
+                launch {
+                    val resultat = resultatSecurise { ressourceRepository.obtenirResume(secteurId) }
+                    if (resultat is Resultat.Succes) _uiState.update { it.copy(resumeRessources = resultat.donnees) }
+                }
+                launch {
+                    val resultat = resultatSecurise { tacheRepository.obtenirResume(secteurId) }
+                    if (resultat is Resultat.Succes) _uiState.update { it.copy(resumeTaches = resultat.donnees) }
+                }
+                launch {
+                    val resultat = resultatSecurise { alerteRepository.obtenirResume(secteurId) }
+                    if (resultat is Resultat.Succes) _uiState.update { it.copy(resumeAlertes = resultat.donnees) }
+                }
+                launch {
+                    val resultat = resultatSecurise { suggestionRepository.obtenirResume(secteurId) }
+                    if (resultat is Resultat.Succes) _uiState.update { it.copy(resumeSuggestions = resultat.donnees) }
+                }
+            }
+
+            val etatFinal = _uiState.value
+            val toutesIndisponibles = listOf(
+                etatFinal.resumeTresorerie,
+                etatFinal.resumeRegistre,
+                etatFinal.resumeRessources,
+                etatFinal.resumeTaches,
+                etatFinal.resumeAlertes,
+                etatFinal.resumeSuggestions,
+            ).all { it == null }
+            _uiState.update {
+                it.copy(
+                    chargement = false,
+                    messageErreur = when {
+                        toutesIndisponibles -> "Les données n'ont pas pu être chargées. Vérifiez la connexion puis réessayez."
+                        listOf(it.resumeTresorerie, it.resumeRegistre, it.resumeRessources, it.resumeTaches, it.resumeAlertes, it.resumeSuggestions).any { resume -> resume == null } ->
+                            "Certaines données sont temporairement indisponibles. Les autres sections restent accessibles."
+                        else -> null
+                    },
+                )
+            }
+        }
+    }
+
+    private suspend fun <T> resultatSecurise(action: suspend () -> Resultat<T>): Resultat<T>? =
+        withTimeoutOrNull(15_000L) {
+            try {
+                action()
+            } catch (annulation: CancellationException) {
+                throw annulation
+            } catch (_: Exception) {
+                null
+            }
+        }
+}

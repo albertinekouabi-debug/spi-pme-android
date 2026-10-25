@@ -26,7 +26,7 @@ import kotlin.coroutines.coroutineContext
  * Rejoue une opération via le client HTTP AUTHENTIFIÉ du projet (AuthInterceptor + TokenAuthenticator :
  * le rafraîchissement du jeton est donc déjà géré ; un 401 qui subsiste = session réellement expirée).
  *
- * En-têtes posés à chaque tentative, identiques d'une tentative à l'autre :
+ * En-têtes posés à chaque tentative, identiques d'une tentative à l'autre (+ X-Origine: hors_ligne) :
  *  - Idempotency-Key : la clé stockée dans l'opération (jamais régénérée) ;
  *  - X-Request-ID    : même valeur, pour relier journal d'audit serveur et opération locale ;
  *  - If-Match        : version lue par le client, pour les modifications.
@@ -46,6 +46,9 @@ class PasserelleOkHttp @Inject constructor(
             .method(operation.methode, corps)
             .header("Idempotency-Key", operation.idempotencyKey)
             .header("X-Request-ID", operation.idempotencyKey)
+            // Origine auditable côté serveur : cette requête est un REJEU de la file (saisie faite sans réseau).
+            // L'appel direct en ligne (Retrofit) n'envoie pas cet en-tête.
+            .header("X-Origine", "hors_ligne")
             .apply { operation.versionBase?.let { header("If-Match", "\"$it\"") } }
             .build()
 

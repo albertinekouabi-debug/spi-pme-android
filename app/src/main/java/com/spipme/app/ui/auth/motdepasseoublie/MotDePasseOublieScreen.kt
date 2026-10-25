@@ -1,4 +1,5 @@
 package com.spipme.app.ui.auth.motdepasseoublie
+import androidx.compose.material3.ExperimentalMaterial3Api
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -40,6 +41,7 @@ import com.spipme.app.ui.components.SpiPmeTextField
  * Écran "Mot de passe oublié". Rejoint depuis LoginScreen (lien câblé,
  * cf. audit — le bouton ne faisait rien auparavant).
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MotDePasseOublieScreen(
     surRetour: () -> Unit,

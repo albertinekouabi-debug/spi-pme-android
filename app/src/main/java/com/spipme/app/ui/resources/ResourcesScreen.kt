@@ -1,5 +1,19 @@
 package com.spipme.app.ui.resources
 
+import androidx.compose.material.icons.filled.ShowChart
+
+import androidx.compose.ui.graphics.drawscope.Stroke
+
+import androidx.compose.ui.graphics.StrokeCap
+
+import androidx.compose.ui.graphics.Path
+
+import androidx.compose.ui.graphics.Color
+
+import androidx.compose.ui.geometry.Offset
+
+import androidx.compose.foundation.Canvas
+
 import com.spipme.app.ui.sync.ElementEnAttente
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -17,6 +31,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -24,6 +39,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ChevronRight
@@ -86,7 +102,17 @@ fun ResourcesScreen(
         surChangementRecherche = viewModel::surChangementRecherche,
         surClicNouvelleRessource = surClicNouvelleRessource,
         surModifier = viewModel::demanderModification,
+        surMouvement = viewModel::demanderMouvement,
     )
+
+    etat.ressourceAMouvementer?.let { ressource ->
+        DialogueMouvementStock(
+            ressource = ressource,
+            erreur = etat.erreurMouvement,
+            surConfirmer = viewModel::confirmerMouvement,
+            surAbandonner = viewModel::abandonnerMouvement,
+        )
+    }
 
     etat.ressourceAModifier?.let { ressource ->
         DialogueModificationRessource(
@@ -108,6 +134,7 @@ private fun ResourcesContenu(
     surChangementRecherche: (String) -> Unit,
     surClicNouvelleRessource: () -> Unit,
     surModifier: (Ressource) -> Unit = {},
+    surMouvement: (Ressource) -> Unit = {},
     nombreNotifs: Int = 0,
 ) {
     Scaffold(
@@ -143,6 +170,13 @@ private fun ResourcesContenu(
                 }
 
                 etat.resume?.let { resume -> item { CartesResume(resume) } }
+
+                item(key = "evolution-stocks") {
+                    CarteEvolutionStocks(
+                        series = etat.evolutionsStock,
+                        enCours = etat.chargementEvolutionStock,
+                    )
+                }
 
                 etat.messageInfo?.let { info ->
                     item { Text(info, style = MaterialTheme.typography.bodySmall, color = SpiPmeTheme.extendedColors.succes) }
@@ -195,6 +229,9 @@ private fun ResourcesContenu(
                             modifiable = etat.peutModifier && ressource.id !in etat.idsModificationEnAttente,
                             modificationEnAttente = ressource.id in etat.idsModificationEnAttente,
                             surModifier = { surModifier(ressource) },
+                            mouvementPossible = etat.peutMouvementer,
+                            mouvementsEnAttente = etat.mouvementsEnAttente[ressource.id] ?: 0,
+                            surMouvement = { surMouvement(ressource) },
                         )
                     }
                 }
@@ -237,11 +274,153 @@ private fun CartesResume(resume: ResumeRessources) {
 }
 
 @Composable
+private fun CarteEvolutionStocks(series: List<EvolutionStock>, enCours: Boolean) {
+    val couleurs = listOf(
+        MaterialTheme.colorScheme.primary,
+        SpiPmeTheme.extendedColors.avertissement,
+        SpiPmeTheme.extendedColors.information,
+    )
+    val seriesVisibles = series.filter { it.points.size >= 2 }
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(18.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+    ) {
+        Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Filled.ShowChart, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                Spacer(Modifier.width(8.dp))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        "Évolution des niveaux de stock",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                    Text(
+                        "Historique disponible sur 7 jours",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+            Spacer(Modifier.height(12.dp))
+
+            when {
+                enCours -> Row(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 18.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    CircularProgressIndicator(modifier = Modifier.size(22.dp), strokeWidth = 2.dp)
+                    Spacer(Modifier.width(10.dp))
+                    Text("Chargement de l’historique…", style = MaterialTheme.typography.bodySmall)
+                }
+
+                seriesVisibles.isEmpty() -> Text(
+                    "L’API ne fournit pas encore assez de points historiques pour tracer une courbe. Les données ne sont pas simulées.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(vertical = 10.dp),
+                )
+
+                else -> {
+                    val grille = MaterialTheme.colorScheme.outline.copy(alpha = 0.28f)
+                    Canvas(modifier = Modifier.fillMaxWidth().height(158.dp)) {
+                        val valeurs = seriesVisibles.flatMap { it.points }.map { it.niveau.toFloat() }
+                        val minimum = valeurs.minOrNull() ?: 0f
+                        val maximum = valeurs.maxOrNull() ?: 0f
+                        val amplitude = (maximum - minimum).takeIf { it > 0.0001f } ?: 1f
+                        val gauche = 8.dp.toPx()
+                        val droite = size.width - 8.dp.toPx()
+                        val haut = 8.dp.toPx()
+                        val bas = size.height - 8.dp.toPx()
+                        val hauteurUtile = bas - haut
+
+                        for (i in 0..3) {
+                            val y = haut + hauteurUtile * i / 3f
+                            drawLine(
+                                color = grille,
+                                start = Offset(gauche, y),
+                                end = Offset(droite, y),
+                                strokeWidth = 1.dp.toPx(),
+                            )
+                        }
+
+                        seriesVisibles.forEachIndexed { index, serie ->
+                            val donnees = serie.points.map { it.niveau.toFloat() }
+                            val positions = donnees.mapIndexed { pointIndex, valeur ->
+                                val fractionX = if (donnees.size < 2) 0f else pointIndex / (donnees.size - 1).toFloat()
+                                val x = gauche + (droite - gauche) * fractionX
+                                val y = bas - ((valeur - minimum) / amplitude) * hauteurUtile
+                                Offset(x, y)
+                            }
+                            val chemin = Path()
+                            positions.forEachIndexed { pointIndex, position ->
+                                if (pointIndex == 0) chemin.moveTo(position.x, position.y)
+                                else chemin.lineTo(position.x, position.y)
+                            }
+                            val couleur = couleurs[index % couleurs.size]
+                            drawPath(chemin, couleur, style = Stroke(width = 2.8.dp.toPx(), cap = StrokeCap.Round))
+                            positions.forEach { position -> drawCircle(couleur, radius = 3.5.dp.toPx(), center = position) }
+                        }
+                    }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(top = 6.dp),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        seriesVisibles.forEachIndexed { index, serie ->
+                            Row(
+                                modifier = Modifier.weight(1f),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Box(
+                                    modifier = Modifier.size(9.dp).background(couleurs[index % couleurs.size], CircleShape),
+                                )
+                                Spacer(Modifier.width(5.dp))
+                                Text(
+                                    serie.nom,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    maxLines = 1,
+                                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                                )
+                            }
+                        }
+                    }
+
+                    val premiereSerie = seriesVisibles.first().points
+                    if (premiereSerie.isNotEmpty()) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(top = 6.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                        ) {
+                            Text(dateCourteGraphique(premiereSerie.first().date), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text(dateCourteGraphique(premiereSerie.last().date), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+private fun dateCourteGraphique(dateIso: String): String {
+    val parties = dateIso.take(10).split("-")
+    return if (parties.size == 3) "${parties[2]}/${parties[1]}" else dateIso.take(10)
+}
+@Composable
 private fun CarteRessource(
     ressource: Ressource,
     modifiable: Boolean = false,
     modificationEnAttente: Boolean = false,
     surModifier: () -> Unit = {},
+    mouvementPossible: Boolean = false,
+    mouvementsEnAttente: Int = 0,
+    surMouvement: () -> Unit = {},
 ) {
     val couleurStatut = when (ressource.statut) {
         "critique" -> MaterialTheme.colorScheme.error
@@ -312,6 +491,28 @@ private fun CarteRessource(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
+            if (ressource.niveauActuel.signum() < 0) {
+                Spacer(Modifier.height(4.dp))
+                // Situation anormale mais VALIDE (sortie saisie avant la réception qui la couvre) : jamais masquée ni corrigée.
+                Text(
+                    "Stock négatif — à régulariser par des entrées",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.error,
+                    fontWeight = FontWeight.SemiBold,
+                )
+            }
+            if (mouvementsEnAttente > 0) {
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    "$mouvementsEnAttente mouvement${if (mouvementsEnAttente > 1) "s" else ""} de stock en attente de synchronisation",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = SpiPmeTheme.extendedColors.avertissement,
+                    fontWeight = FontWeight.SemiBold,
+                )
+            }
+            if (mouvementPossible) {
+                TextButton(onClick = surMouvement) { Text("Mouvement de stock") }
+            }
             if (modificationEnAttente) {
                 Spacer(Modifier.height(4.dp))
                 Text(
@@ -344,6 +545,38 @@ private fun CarteEnAttente(element: ElementEnAttente) {
             )
         }
     }
+}
+
+/**
+ * Mouvement de stock : le niveau ne change QUE par des mouvements tracés (jamais par édition directe).
+ * Le niveau affiché est celui du dernier chargement : les mouvements en attente ne sont pas encore appliqués.
+ */
+@Composable
+private fun DialogueMouvementStock(
+    ressource: Ressource,
+    erreur: String?,
+    surConfirmer: (String, String) -> Unit,
+    surAbandonner: () -> Unit,
+) {
+    var quantite by rememberSaveable(ressource.id) { mutableStateOf("") }
+    var description by rememberSaveable(ressource.id) { mutableStateOf("") }
+    AlertDialog(
+        onDismissRequest = surAbandonner,
+        title = { Text("Mouvement de stock — ${ressource.nom}") },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(
+                    "Positif = entrée en stock, négatif = sortie (ex. 10 ou -5). Saisie possible hors ligne.",
+                    style = MaterialTheme.typography.bodySmall,
+                )
+                OutlinedTextField(quantite, { quantite = it }, label = { Text("Quantité") }, singleLine = true, modifier = Modifier.fillMaxWidth())
+                OutlinedTextField(description, { description = it }, label = { Text("Motif / note (facultatif)") }, modifier = Modifier.fillMaxWidth())
+                erreur?.let { Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall) }
+            }
+        },
+        confirmButton = { TextButton(onClick = { surConfirmer(quantite, description) }) { Text("Enregistrer") } },
+        dismissButton = { TextButton(onClick = surAbandonner) { Text("Annuler") } },
+    )
 }
 
 /** Le NIVEAU de stock n'est pas modifiable ici : il ne change que par des mouvements tracés. */

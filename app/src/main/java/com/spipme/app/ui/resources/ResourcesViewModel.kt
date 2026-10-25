@@ -1,5 +1,19 @@
 package com.spipme.app.ui.resources
 
+import kotlinx.coroutines.withTimeoutOrNull
+
+import kotlinx.coroutines.coroutineScope
+
+import kotlinx.coroutines.awaitAll
+
+import kotlinx.coroutines.async
+
+import kotlinx.coroutines.Job
+
+import kotlinx.coroutines.CancellationException
+
+import com.spipme.app.domain.repository.TransactionRepository
+import com.spipme.app.core.sync.PayloadJson
 import kotlinx.coroutines.flow.combine
 import com.spipme.app.ui.sync.versElementEnAttente
 import com.spipme.app.domain.model.Ressource
@@ -32,12 +46,15 @@ class ResourcesViewModel @Inject constructor(
     private val ressourceRepository: RessourceRepository,
     private val sessionManager: SessionManager,
     private val synchronisation: SynchronisationRepository,
+    private val transactionRepository: TransactionRepository,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ResourcesUiState())
     val uiState: StateFlow<ResourcesUiState> = _uiState.asStateFlow()
 
     private var secteurActifId: Int? = null
+    private var evolutionJob: Job? = null
+    private var idsEvolutionChargee: List<Int> = emptyList()
 
     init {
         viewModelScope.launch {
@@ -53,6 +70,24 @@ class ResourcesViewModel @Inject constructor(
             combine(sessionManager.permissionsFlow, sessionManager.roleNomFlow) { permissions, role ->
                 role == "Administrateur" || "resources.write" in permissions
             }.collect { autorise -> _uiState.update { it.copy(peutModifier = autorise) } }
+        }
+        viewModelScope.launch {
+            combine(sessionManager.permissionsFlow, sessionManager.roleNomFlow) { permissions, role ->
+                role == "Administrateur" || "treasury.write" in permissions
+            }.collect { autorise -> _uiState.update { it.copy(peutMouvementer = autorise) } }
+        }
+        // Mouvements de stock saisis hors ligne : comptés par ressource ; le niveau est rechargé quand ils aboutissent.
+        viewModelScope.launch {
+            var precedent = 0
+            synchronisation.operationsEnAttente("CREER_TRANSACTION").collect { operations ->
+                val mouvements = operations.filter { PayloadJson.champ(it.payloadJson, "type") == "mouvement_stock" }
+                val parRessource = mouvements
+                    .mapNotNull { PayloadJson.champ(it.payloadJson, "ressource")?.toIntOrNull() }
+                    .groupingBy { it }.eachCount()
+                _uiState.update { it.copy(mouvementsEnAttente = parRessource) }
+                if (mouvements.size < precedent && secteurActifId != null) rafraichir()
+                precedent = mouvements.size
+            }
         }
         // Créations saisies hors ligne : visibles tout de suite dans la liste, marquées « en attente ».
         viewModelScope.launch {
@@ -102,6 +137,38 @@ class ResourcesViewModel @Inject constructor(
         }
     }
 
+    fun demanderMouvement(ressource: Ressource) {
+        if (_uiState.value.peutMouvementer) _uiState.update { it.copy(ressourceAMouvementer = ressource, erreurMouvement = null) }
+    }
+
+    fun abandonnerMouvement() { _uiState.update { it.copy(ressourceAMouvementer = null, erreurMouvement = null) } }
+
+    /** Quantité signée : positive = entrée en stock, négative = sortie. Nulle ou illisible : refusée AVANT toute file. */
+    fun confirmerMouvement(quantiteTexte: String, description: String) {
+        val ressource = _uiState.value.ressourceAMouvementer ?: return
+        val secteurId = secteurActifId ?: return
+        val quantite = quantiteTexte.trim().replace(',', '.').toBigDecimalOrNull()
+        if (quantite == null) { _uiState.update { it.copy(erreurMouvement = "Quantité invalide (ex. 10 ou -5).") }; return }
+        if (quantite.signum() == 0) { _uiState.update { it.copy(erreurMouvement = "La quantité ne peut pas être nulle.") }; return }
+        viewModelScope.launch {
+            val resultat = transactionRepository.creerMouvementStock(
+                secteurId, ressource.id, quantite, description.trim().ifEmpty { null }, java.time.Instant.now().toString(),
+            )
+            when (resultat) {
+                is Resultat.Succes -> {
+                    _uiState.update { it.copy(ressourceAMouvementer = null, erreurMouvement = null, messageInfo = "Mouvement de stock enregistré.") }
+                    rafraichir()
+                }
+                is Resultat.Echec -> _uiState.update {
+                    if (resultat.enFile) it.copy(
+                        ressourceAMouvementer = null, erreurMouvement = null,
+                        messageInfo = "Mouvement enregistré hors ligne : le stock sera mis à jour dès le retour du réseau.",
+                    ) else it.copy(erreurMouvement = resultat.message)
+                }
+            }
+        }
+    }
+
     fun abandonnerModification() { _uiState.update { it.copy(ressourceAModifier = null, erreurModification = null) } }
 
     /** Validation locale avant tout envoi/enfilage : une saisie invalide ne doit jamais entrer dans la file. */
@@ -136,9 +203,53 @@ class ResourcesViewModel @Inject constructor(
     private fun erreur(message: String) { _uiState.update { it.copy(erreurModification = message) } }
 
     fun rafraichir() {
+        idsEvolutionChargee = emptyList()
+        evolutionJob?.cancel()
         viewModelScope.launch { chargerTout() }
     }
 
+    private fun chargerEvolutionStocks(ressources: List<Ressource>) {
+        val selection = ressources.filter { it.id > 0 }.take(3)
+        val ids = selection.map { it.id }
+        if (ids == idsEvolutionChargee && (ids.isNotEmpty() || _uiState.value.evolutionsStock.isEmpty())) return
+
+        idsEvolutionChargee = ids
+        evolutionJob?.cancel()
+
+        if (selection.isEmpty()) {
+            _uiState.update { it.copy(evolutionsStock = emptyList(), chargementEvolutionStock = false) }
+            return
+        }
+
+        _uiState.update { it.copy(chargementEvolutionStock = true) }
+        evolutionJob = viewModelScope.launch {
+            val series = coroutineScope {
+                selection.map { ressource ->
+                    async {
+                        val resultat = withTimeoutOrNull(12_000L) {
+                            try {
+                                ressourceRepository.obtenirEvolution(ressource.id, jours = 7)
+                            } catch (annulation: CancellationException) {
+                                throw annulation
+                            } catch (_: Exception) {
+                                null
+                            }
+                        }
+                        if (resultat is Resultat.Succes && resultat.donnees.isNotEmpty()) {
+                            EvolutionStock(
+                                ressourceId = ressource.id,
+                                nom = ressource.nom,
+                                points = resultat.donnees.sortedBy { it.date },
+                            )
+                        } else null
+                    }
+                }.awaitAll().filterNotNull()
+            }
+            _uiState.update {
+                it.copy(evolutionsStock = series, chargementEvolutionStock = false)
+            }
+        }
+    }
     private suspend fun chargerTout() {
         _uiState.update { it.copy(enChargement = true, messageErreur = null) }
         kotlinx.coroutines.coroutineScope {
@@ -166,7 +277,10 @@ class ResourcesViewModel @Inject constructor(
                 recherche = etat.recherche.ifBlank { null },
             )
         ) {
-            is Resultat.Succes -> _uiState.update { it.copy(ressources = resultat.donnees, messageErreur = null) }
+            is Resultat.Succes -> {
+                _uiState.update { it.copy(ressources = resultat.donnees, messageErreur = null) }
+                chargerEvolutionStocks(resultat.donnees)
+            }
             is Resultat.Echec -> _uiState.update { it.copy(messageErreur = resultat.message) }
         }
     }

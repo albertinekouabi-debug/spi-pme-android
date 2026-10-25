@@ -1,5 +1,8 @@
 package com.spipme.app.data.repository
 
+import com.spipme.app.data.remote.dto.intelligence.ResumeSuggestionsDto
+import com.spipme.app.data.remote.dto.registry.PageDto
+import com.spipme.app.data.local.CacheLecture
 import com.spipme.app.core.network.executerAppelApi
 import com.spipme.app.core.util.Resultat
 import com.spipme.app.data.remote.api.SuggestionApi
@@ -21,10 +24,13 @@ import javax.inject.Singleton
 class SuggestionRepositoryImpl @Inject constructor(
     private val suggestionApi: SuggestionApi,
     private val json: Json,
+    private val cacheLecture: CacheLecture,
 ) : SuggestionRepository {
 
     override suspend fun lister(secteurId: Int, statut: String?): Resultat<List<Suggestion>> {
-        val resultat = executerAppelApi(json) { suggestionApi.lister(secteurId = secteurId, statut = statut) }
+        val resultat = cacheLecture.lire("suggestions:$secteurId:${statut ?: "-"}", PageDto.serializer(SuggestionDto.serializer())) {
+            executerAppelApi(json) { suggestionApi.lister(secteurId = secteurId, statut = statut) }
+        }
         return when (resultat) {
             is Resultat.Succes -> Resultat.Succes(resultat.donnees.results.map { it.versDomaine() })
             is Resultat.Echec -> resultat
@@ -32,7 +38,9 @@ class SuggestionRepositoryImpl @Inject constructor(
     }
 
     override suspend fun obtenirResume(secteurId: Int): Resultat<ResumeSuggestions> {
-        val resultat = executerAppelApi(json) { suggestionApi.resume(secteurId = secteurId) }
+        val resultat = cacheLecture.lire("suggestions-resume:$secteurId", ResumeSuggestionsDto.serializer()) {
+            executerAppelApi(json) { suggestionApi.resume(secteurId = secteurId) }
+        }
         return when (resultat) {
             is Resultat.Succes -> Resultat.Succes(
                 ResumeSuggestions(

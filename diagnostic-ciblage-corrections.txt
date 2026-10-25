@@ -1,0 +1,211 @@
+﻿=== FICHIERS CANDIDATS ===
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\audit\AuditScreen.kt
+  L20: import androidx.compose.material.icons.filled.WarningAmber || L55: surClicProfil: () -> Unit, || L69: surClicProfil = surClicProfil, || L149: Triple("Avertissements", resume.avertissements, SpiPmeTheme.extendedColors.avertissement), || L150: Triple("Échecs", resume.echecs, MaterialTheme.colorScheme.error),
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\alerts\AlertsScreen.kt
+  L24: import androidx.compose.material.icons.filled.Warning || L54: surClicProfil: () -> Unit, || L65: surClicProfil = surClicProfil, || L78: surClicProfil: () -> Unit, || L101: surClicProfil = surClicProfil,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\invoices\InvoicesScreen.kt
+  L47: surClicProfil: () -> Unit, || L61: surClicProfil = surClicProfil, || L133: "impayee" to "Impayées", || L188: "impayee" -> MaterialTheme.colorScheme.error || L189: "relancee" -> SpiPmeTheme.extendedColors.avertissement
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\profile\ProfileScreen.kt
+  L1: package com.spipme.app.ui.profile || L41: fun ProfileScreen( || L44: viewModel: ProfileViewModel = hiltViewModel(), || L61: topBar = { TopAppBar(title = { Text("Profil") }) },
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\profile\ProfileViewModel.kt
+  L1: package com.spipme.app.ui.profile || L18: data class ProfileUiState( || L35: class ProfileViewModel @Inject constructor( || L41: private val _uiState = MutableStateFlow(ProfileUiState()) || L42: val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\dashboard\DashboardScreen.kt
+  L33: import androidx.compose.material.icons.filled.Warning || L64: private data class IndicateurDashboard( || L77: surClicProfil: () -> Unit, || L102: IndicateurDashboard( || L104: titre = "Ressources critiques",
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\pilotage\PilotageScreen.kt
+  L55: surClicProfil: () -> Unit, || L74: surClicProfil = surClicProfil, || L103: color = SpiPmeTheme.extendedColors.avertissement, || L189: "attention" -> SpiPmeTheme.extendedColors.avertissement
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\admin\AdminScreen.kt
+  L67: surClicProfil: () -> Unit, || L90: surClicProfil = surClicProfil,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\alerts\AlertsUiState.kt
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\alerts\AlertsViewModel.kt
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\audit\AuditUiState.kt
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\audit\AuditViewModel.kt
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\compliance\ComplianceScreen.kt
+  L59: surClicProfil: () -> Unit, || L85: surClicProfil = surClicProfil, || L226: else -> SpiPmeTheme.extendedColors.avertissement
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\components\SpiPmeTopBar.kt
+  L46: * notifications (badge = nombre non lues), avatar utilisateur. Un seul || L61: surClicProfil: () -> Unit, || L85: AvatarUtilisateur(surClicProfil) || L202: private fun AvatarUtilisateur(surClic: () -> Unit) { || L210: Icon(Icons.Filled.Person, contentDescription = "Profil", tint = MaterialTheme.colorScheme.primary)
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\dashboard\DashboardViewModel.kt
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\imports\ImportsScreen.kt
+  L60: surClicProfil: () -> Unit, || L89: surClicProfil = surClicProfil, || L112: surClicProfil: () -> Unit, || L127: surClicProfil = surClicProfil, || L335: "termine_avec_anomalies" -> SpiPmeTheme.extendedColors.avertissement to "Terminé avec anomalies"
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\intelligence\IntelligenceScreen.kt
+  L58: surClicProfil: () -> Unit, || L69: surClicProfil = surClicProfil, || L84: surClicProfil: () -> Unit, || L109: surClicProfil = surClicProfil, || L193: Triple("En attente", resume.enAttente, SpiPmeTheme.extendedColors.avertissement),
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\navigation\Ecran.kt
+  L23: data object Profil : Ecran("profil")
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\navigation\SpiPmeNavGraph.kt
+  L46: import com.spipme.app.ui.profile.ProfileScreen || L86: Ecran.Profil.route, || L307: surClicProfil = { naviguerVers(Ecran.Profil.route) }, || L320: surClicProfil = { naviguerVers(Ecran.Profil.route) }, || L344: surClicProfil = { naviguerVers(Ecran.Profil.route) },
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\pilotage\PilotageViewModel.kt
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\registry\RegistryScreen.kt
+  L57: surClicProfil: () -> Unit, || L76: surClicProfil = surClicProfil, || L88: surClicProfil: () -> Unit, || L106: surClicProfil = surClicProfil, || L307: surClicProfil = {},
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\resources\ResourcesScreen.kt
+  L80: surClicProfil: () -> Unit, || L99: surClicProfil = surClicProfil, || L131: surClicProfil: () -> Unit, || L155: surClicProfil = surClicProfil, || L255: Triple("À surveiller", resume.aSurveiller, SpiPmeTheme.extendedColors.avertissement),
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\sync\BandeauSynchronisation.kt
+  L16: import androidx.compose.material.icons.filled.Warning || L39: * liste des opérations nécessitant une décision (conflits, échecs). || L50: ResumeSynchronisation.CONFLITS, ResumeSynchronisation.ECHECS -> || L56: val necessiteDecision = etat.conflits + etat.echecs > 0 || L70: ResumeSynchronisation.CONFLITS -> Icon(Icons.Filled.Warning, null, tint = contenu, modifier = Modifier.size(16.dp))
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\tasks\TasksScreen.kt
+  L55: surClicProfil: () -> Unit, || L74: surClicProfil = surClicProfil, || L86: surClicProfil: () -> Unit, || L108: surClicProfil = surClicProfil, || L180: Triple("En cours", resume.enCours, SpiPmeTheme.extendedColors.avertissement),
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\theme\Color.kt
+  L24: val Avertissement = Color(0xFFF59E0B)
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\theme\Theme.kt
+  L53: val avertissement: androidx.compose.ui.graphics.Color, || L60: succes = Succes, avertissement = Avertissement, information = Information, ia = IA, sidebar = Sidebar, || L63: succes = Succes, avertissement = Avertissement, information = Information, ia = IA, sidebar = CarteSombre,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\treasury\TreasuryScreen.kt
+  L65: surClicProfil: () -> Unit, || L84: surClicProfil = surClicProfil, || L105: surClicProfil: () -> Unit, || L127: surClicProfil = surClicProfil, || L190: color = SpiPmeTheme.extendedColors.avertissement)
+
+=== EXTRAITS DES COMPOSANTS A CORRIGER ===
+
+--- C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\audit\AuditScreen.kt ---
+ 141: 
+ 142: @Composable
+ 143: private fun CartesResumeAudit(resume: ResumeAudit) {
+ 144:     // Couleurs lues ici, dans un contexte @Composable valide (pas dans un
+ 145:     // lambda LazyListScope), cf. correctif COMPILE-KOTLIN-002.
+ 146:     val donnees = listOf(
+ 147:         Triple("Total", resume.total, MaterialTheme.colorScheme.onSurface),
+ 148:         Triple("RÃ©ussies", resume.reussies, SpiPmeTheme.extendedColors.succes),
+ 149:         Triple("Avertissements", resume.avertissements, SpiPmeTheme.extendedColors.avertissement),
+ 150:         Triple("Ã‰checs", resume.echecs, MaterialTheme.colorScheme.error),
+ 151:     )
+ 152:     Row(
+ 153:         modifier = Modifier.fillMaxWidth(),
+ 154:         horizontalArrangement = Arrangement.spacedBy(8.dp),
+ 155:     ) {
+ 156:         donnees.forEach { (libelle, valeur, couleur) ->
+ 157:             Card(modifier = Modifier.weight(1f), colors = CardDefaults.cardColors()) {
+ 158:                 Column(
+ 159:                     modifier = Modifier.padding(12.dp),
+ 160:                     horizontalAlignment = Alignment.CenterHorizontally,
+ 161:                 ) {
+ 162:                     Text(
+ 163:                         valeur.toString(),
+ 164:                         style = MaterialTheme.typography.titleLarge,
+ 165:                         fontWeight = FontWeight.Bold,
+ 166:                         color = couleur,
+ 167:                     )
+ 168:                     Text(
+ 169:                         libelle,
+ 170:                         style = MaterialTheme.typography.labelSmall,
+ 171:                         color = MaterialTheme.colorScheme.onSurfaceVariant,
+ 172:                         textAlign = TextAlign.Center,
+ 173:                     )
+ 174:                 }
+ 175:             }
+ 176:         }
+ 177:     }
+ 178: }
+ 179: 
+ 180: @Composable
+ 181: private fun FiltresAudit(filtreResultat: String?, surSelectionResultat: (String?) -> Unit) {
+ 182:     val options = listOf(null to "Tous", "reussi" to "RÃ©ussis", "avertissement" to "Avertissements", "echec" to "Ã‰checs")
+ 183:     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+ 184:         options.forEach { (valeur, libelle) ->
+ 185:             FilterChip(
+ 186:                 selected = filtreResultat == valeur,
+ 187:                 onClick = { surSelectionResultat(valeur) },
+ 188:                 label = { Text(libelle, style = MaterialTheme.typography.labelMedium) },
+ 189:             )
+ 190:         }
+ 191:     }
+ 192: }
+ 193: 
+ 194: @Composable
+ 195: private fun LigneEvenementAudit(evenement: EvenementAudit) {
+ 196:     val couleurResultat = when (evenement.resultat) {
+ 197:         "reussi" -> SpiPmeTheme.extendedColors.succes
+ 198:         "avertissement" -> SpiPmeTheme.extendedColors.avertissement
+ 199:         else -> MaterialTheme.colorScheme.error
+ 200:     }
+ 201:     val iconeResultat = when (evenement.resultat) {
+ 202:         "reussi" -> Icons.Filled.CheckCircle
+ 203:         "avertissement" -> Icons.Filled.WarningAmber
+ 204:         else -> Icons.Filled.ErrorOutline
+ 205:     }
+
+--- C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\alerts\AlertsScreen.kt ---
+  21: import androidx.compose.material.icons.filled.CheckCircle
+  22: import androidx.compose.material.icons.filled.Info
+  23: import androidx.compose.material.icons.filled.NotificationsActive
+  24: import androidx.compose.material.icons.filled.Warning
+  25: import androidx.compose.material3.Card
+  26: import androidx.compose.material3.CardDefaults
+  27: import androidx.compose.material3.CircularProgressIndicator
+  28: import androidx.compose.material3.ExtendedFloatingActionButton
+  29: import androidx.compose.material3.FilterChip
+...
+  51: @Composable
+  52: fun AlertsScreen(
+  53:     surClicNotifications: () -> Unit,
+  54:     surClicProfil: () -> Unit,
+  55:     surClicSecteur: () -> Unit,
+  56:     viewModel: AlertsViewModel = hiltViewModel(),
+  57: ) {
+  58:     val etat by viewModel.uiState.collectAsStateWithLifecycle()
+  59:     val nombreNotifs by (hiltViewModel<NotificationBadgeViewModel>()).compte.collectAsStateWithLifecycle()
+...
+  62:         nombreNotifs = nombreNotifs,
+  63:         etat = etat,
+  64:         surClicNotifications = surClicNotifications,
+  65:         surClicProfil = surClicProfil,
+  66:         surClicSecteur = surClicSecteur,
+  67:         surChangementOnglet = viewModel::surChangementOnglet,
+  68:         surClicGenerer = viewModel::genererAlertes,
+  69:         surClicResoudre = viewModel::resoudre,
+  70:         surClicIgnorer = viewModel::ignorer,
+...
+  75: private fun AlertsContenu(
+  76:     etat: AlertsUiState,
+  77:     surClicNotifications: () -> Unit,
+  78:     surClicProfil: () -> Unit,
+  79:     surClicSecteur: () -> Unit,
+  80:     surChangementOnglet: (OngletAlertes) -> Unit,
+  81:     surClicGenerer: () -> Unit,
+  82:     surClicResoudre: (Int) -> Unit,
+  83:     surClicIgnorer: (Int) -> Unit,
+...
+
+--- C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\invoices\InvoicesScreen.kt ---
+  44: @Composable
+  45: fun InvoicesScreen(
+  46:     surClicNotifications: () -> Unit,
+  47:     surClicProfil: () -> Unit,
+  48:     surClicSecteur: () -> Unit,
+  49:     viewModel: InvoicesViewModel = hiltViewModel(),
+  50: ) {
+  51:     val etat by viewModel.uiState.collectAsStateWithLifecycle()
+  52:     val nombreNotifs by (hiltViewModel<NotificationBadgeViewModel>()).compte.collectAsStateWithLifecycle()
+...
+  58:                 nombreNotificationsNonLues = nombreNotifs,
+  59:                 surClicSecteur = surClicSecteur,
+  60:                 surClicNotifications = surClicNotifications,
+  61:                 surClicProfil = surClicProfil,
+  62:             )
+  63:         },
+  64:     ) { paddingInterne ->
+  65:         etat.factureAAnnuler?.let { facture ->
+  66:             DialogueAnnulation(
+...
+ 130:         null to "Toutes",
+ 131:         "emise" to "Ã‰mises",
+ 132:         "payee" to "PayÃ©es",
+ 133:         "impayee" to "ImpayÃ©es",
+ 134:         "relancee" to "RelancÃ©es",
+ 135:         "annulee" to "AnnulÃ©es",
+ 136:         "avoir" to "Avoirs",
+ 137:     )
+ 138:     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+...
+ 185: private fun LigneFacture(facture: Facture, annulable: Boolean, enAttente: Boolean, surAnnuler: () -> Unit) {
+ 186:     val couleurStatut = when (facture.statut) {
+ 187:         "payee" -> SpiPmeTheme.extendedColors.succes
+ 188:         "impayee" -> MaterialTheme.colorScheme.error
+ 189:         "relancee" -> SpiPmeTheme.extendedColors.avertissement
+ 190:         "emise" -> SpiPmeTheme.extendedColors.information
+ 191:         else -> MaterialTheme.colorScheme.onSurfaceVariant
+ 192:     }
+ 193:     Card(modifier = Modifier.fillMaxWidth()) {
+...
+
+--- C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\profile\ProfileScreen.kt ---
+   1: package com.spipme.app.ui.profile
+   2: 
+   3: import androidx.compose.foundation.layout.Arrangement
+   4: import androidx.compose.foundation.layout.Box
+   5: import androidx.compose.foundation.layout.Column
+   6: import androidx.compose.foundation.layout.Row
+...

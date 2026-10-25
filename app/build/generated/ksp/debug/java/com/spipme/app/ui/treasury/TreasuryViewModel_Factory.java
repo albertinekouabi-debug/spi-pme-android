@@ -1,6 +1,7 @@
 package com.spipme.app.ui.treasury;
 
 import com.spipme.app.core.security.SessionManager;
+import com.spipme.app.core.sync.android.SynchronisationRepository;
 import com.spipme.app.domain.repository.TransactionRepository;
 import dagger.internal.DaggerGenerated;
 import dagger.internal.Factory;
@@ -29,25 +30,30 @@ public final class TreasuryViewModel_Factory implements Factory<TreasuryViewMode
 
   private final Provider<SessionManager> sessionManagerProvider;
 
+  private final Provider<SynchronisationRepository> synchronisationProvider;
+
   public TreasuryViewModel_Factory(Provider<TransactionRepository> transactionRepositoryProvider,
-      Provider<SessionManager> sessionManagerProvider) {
+      Provider<SessionManager> sessionManagerProvider,
+      Provider<SynchronisationRepository> synchronisationProvider) {
     this.transactionRepositoryProvider = transactionRepositoryProvider;
     this.sessionManagerProvider = sessionManagerProvider;
+    this.synchronisationProvider = synchronisationProvider;
   }
 
   @Override
   public TreasuryViewModel get() {
-    return newInstance(transactionRepositoryProvider.get(), sessionManagerProvider.get());
+    return newInstance(transactionRepositoryProvider.get(), sessionManagerProvider.get(), synchronisationProvider.get());
   }
 
   public static TreasuryViewModel_Factory create(
       Provider<TransactionRepository> transactionRepositoryProvider,
-      Provider<SessionManager> sessionManagerProvider) {
-    return new TreasuryViewModel_Factory(transactionRepositoryProvider, sessionManagerProvider);
+      Provider<SessionManager> sessionManagerProvider,
+      Provider<SynchronisationRepository> synchronisationProvider) {
+    return new TreasuryViewModel_Factory(transactionRepositoryProvider, sessionManagerProvider, synchronisationProvider);
   }
 
   public static TreasuryViewModel newInstance(TransactionRepository transactionRepository,
-      SessionManager sessionManager) {
-    return new TreasuryViewModel(transactionRepository, sessionManager);
+      SessionManager sessionManager, SynchronisationRepository synchronisation) {
+    return new TreasuryViewModel(transactionRepository, sessionManager, synchronisation);
   }
 }

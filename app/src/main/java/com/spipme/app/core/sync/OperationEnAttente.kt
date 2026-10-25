@@ -44,6 +44,8 @@ data class OperationEnAttente(
     val statut: StatutOperation = StatutOperation.EN_ATTENTE,
     val messageErreur: String? = null,
     val conflitJson: String? = null,
+    /** Propriétaire : une opération ne part QUE sous le compte qui l'a saisie. */
+    val utilisateurId: Long = 0,
 ) {
     /** Deux opérations d'une même entité sont rejouées dans l'ordre : une en échec bloque les suivantes. */
     val cleEntite: String get() = "$entityType:$entityId"

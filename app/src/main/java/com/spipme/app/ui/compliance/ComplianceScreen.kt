@@ -1,4 +1,6 @@
 package com.spipme.app.ui.compliance
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.horizontalScroll
 
 import com.spipme.app.core.notifications.NotificationBadgeViewModel
 import androidx.compose.foundation.layout.Arrangement
@@ -200,7 +202,7 @@ private fun FiltresStatut(filtre: String?, surSelection: (String?) -> Unit) {
         "declaree" to "Déclarées",
         "exemptee" to "Exemptées",
     )
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+    Row(modifier = Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         options.forEach { (valeur, libelle) ->
             FilterChip(
                 selected = filtre == valeur,

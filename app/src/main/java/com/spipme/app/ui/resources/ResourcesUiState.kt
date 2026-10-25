@@ -1,5 +1,7 @@
 package com.spipme.app.ui.resources
 
+import com.spipme.app.domain.model.PointEvolution
+
 import com.spipme.app.ui.sync.ElementEnAttente
 import com.spipme.app.domain.model.ResumeRessources
 import com.spipme.app.domain.model.Ressource
@@ -11,10 +13,14 @@ enum class OngletRessources(val libelle: String, val statutFiltre: String?) {
     STABLES("Stables", "stable"),
 }
 
+data class EvolutionStock(val ressourceId: Int, val nom: String, val points: List<PointEvolution>)
+
 data class ResourcesUiState(
     val enChargement: Boolean = true,
     val ressources: List<Ressource> = emptyList(),
     val resume: ResumeRessources? = null,
+    val evolutionsStock: List<EvolutionStock> = emptyList(),
+    val chargementEvolutionStock: Boolean = false,
     val ongletActif: OngletRessources = OngletRessources.TOUTES,
     val recherche: String = "",
     val messageErreur: String? = null,
@@ -25,4 +31,8 @@ data class ResourcesUiState(
     val ressourceAModifier: Ressource? = null,
     val erreurModification: String? = null,
     val messageInfo: String? = null,
+    val peutMouvementer: Boolean = false,
+    val mouvementsEnAttente: Map<Int, Int> = emptyMap(),
+    val ressourceAMouvementer: Ressource? = null,
+    val erreurMouvement: String? = null,
 )

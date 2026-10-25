@@ -19,8 +19,8 @@ interface OperationDao {
     @Update
     suspend fun mettreAJour(operation: OperationEnAttenteEntity)
 
-    @Query("SELECT * FROM operation_en_attente WHERE statut = 'EN_ATTENTE' ORDER BY creeLe ASC, id ASC")
-    suspend fun aEnvoyer(): List<OperationEnAttenteEntity>
+    @Query("SELECT * FROM operation_en_attente WHERE utilisateurId = :utilisateurId AND statut = 'EN_ATTENTE' ORDER BY creeLe ASC, id ASC")
+    suspend fun aEnvoyer(utilisateurId: Long): List<OperationEnAttenteEntity>
 
     @Query("SELECT * FROM operation_en_attente WHERE id = :id")
     suspend fun parId(id: Long): OperationEnAttenteEntity?
@@ -34,25 +34,25 @@ interface OperationDao {
     @Query("UPDATE operation_en_attente SET statut = 'EN_ATTENTE', tentatives = 0, prochaineTentativeLe = 0, messageErreur = NULL WHERE id = :id AND statut = 'ECHEC_DEFINITIF'")
     suspend fun relancer(id: Long)
 
-    @Query("SELECT COUNT(*) FROM operation_en_attente WHERE statut IN ('EN_ATTENTE', 'EN_COURS')")
-    fun compterEnAttente(): Flow<Int>
+    @Query("SELECT COUNT(*) FROM operation_en_attente WHERE utilisateurId = :utilisateurId AND statut IN ('EN_ATTENTE', 'EN_COURS')")
+    fun compterEnAttente(utilisateurId: Long): Flow<Int>
 
-    @Query("SELECT COUNT(*) FROM operation_en_attente WHERE statut = 'CONFLIT'")
-    fun compterConflits(): Flow<Int>
+    @Query("SELECT COUNT(*) FROM operation_en_attente WHERE utilisateurId = :utilisateurId AND statut = 'CONFLIT'")
+    fun compterConflits(utilisateurId: Long): Flow<Int>
 
-    @Query("SELECT COUNT(*) FROM operation_en_attente WHERE statut = 'ECHEC_DEFINITIF'")
-    fun compterEchecs(): Flow<Int>
+    @Query("SELECT COUNT(*) FROM operation_en_attente WHERE utilisateurId = :utilisateurId AND statut = 'ECHEC_DEFINITIF'")
+    fun compterEchecs(utilisateurId: Long): Flow<Int>
 
-    @Query("SELECT * FROM operation_en_attente WHERE statut IN ('CONFLIT', 'ECHEC_DEFINITIF') ORDER BY creeLe ASC")
-    fun aTraiter(): Flow<List<OperationEnAttenteEntity>>
+    @Query("SELECT * FROM operation_en_attente WHERE utilisateurId = :utilisateurId AND statut IN ('CONFLIT', 'ECHEC_DEFINITIF') ORDER BY creeLe ASC")
+    fun aTraiter(utilisateurId: Long): Flow<List<OperationEnAttenteEntity>>
 
     /** Saisies hors ligne pas encore synchronisées, pour les superposer aux listes (« en attente »). */
-    @Query("SELECT * FROM operation_en_attente WHERE type IN (:types) AND statut IN ('EN_ATTENTE', 'EN_COURS') ORDER BY creeLe ASC")
-    fun enAttentePourTypes(types: List<String>): Flow<List<OperationEnAttenteEntity>>
+    @Query("SELECT * FROM operation_en_attente WHERE utilisateurId = :utilisateurId AND type IN (:types) AND statut IN ('EN_ATTENTE', 'EN_COURS') ORDER BY creeLe ASC")
+    fun enAttentePourTypes(utilisateurId: Long, types: List<String>): Flow<List<OperationEnAttenteEntity>>
 
     /** Entités d'un type ayant une écriture en attente (superposition « en attente de synchronisation »). */
-    @Query("SELECT entityId FROM operation_en_attente WHERE entityType = :entityType AND statut IN ('EN_ATTENTE', 'EN_COURS')")
-    fun entitesEnAttente(entityType: String): Flow<List<String>>
+    @Query("SELECT entityId FROM operation_en_attente WHERE utilisateurId = :utilisateurId AND entityType = :entityType AND statut IN ('EN_ATTENTE', 'EN_COURS')")
+    fun entitesEnAttente(utilisateurId: Long, entityType: String): Flow<List<String>>
 }
 
 @Dao
@@ -71,4 +71,8 @@ interface CacheDao {
 
     @Query("SELECT * FROM cache_reponse WHERE cle = :cle")
     suspend fun lire(cle: String): CacheReponseEntity?
+
+    /** Déconnexion : les lectures mémorisées d'un compte ne doivent pas rester lisibles pour le suivant. */
+    @Query("DELETE FROM cache_reponse")
+    suspend fun supprimerTout()
 }

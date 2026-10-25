@@ -9,6 +9,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.spipme.app.domain.model.Utilisateur
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -42,6 +43,10 @@ class SessionManager @Inject constructor(
     val permissionsFlow: Flow<Set<String>> = context.sessionDataStore.data.map {
         it[Cles.PERMISSIONS]?.split(",")?.filter(String::isNotBlank)?.toSet().orEmpty()
     }
+    /** Propriétaire des données locales (file d'écritures, cache de lecture) : jamais mélangées entre comptes. */
+    val utilisateurIdFlow: Flow<Long?> = context.sessionDataStore.data.map { it[Cles.UTILISATEUR_ID]?.toLong() }
+    suspend fun utilisateurId(): Long? = utilisateurIdFlow.first()
+
     val nomUtilisateurFlow: Flow<String?> = context.sessionDataStore.data.map { it[Cles.NOM_UTILISATEUR] }
 
     suspend fun enregistrerSession(utilisateur: Utilisateur) {

@@ -13,6 +13,8 @@ data class LoginResponseDto(
 @Serializable
 data class RefreshResponseDto(
     val access: String,
+    // Le backend active la rotation des refresh tokens.
+    val refresh: String? = null,
 )
 
 /**

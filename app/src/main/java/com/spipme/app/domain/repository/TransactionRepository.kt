@@ -21,6 +21,15 @@ interface TransactionRepository {
 
     fun idsAvecOperationEnAttente(): kotlinx.coroutines.flow.Flow<Set<Int>>
 
+    /**
+     * Mouvement de stock (quantité signée : positive = entrée en stock, négative = sortie). Même mécanisme que
+     * [creer] : appel direct, sinon file hors ligne avec la MÊME clé d'idempotence. Le serveur peut accepter un
+     * stock négatif (décision métier ouverte) : la ressource passe alors « critique ».
+     */
+    suspend fun creerMouvementStock(
+        secteurId: Int, ressourceId: Int, quantite: BigDecimal, description: String?, dateTransactionIso: String,
+    ): Resultat<Transaction>
+
     suspend fun creer(
         secteurId: Int,
         type: String,

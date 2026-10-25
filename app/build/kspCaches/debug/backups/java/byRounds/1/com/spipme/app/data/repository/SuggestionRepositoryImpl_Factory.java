@@ -1,5 +1,6 @@
 package com.spipme.app.data.repository;
 
+import com.spipme.app.data.local.CacheLecture;
 import com.spipme.app.data.remote.api.SuggestionApi;
 import dagger.internal.DaggerGenerated;
 import dagger.internal.Factory;
@@ -29,23 +30,28 @@ public final class SuggestionRepositoryImpl_Factory implements Factory<Suggestio
 
   private final Provider<Json> jsonProvider;
 
+  private final Provider<CacheLecture> cacheLectureProvider;
+
   public SuggestionRepositoryImpl_Factory(Provider<SuggestionApi> suggestionApiProvider,
-      Provider<Json> jsonProvider) {
+      Provider<Json> jsonProvider, Provider<CacheLecture> cacheLectureProvider) {
     this.suggestionApiProvider = suggestionApiProvider;
     this.jsonProvider = jsonProvider;
+    this.cacheLectureProvider = cacheLectureProvider;
   }
 
   @Override
   public SuggestionRepositoryImpl get() {
-    return newInstance(suggestionApiProvider.get(), jsonProvider.get());
+    return newInstance(suggestionApiProvider.get(), jsonProvider.get(), cacheLectureProvider.get());
   }
 
   public static SuggestionRepositoryImpl_Factory create(
-      Provider<SuggestionApi> suggestionApiProvider, Provider<Json> jsonProvider) {
-    return new SuggestionRepositoryImpl_Factory(suggestionApiProvider, jsonProvider);
+      Provider<SuggestionApi> suggestionApiProvider, Provider<Json> jsonProvider,
+      Provider<CacheLecture> cacheLectureProvider) {
+    return new SuggestionRepositoryImpl_Factory(suggestionApiProvider, jsonProvider, cacheLectureProvider);
   }
 
-  public static SuggestionRepositoryImpl newInstance(SuggestionApi suggestionApi, Json json) {
-    return new SuggestionRepositoryImpl(suggestionApi, json);
+  public static SuggestionRepositoryImpl newInstance(SuggestionApi suggestionApi, Json json,
+      CacheLecture cacheLecture) {
+    return new SuggestionRepositoryImpl(suggestionApi, json, cacheLecture);
   }
 }

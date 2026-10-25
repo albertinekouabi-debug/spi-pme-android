@@ -30,7 +30,7 @@ data class ResumeAlertesDto(
     val critiques: Int,
     val elevees: Int,
     val moderees: Int,
-    val resolues: Int,
+    val resolues: Int = 0,
 )
 
 @Serializable

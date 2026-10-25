@@ -1,5 +1,8 @@
 package com.spipme.app.data.repository
 
+import com.spipme.app.data.remote.dto.core.SecteurDto
+import com.spipme.app.data.remote.dto.registry.PageDto
+import com.spipme.app.data.local.CacheLecture
 import com.spipme.app.core.network.executerAppelApi
 import com.spipme.app.core.util.Resultat
 import com.spipme.app.data.remote.api.SecteurApi
@@ -13,10 +16,13 @@ import javax.inject.Singleton
 class SecteurRepositoryImpl @Inject constructor(
     private val secteurApi: SecteurApi,
     private val json: Json,
+    private val cacheLecture: CacheLecture,
 ) : SecteurRepository {
 
     override suspend fun mesSecteurs(): Resultat<List<Secteur>> {
-        val reponse = executerAppelApi(json) { secteurApi.mesSecteurs() }
+        val reponse = cacheLecture.lire("secteurs", PageDto.serializer(SecteurDto.serializer())) {
+            executerAppelApi(json) { secteurApi.mesSecteurs() }
+        }
         return when (reponse) {
             is Resultat.Succes -> Resultat.Succes(
                 reponse.donnees.results.map { Secteur(id = it.id, code = it.code, nom = it.nom) }

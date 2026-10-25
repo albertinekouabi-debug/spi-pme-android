@@ -77,6 +77,33 @@ class TransactionRepositoryImpl @Inject constructor(
     override fun idsAvecOperationEnAttente(): kotlinx.coroutines.flow.Flow<Set<Int>> =
         synchronisation.entitesEnAttente("transaction").map { ids -> ids.mapNotNull { it.toIntOrNull() }.toSet() }
 
+    override suspend fun creerMouvementStock(
+        secteurId: Int, ressourceId: Int, quantite: BigDecimal, description: String?, dateTransactionIso: String,
+    ): Resultat<Transaction> {
+        val dto = CreerTransactionRequestDto(
+            type = "mouvement_stock", quantite = quantite.toPlainString(), ressource = ressourceId,
+            description = description, secteur = secteurId, dateTransaction = dateTransactionIso,
+        )
+        val payload = OperationsMetier.jsonObjet(
+            "type" to "mouvement_stock", "quantite" to quantite.toPlainString(), "ressource" to ressourceId,
+            "description" to description, "secteur" to secteurId, "date_transaction" to dateTransactionIso,
+        )
+        val resultat = ecriture.tenterOuEnfiler(
+            cle = ecriture.nouvelleCle(),
+            appel = { cle -> executerAppelApi(json) { transactionApi.creer(cle, dto) } },
+            operation = { cle ->
+                OperationsMetier.creer(
+                    type = "CREER_TRANSACTION", entityType = "transaction", cheminCollection = "transactions/",
+                    payloadJson = payload, refLocale = "$PREFIXE_ID_LOCAL$cle", maintenantMs = System.currentTimeMillis(),
+                ) { cle }
+            },
+        )
+        return when (resultat) {
+            is Resultat.Succes -> Resultat.Succes(resultat.donnees.versDomaine())
+            is Resultat.Echec -> resultat
+        }
+    }
+
     override suspend fun creer(
         secteurId: Int, type: String, montant: BigDecimal?, modePaiement: String?,
         description: String?, dateTransactionIso: String,

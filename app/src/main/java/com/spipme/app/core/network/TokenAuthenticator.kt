@@ -65,11 +65,25 @@ class TokenAuthenticator @Inject constructor(
                 try {
                     val reponse = authApiBrut.refresh(RefreshRequestDto(refresh = refreshToken))
                     if (reponse.isSuccessful) {
-                        reponse.body()?.access?.also { tokenManager.mettreAJourAccessToken(it) }
+                        val corps = reponse.body()
+                        val nouvelAccess = corps?.access?.takeIf { it.isNotBlank() }
+                        val nouveauRefresh = corps?.refresh?.takeIf { it.isNotBlank() }
+                    
+                        if (nouvelAccess != null && nouveauRefresh != null) {
+                            // Enregistrer les deux tokens : l'ancien refresh a ete invalide.
+                            tokenManager.enregistrerTokens(nouvelAccess, nouveauRefresh)
+                            nouvelAccess
+                        } else {
+                            // Reponse incomplete : ne pas continuer avec une session incoherente.
+                            tokenManager.effacerTokens()
+                            null
+                        }
                     } else {
-                        // Refresh token expiré/révoqué : on efface la session, l'UI doit
-                        // rediriger vers l'écran de connexion (observée via estConnecteFlow).
-                        tokenManager.effacerTokens()
+                        // Un rejet du token indique une session a renouveler par reconnexion.
+                        // Une erreur temporaire (429 ou 5xx) ne doit pas effacer la session.
+                        if (reponse.code() == 400 || reponse.code() == 401) {
+                            tokenManager.effacerTokens()
+                        }
                         null
                     }
                 } catch (e: Exception) {

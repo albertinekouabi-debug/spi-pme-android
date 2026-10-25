@@ -1,0 +1,60 @@
+﻿C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\remote\api\AuditApi.kt:3: import com.spipme.app.data.remote.dto.audit.EvenementAuditDto
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\remote\api\AuditApi.kt:4: import com.spipme.app.data.remote.dto.audit.ResumeAuditDto
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\remote\api\AuditApi.kt:11: * Journal d'audit — LECTURE SEULE côté serveur (ReadOnlyModelViewSet +
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\remote\api\AuditApi.kt:14: * Filtres conformes au contrat réel du backend (apps/audit/views.py).
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\remote\api\AuditApi.kt:16: interface AuditApi {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\remote\api\AuditApi.kt:17: @GET("audit-log/")
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\remote\api\AuditApi.kt:27: ): Response<PageDto<EvenementAuditDto>>
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\remote\api\AuditApi.kt:29: @GET("audit-log/summary/")
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\remote\api\AuditApi.kt:34: ): Response<ResumeAuditDto>
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\remote\dto\alerts\AlerteDto.kt:30: val critiques: Int,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\remote\dto\audit\EvenementAuditDto.kt:1: package com.spipme.app.data.remote.dto.audit
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\remote\dto\audit\EvenementAuditDto.kt:6: /** Reflète exactement JournalAuditSerializer côté backend (lecture seule). */
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\remote\dto\audit\EvenementAuditDto.kt:8: data class EvenementAuditDto(
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\remote\dto\audit\EvenementAuditDto.kt:21: /** Reflète exactement l'agrégat de GET /audit-log/summary (total, reussies, avertissements, echecs). */
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\remote\dto\audit\EvenementAuditDto.kt:23: data class ResumeAuditDto(
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\remote\dto\audit\EvenementAuditDto.kt:26: val avertissements: Int,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\remote\dto\audit\EvenementAuditDto.kt:27: val echecs: Int,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AlerteRepositoryImpl.kt:33: is Resultat.Echec -> resultat
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AlerteRepositoryImpl.kt:42: critiques = resultat.donnees.critiques,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AlerteRepositoryImpl.kt:48: is Resultat.Echec -> resultat
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AlerteRepositoryImpl.kt:58: is Resultat.Echec -> resultat
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AlerteRepositoryImpl.kt:66: is Resultat.Echec -> resultat
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AlerteRepositoryImpl.kt:74: is Resultat.Echec -> resultat
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AuditRepositoryImpl.kt:5: import com.spipme.app.data.remote.api.AuditApi
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AuditRepositoryImpl.kt:6: import com.spipme.app.data.remote.dto.audit.EvenementAuditDto
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AuditRepositoryImpl.kt:7: import com.spipme.app.domain.model.EvenementAudit
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AuditRepositoryImpl.kt:8: import com.spipme.app.domain.model.ResumeAudit
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AuditRepositoryImpl.kt:9: import com.spipme.app.domain.repository.AuditRepository
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AuditRepositoryImpl.kt:15: class AuditRepositoryImpl @Inject constructor(
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AuditRepositoryImpl.kt:16: private val auditApi: AuditApi,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AuditRepositoryImpl.kt:18: ) : AuditRepository {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AuditRepositoryImpl.kt:26: ): Resultat<Pair<List<EvenementAudit>, Boolean>> {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AuditRepositoryImpl.kt:28: auditApi.lister(module = module, resultat = resultat, recherche = recherche, page = page)
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AuditRepositoryImpl.kt:34: is Resultat.Echec -> reponse
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AuditRepositoryImpl.kt:42: ): Resultat<ResumeAudit> {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\FactureRepositoryImpl.kt:48: is Resultat.Echec -> reponse
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\FactureRepositoryImpl.kt:53: if (motif.isBlank()) return Resultat.Echec("Le motif d'annulation est obligatoire.")
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\FactureRepositoryImpl.kt:84: is Resultat.Echec -> reponse
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\FactureRepositoryImpl.kt:94: is Resultat.Echec -> reponse
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\FactureRepositoryImpl.kt:104: is Resultat.Echec -> reponse
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\domain\model\Alerte.kt:22: val critiques: Int,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\domain\model\EvenementAudit.kt:3: data class EvenementAudit(
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\domain\model\EvenementAudit.kt:15: data class ResumeAudit(
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\domain\model\EvenementAudit.kt:18: val avertissements: Int,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\domain\model\EvenementAudit.kt:19: val echecs: Int,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\domain\model\Pilotage.kt:4: data class Kpi(val libelle: String, val valeur: String?, val detail: String? = null)
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\domain\model\Pilotage.kt:8: /** `niveau` : "critique" | "attention" | "info". Faits, projection et recommandation restent séparés. */
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\domain\model\Pilotage.kt:22: data class Pilotage(val kpis: List<Kpi>, val insights: List<Insight>, val horsLigneDepuis: Long?)
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\domain\repository\AuditRepository.kt:4: import com.spipme.app.domain.model.EvenementAudit
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\domain\repository\AuditRepository.kt:5: import com.spipme.app.domain.model.ResumeAudit
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\domain\repository\AuditRepository.kt:8: * Journal d'audit : LECTURE SEULE. Aucune méthode de modification ou de
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\domain\repository\AuditRepository.kt:12: interface AuditRepository {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\domain\repository\AuditRepository.kt:18: ): Resultat<Pair<List<EvenementAudit>, Boolean>>
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\domain\repository\AuditRepository.kt:24: ): Resultat<ResumeAudit>
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\domain\repository\FactureRepository.kt:9: /** Hors ligne (et seulement si le réseau est la cause de l'échec) : sert la dernière page lue en cache. */
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\domain\repository\FactureRepository.kt:19: * revalide (droits, état, période clôturée) ; un refus remonte comme opération en échec.
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\alerts\AlertsScreen.kt:24: import androidx.compose.material.icons.filled.Warning
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\alerts\AlertsScreen.kt:54: surClicProfil: () -> Unit,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\alerts\AlertsScreen.kt:65: surClicProfil = surClicProfil,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\alerts\AlertsScreen.kt:78: surClicProfil: () -> Unit,

@@ -1,5 +1,6 @@
 package com.spipme.app.data.local
 
+import com.spipme.app.core.security.SessionManager
 import com.spipme.app.core.util.Resultat
 import com.spipme.app.data.local.dao.CacheDao
 import com.spipme.app.data.local.entity.CacheReponseEntity
@@ -20,6 +21,7 @@ import javax.inject.Singleton
 class CacheLecture @Inject constructor(
     private val dao: CacheDao,
     private val json: Json,
+    private val sessionManager: SessionManager,
 ) {
     suspend fun <T> lire(cle: String, serializer: KSerializer<T>, appel: suspend () -> Resultat<T>): Resultat<T> =
         when (val r = lireAvecOrigine(cle, serializer, appel)) {
@@ -34,16 +36,18 @@ class CacheLecture @Inject constructor(
     suspend fun <T> lireAvecOrigine(
         cle: String, serializer: KSerializer<T>, appel: suspend () -> Resultat<T>,
     ): Resultat<Pair<T, Long?>> {
+        // Clé propre au compte : un autre utilisateur du même téléphone ne relit jamais ce cache.
+        val cleUtilisateur = sessionManager.utilisateurId()?.let { "u$it:$cle" }
         return when (val resultat = appel()) {
             is Resultat.Succes -> {
-                runCatching {
-                    dao.enregistrer(CacheReponseEntity(cle, json.encodeToString(serializer, resultat.donnees), System.currentTimeMillis()))
+                if (cleUtilisateur != null) runCatching {
+                    dao.enregistrer(CacheReponseEntity(cleUtilisateur, json.encodeToString(serializer, resultat.donnees), System.currentTimeMillis()))
                 }
                 Resultat.Succes(resultat.donnees to null)
             }
             is Resultat.Echec -> {
                 if (!resultat.reseau) return resultat
-                val entree = dao.lire(cle)
+                val entree = cleUtilisateur?.let { dao.lire(it) }
                 val valeur = entree?.let { runCatching { json.decodeFromString(serializer, it.json) }.getOrNull() }
                 if (entree != null && valeur != null) Resultat.Succes(valeur to entree.majLe) else resultat
             }

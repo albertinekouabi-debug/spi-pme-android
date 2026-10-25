@@ -1,0 +1,506 @@
+﻿C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\network\ApiCallHandler.kt:15: *  - échec HTTP -> parse le corps d'erreur avec le format homogène du
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\network\ApiCallHandler.kt:28: Resultat.Echec("Réponse vide inattendue du serveur.")
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\network\ApiCallHandler.kt:39: Resultat.Echec(
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\network\ApiCallHandler.kt:45: Resultat.Echec("Impossible de contacter le serveur. Vérifiez votre connexion.", reseau = true)
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\network\ApiCallHandler.kt:47: Resultat.Echec("Une erreur inattendue est survenue : ${e.message ?: e::class.simpleName}")
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\network\NetworkModule.kt:148: fun fournirAuditApi(@ClientAuthentifie retrofit: Retrofit): com.spipme.app.data.remote.api.AuditApi =
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\network\NetworkModule.kt:149: retrofit.create(com.spipme.app.data.remote.api.AuditApi::class.java)
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\network\TokenAuthenticator.kt:22: * CORRECTIF CONCURRENCE (audit du 13/09/2026) : le backend fait tourner le
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\network\TokenAuthenticator.kt:33: * application ici (5 requêtes concurrentes : 5 échecs sans le correctif,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\network\TokenAuthenticator.kt:34: * 0 échec avec).
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\network\TokenAuthenticator.kt:51: val tokenEnEchec = jetonDeLaRequeteEnEchec(response)
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\network\TokenAuthenticator.kt:58: if (!tokenActuel.isNullOrBlank() && tokenActuel != tokenEnEchec) {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\network\TokenAuthenticator.kt:98: /** Le token que PORTAIT la requête en échec (pas celui, potentiellement déjà mis à jour, du TokenManager). */
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\network\TokenAuthenticator.kt:99: private fun jetonDeLaRequeteEnEchec(response: Response): String? =
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\notifications\NotificationBadgeManager.kt:21: * Source unique du badge de notifications (audit — remplaçait un `0` codé en
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\notifications\NotificationBadgeManager.kt:24: * duplication signalée dans l'audit précédent).
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\notifications\NotificationBadgeManager.kt:32: * dernière Activity) plutôt que `Singleton` : évite de garder un compteur
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\notifications\NotificationBadgeManager.kt:61: _compte.value = r.critiques + r.elevees + r.moderees
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\notifications\NotificationBadgeManager.kt:63: is Resultat.Echec -> {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\notifications\NotificationBadgeManager.kt:64: // Échec réseau : on conserve la dernière valeur connue plutôt que
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\security\SessionManager.kt:20: * Profil de l'utilisateur connecté, mis en cache localement après connexion
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\security\SessionManager.kt:24: * détail d'authentification réseau, ce profil est une donnée d'application.
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\security\SessionManager.kt:57: // Connexion hors ligne : le profil local n'a pas de permissions ; on conserve celles
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\security\TokenManager.kt:20: * SÉCURITÉ : contrairement au reste des préférences de l'app (profil,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\security\TokenManager.kt:24: * n'est pas critique, mais le refresh token vit 14 jours (§8.3 backend) —
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\sync\EtatSynchronisation.kt:4: enum class ResumeSynchronisation { HORS_LIGNE, CONFLITS, ECHECS, EN_COURS, EN_ATTENTE, A_JOUR }
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\sync\EtatSynchronisation.kt:10: val echecs: Int = 0,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\sync\EtatSynchronisation.kt:14: * Priorité volontaire : un conflit ou un échec exige une décision humaine et doit toujours
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\sync\EtatSynchronisation.kt:21: echecs > 0 -> ResumeSynchronisation.ECHECS
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\sync\EtatSynchronisation.kt:32: ResumeSynchronisation.ECHECS -> "$echecs opération${s(echecs)} en échec"
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\sync\OperationEnAttente.kt:8: *        └──échec transitoire─┘   (nouvelle tentative après un délai croissant)
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\sync\OperationEnAttente.kt:11: *   ECHEC_DEFINITIF  : refus métier/validation (4xx) ou trop de tentatives — attend une action de l'utilisateur.
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\sync\OperationEnAttente.kt:13: enum class StatutOperation { EN_ATTENTE, EN_COURS, CONFLIT, ECHEC_DEFINITIF }
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\sync\OperationEnAttente.kt:50: /** Deux opérations d'une même entité sont rejouées dans l'ordre : une en échec bloque les suivantes. */
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\sync\OperationsMetier.kt:8: * moment de la synchronisation ; leur éventuel refus remonte comme échec définitif visible.
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\sync\SyncContracts.kt:8: /** Pas de réseau / timeout / connexion coupée : réessayer plus tard, sans compter d'échec. */
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\sync\SyncEngine.kt:11: val echecsDefinitifs: Int = 0,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\sync\SyncEngine.kt:13: val bloquees: Int = 0,       // dépendent d'une opération en échec/conflit/non résolue
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\sync\SyncEngine.kt:21: *  - ordre FIFO, et une opération en échec/conflit bloque les suivantes de la MÊME entité (jamais de
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\sync\SyncEngine.kt:95: statut = StatutOperation.ECHEC_DEFINITIF, tentatives = tentatives, derniereTentativeLe = maintenant,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\sync\SyncEngine.kt:98: bilan = bilan.copy(echecsDefinitifs = bilan.echecsDefinitifs + 1)
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\sync\SyncEngine.kt:109: statut = StatutOperation.ECHEC_DEFINITIF, tentatives = operation.tentatives + 1,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\sync\SyncEngine.kt:113: bilan = bilan.copy(echecsDefinitifs = bilan.echecsDefinitifs + 1)
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\sync\android\EcritureHorsLigne.kt:14: * Cas critique : la requête est arrivée au serveur mais la réponse s'est perdue (coupure) → l'appel est
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\sync\android\EcritureHorsLigne.kt:30: if (resultat is Resultat.Echec && resultat.reseau) {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\sync\android\EcritureHorsLigne.kt:32: return Resultat.Echec(
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\sync\android\PasserelleOkHttp.kt:31: *  - X-Request-ID    : même valeur, pour relier journal d'audit serveur et opération locale ;
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\sync\android\PasserelleOkHttp.kt:49: // Origine auditable côté serveur : cette requête est un REJEU de la file (saisie faite sans réseau).
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\sync\android\SynchronisationRepository.kt:99: pourUtilisateur<Int>(0) { dao.compterEchecs(it) },
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\sync\android\SynchronisationRepository.kt:101: ) { enLigne, enAttente, conflits, echecs, enCours ->
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\sync\android\SynchronisationRepository.kt:102: EtatSynchronisation(enLigne, enAttente, conflits, echecs, enCours)
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\sync\android\SynchronisationRepository.kt:147: if (op.statut == StatutOperation.CONFLIT.name || op.statut == StatutOperation.ECHEC_DEFINITIF.name) dao.supprimer(id)
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\util\Resultat.kt:5: data class Echec(
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\util\Resultat.kt:8: /** Vrai si l'échec vient de l'absence de réseau (IOException) : seul cas où un cache local peut répondre. */
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\util\Resultat.kt:23: inline fun <T> Resultat<T>.surEchec(action: (String) -> Unit): Resultat<T> {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\core\util\Resultat.kt:24: if (this is Resultat.Echec) action(message)
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\local\CacheLecture.kt:14: *  - succès → la réponse est mémorisée (un échec d'écriture du cache ne fait JAMAIS échouer la lecture) ;
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\local\CacheLecture.kt:15: *  - échec causé par le RÉSEAU → dernière réponse mémorisée, si elle existe et se relit ;
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\local\CacheLecture.kt:16: *  - tout autre échec (403, 400, 5xx...) est renvoyé tel quel : de vieilles données ne doivent pas masquer
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\local\CacheLecture.kt:29: is Resultat.Echec -> r
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\local\CacheLecture.kt:48: is Resultat.Echec -> {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\local\dao\SyncDaos.kt:34: @Query("UPDATE operation_en_attente SET statut = 'EN_ATTENTE', tentatives = 0, prochaineTentativeLe = 0, messageErreur = NULL WHERE id = :id AND statut = 'ECHEC_DEFINITIF'")
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\local\dao\SyncDaos.kt:43: @Query("SELECT COUNT(*) FROM operation_en_attente WHERE utilisateurId = :utilisateurId AND statut = 'ECHEC_DEFINITIF'")
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\local\dao\SyncDaos.kt:44: fun compterEchecs(utilisateurId: Long): Flow<Int>
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\local\dao\SyncDaos.kt:46: @Query("SELECT * FROM operation_en_attente WHERE utilisateurId = :utilisateurId AND statut IN ('CONFLIT', 'ECHEC_DEFINITIF') ORDER BY creeLe ASC")
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\remote\api\AnalyticsApi.kt:6: import com.spipme.app.data.remote.dto.analytics.KpisDto
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\remote\api\AnalyticsApi.kt:14: @GET("analytics/kpis")
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\remote\api\AnalyticsApi.kt:15: suspend fun kpis(@Query("secteur") secteurId: Int): Response<KpisDto>
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\remote\api\AuditApi.kt:3: import com.spipme.app.data.remote.dto.audit.EvenementAuditDto
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\remote\api\AuditApi.kt:4: import com.spipme.app.data.remote.dto.audit.ResumeAuditDto
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\remote\api\AuditApi.kt:11: * Journal d'audit — LECTURE SEULE côté serveur (ReadOnlyModelViewSet +
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\remote\api\AuditApi.kt:14: * Filtres conformes au contrat réel du backend (apps/audit/views.py).
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\remote\api\AuditApi.kt:16: interface AuditApi {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\remote\api\AuditApi.kt:17: @GET("audit-log/")
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\remote\api\AuditApi.kt:27: ): Response<PageDto<EvenementAuditDto>>
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\remote\api\AuditApi.kt:29: @GET("audit-log/summary/")
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\remote\api\AuditApi.kt:34: ): Response<ResumeAuditDto>
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\remote\api\MoiApi.kt:4: import com.spipme.app.data.remote.dto.MettreAJourProfilRequestDto
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\remote\api\MoiApi.kt:14: suspend fun obtenirProfil(): Response<UtilisateurDto>
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\remote\api\MoiApi.kt:18: suspend fun mettreAJourProfil(@Body body: MettreAJourProfilRequestDto): Response<UtilisateurDto>
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\remote\dto\MoiDto.kt:8: data class MettreAJourProfilRequestDto(
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\remote\dto\alerts\AlerteDto.kt:30: val critiques: Int,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\remote\dto\analytics\AnalyticsDto.kt:22: data class KpisDto(
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\remote\dto\analytics\AnalyticsDto.kt:32: @SerialName("ressources_critiques") val ressourcesCritiques: CompteDto = CompteDto(),
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\remote\dto\audit\EvenementAuditDto.kt:1: package com.spipme.app.data.remote.dto.audit
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\remote\dto\audit\EvenementAuditDto.kt:6: /** Reflète exactement JournalAuditSerializer côté backend (lecture seule). */
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\remote\dto\audit\EvenementAuditDto.kt:8: data class EvenementAuditDto(
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\remote\dto\audit\EvenementAuditDto.kt:21: /** Reflète exactement l'agrégat de GET /audit-log/summary (total, reussies, avertissements, echecs). */
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\remote\dto\audit\EvenementAuditDto.kt:23: data class ResumeAuditDto(
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\remote\dto\audit\EvenementAuditDto.kt:26: val avertissements: Int,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\remote\dto\audit\EvenementAuditDto.kt:27: val echecs: Int,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\remote\dto\resources\RessourceDto.kt:14: @SerialName("seuil_critique") val seuilCritique: String? = null,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\remote\dto\resources\RessourceDto.kt:29: val critiques: Int,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\remote\dto\resources\RessourceDto.kt:41: @SerialName("seuil_critique") val seuilCritique: String? = null,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AdminRepositoryImpl.kt:28: is Resultat.Echec -> reponse
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AdminRepositoryImpl.kt:56: is Resultat.Echec -> reponse
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AdminRepositoryImpl.kt:63: is Resultat.Echec -> reponse
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AdminRepositoryImpl.kt:73: is Resultat.Echec -> reponse
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AlerteRepositoryImpl.kt:33: is Resultat.Echec -> resultat
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AlerteRepositoryImpl.kt:42: critiques = resultat.donnees.critiques,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AlerteRepositoryImpl.kt:48: is Resultat.Echec -> resultat
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AlerteRepositoryImpl.kt:58: is Resultat.Echec -> resultat
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AlerteRepositoryImpl.kt:66: is Resultat.Echec -> resultat
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AlerteRepositoryImpl.kt:74: is Resultat.Echec -> resultat
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AnalyticsRepositoryImpl.kt:10: import com.spipme.app.data.remote.dto.analytics.KpisDto
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AnalyticsRepositoryImpl.kt:14: import com.spipme.app.domain.model.Kpi
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AnalyticsRepositoryImpl.kt:36: val kpis = async {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AnalyticsRepositoryImpl.kt:37: cacheLecture.lireAvecOrigine("pilotage-kpis:$secteurId", KpisDto.serializer()) {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AnalyticsRepositoryImpl.kt:38: executerAppelApi(json) { api.kpis(secteurId) }
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AnalyticsRepositoryImpl.kt:46: val k = kpis.await()
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AnalyticsRepositoryImpl.kt:49: k is Resultat.Echec -> k
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AnalyticsRepositoryImpl.kt:50: i is Resultat.Echec -> i
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AnalyticsRepositoryImpl.kt:52: val (kpisDto, origineK) = (k as Resultat.Succes).donnees
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AnalyticsRepositoryImpl.kt:56: Resultat.Succes(Pilotage(versKpis(kpisDto), insightsDto.insights.map { it.versDomaine() }, depuis))
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AnalyticsRepositoryImpl.kt:67: is Resultat.Echec -> reponse
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AnalyticsRepositoryImpl.kt:71: private fun versKpis(k: KpisDto): List<Kpi> = listOf(
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AnalyticsRepositoryImpl.kt:77: Kpi(
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AnalyticsRepositoryImpl.kt:81: Kpi("Ressources critiques", k.ressourcesCritiques.nb.toString(), "${k.ressourcesASurveiller.nb} à surveiller"),
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AnalyticsRepositoryImpl.kt:85: private fun mesure(libelle: String, m: MesureDto, variation: Double?) = Kpi(
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AuditRepositoryImpl.kt:5: import com.spipme.app.data.remote.api.AuditApi
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AuditRepositoryImpl.kt:6: import com.spipme.app.data.remote.dto.audit.EvenementAuditDto
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AuditRepositoryImpl.kt:7: import com.spipme.app.domain.model.EvenementAudit
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AuditRepositoryImpl.kt:8: import com.spipme.app.domain.model.ResumeAudit
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AuditRepositoryImpl.kt:9: import com.spipme.app.domain.repository.AuditRepository
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AuditRepositoryImpl.kt:15: class AuditRepositoryImpl @Inject constructor(
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AuditRepositoryImpl.kt:16: private val auditApi: AuditApi,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AuditRepositoryImpl.kt:18: ) : AuditRepository {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AuditRepositoryImpl.kt:26: ): Resultat<Pair<List<EvenementAudit>, Boolean>> {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AuditRepositoryImpl.kt:28: auditApi.lister(module = module, resultat = resultat, recherche = recherche, page = page)
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AuditRepositoryImpl.kt:34: is Resultat.Echec -> reponse
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AuditRepositoryImpl.kt:42: ): Resultat<ResumeAudit> {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AuditRepositoryImpl.kt:44: auditApi.resume(module = module, resultat = resultat, recherche = recherche)
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AuditRepositoryImpl.kt:48: ResumeAudit(
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AuditRepositoryImpl.kt:51: avertissements = reponse.donnees.avertissements,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AuditRepositoryImpl.kt:52: echecs = reponse.donnees.echecs,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AuditRepositoryImpl.kt:55: is Resultat.Echec -> reponse
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AuditRepositoryImpl.kt:60: private fun EvenementAuditDto.versDomaine() = EvenementAudit(
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AuthRepositoryImpl.kt:47: is Resultat.Echec -> resultat
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AuthRepositoryImpl.kt:53: ?: return Resultat.Echec("Aucun compte synchronisé sur cet appareil pour cet identifiant. Une première connexion en ligne est nécessaire.")
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AuthRepositoryImpl.kt:57: return Resultat.Echec("Identifiant ou mot de passe incorrect.")
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AuthRepositoryImpl.kt:103: is Resultat.Echec -> resultat
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AuthRepositoryImpl.kt:113: is Resultat.Echec -> resultat
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\AuthRepositoryImpl.kt:123: is Resultat.Echec -> resultat
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\EntiteRepositoryImpl.kt:38: is Resultat.Echec -> resultat
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\EntiteRepositoryImpl.kt:52: is Resultat.Echec -> resultat
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\EntiteRepositoryImpl.kt:78: is Resultat.Echec -> resultat
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\FactureRepositoryImpl.kt:48: is Resultat.Echec -> reponse
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\FactureRepositoryImpl.kt:53: if (motif.isBlank()) return Resultat.Echec("Le motif d'annulation est obligatoire.")
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\FactureRepositoryImpl.kt:84: is Resultat.Echec -> reponse
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\FactureRepositoryImpl.kt:94: is Resultat.Echec -> reponse
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\FactureRepositoryImpl.kt:104: is Resultat.Echec -> reponse
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\ImportRepositoryImpl.kt:33: is Resultat.Echec -> resultat
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\ImportRepositoryImpl.kt:50: is Resultat.Echec -> resultat
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\ImportRepositoryImpl.kt:59: is Resultat.Echec -> resultat
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\MoiRepositoryImpl.kt:7: import com.spipme.app.data.remote.dto.MettreAJourProfilRequestDto
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\MoiRepositoryImpl.kt:21: override suspend fun obtenirProfil(): Resultat<Utilisateur> {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\MoiRepositoryImpl.kt:22: val reponse = executerAppelApi(json) { moiApi.obtenirProfil() }
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\MoiRepositoryImpl.kt:25: is Resultat.Echec -> reponse
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\MoiRepositoryImpl.kt:29: override suspend fun mettreAJourProfil(nomComplet: String?, telephone: String?): Resultat<Utilisateur> {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\MoiRepositoryImpl.kt:31: moiApi.mettreAJourProfil(MettreAJourProfilRequestDto(nomComplet = nomComplet, telephone = telephone))
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\MoiRepositoryImpl.kt:35: is Resultat.Echec -> reponse
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\MoiRepositoryImpl.kt:47: is Resultat.Echec -> reponse
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\RessourceRepositoryImpl.kt:41: is Resultat.Echec -> resultat
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\RessourceRepositoryImpl.kt:51: critiques = resultat.donnees.critiques,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\RessourceRepositoryImpl.kt:56: is Resultat.Echec -> resultat
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\RessourceRepositoryImpl.kt:66: is Resultat.Echec -> resultat
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\RessourceRepositoryImpl.kt:71: ressource: Ressource, nom: String, emplacement: String?, seuilCritique: BigDecimal?, seuilAlerte: BigDecimal?,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\RessourceRepositoryImpl.kt:76: "seuil_critique" to seuilCritique?.toPlainString(), "seuil_alerte" to seuilAlerte?.toPlainString(),
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\RessourceRepositoryImpl.kt:98: is Resultat.Echec -> resultat
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\RessourceRepositoryImpl.kt:104: niveauActuel: BigDecimal, seuilCritique: BigDecimal?, seuilAlerte: BigDecimal?, emplacement: String?,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\RessourceRepositoryImpl.kt:108: niveauActuel = niveauActuel.toPlainString(), seuilCritique = seuilCritique?.toPlainString(),
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\RessourceRepositoryImpl.kt:113: "niveau_actuel" to niveauActuel.toPlainString(), "seuil_critique" to seuilCritique?.toPlainString(),
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\RessourceRepositoryImpl.kt:129: is Resultat.Echec -> resultat
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\RessourceRepositoryImpl.kt:141: seuilCritique = seuilCritique?.let { BigDecimal(it) },
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\SecteurRepositoryImpl.kt:30: is Resultat.Echec -> reponse
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\SuggestionRepositoryImpl.kt:36: is Resultat.Echec -> resultat
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\SuggestionRepositoryImpl.kt:54: is Resultat.Echec -> resultat
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\SuggestionRepositoryImpl.kt:62: is Resultat.Echec -> resultat
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\SuggestionRepositoryImpl.kt:70: is Resultat.Echec -> resultat
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\SuggestionRepositoryImpl.kt:78: is Resultat.Echec -> resultat
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\TacheRepositoryImpl.kt:40: is Resultat.Echec -> resultat
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\TacheRepositoryImpl.kt:55: is Resultat.Echec -> resultat
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\TacheRepositoryImpl.kt:63: is Resultat.Echec -> resultat
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\TacheRepositoryImpl.kt:91: is Resultat.Echec -> resultat
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\TacheRepositoryImpl.kt:101: is Resultat.Echec -> resultat
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\TransactionRepositoryImpl.kt:40: is Resultat.Echec -> resultat
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\TransactionRepositoryImpl.kt:55: is Resultat.Echec -> resultat
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\TransactionRepositoryImpl.kt:63: is Resultat.Echec -> resultat
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\TransactionRepositoryImpl.kt:68: if (motif.isBlank()) return Resultat.Echec("Le motif de la contre-écriture est obligatoire.")
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\TransactionRepositoryImpl.kt:103: is Resultat.Echec -> resultat
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\data\repository\TransactionRepositoryImpl.kt:132: is Resultat.Echec -> resultat
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\di\RepositoryModule.kt:4: import com.spipme.app.data.repository.AuditRepositoryImpl
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\di\RepositoryModule.kt:18: import com.spipme.app.domain.repository.AuditRepository
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\di\RepositoryModule.kt:75: abstract fun lierAuditRepository(impl: AuditRepositoryImpl): AuditRepository
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\domain\model\Alerte.kt:22: val critiques: Int,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\domain\model\EvenementAudit.kt:3: data class EvenementAudit(
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\domain\model\EvenementAudit.kt:15: data class ResumeAudit(
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\domain\model\EvenementAudit.kt:18: val avertissements: Int,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\domain\model\EvenementAudit.kt:19: val echecs: Int,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\domain\model\Pilotage.kt:4: data class Kpi(val libelle: String, val valeur: String?, val detail: String? = null)
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\domain\model\Pilotage.kt:8: /** `niveau` : "critique" | "attention" | "info". Faits, projection et recommandation restent séparés. */
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\domain\model\Pilotage.kt:22: data class Pilotage(val kpis: List<Kpi>, val insights: List<Insight>, val horsLigneDepuis: Long?)
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\domain\model\Ressource.kt:12: val seuilCritique: BigDecimal?,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\domain\model\Ressource.kt:30: val seuilsConfigures: Boolean get() = seuilCritique != null && seuilAlerte != null
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\domain\model\Ressource.kt:35: val critiques: Int,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\domain\repository\AnalyticsRepository.kt:8: /** KPI + insights ; hors ligne, la dernière analyse mémorisée (mention de sa date). Calcul DISTANT (serveur). */
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\domain\repository\AuditRepository.kt:4: import com.spipme.app.domain.model.EvenementAudit
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\domain\repository\AuditRepository.kt:5: import com.spipme.app.domain.model.ResumeAudit
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\domain\repository\AuditRepository.kt:8: * Journal d'audit : LECTURE SEULE. Aucune méthode de modification ou de
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\domain\repository\AuditRepository.kt:12: interface AuditRepository {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\domain\repository\AuditRepository.kt:18: ): Resultat<Pair<List<EvenementAudit>, Boolean>>
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\domain\repository\AuditRepository.kt:24: ): Resultat<ResumeAudit>
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\domain\repository\FactureRepository.kt:9: /** Hors ligne (et seulement si le réseau est la cause de l'échec) : sert la dernière page lue en cache. */
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\domain\repository\FactureRepository.kt:19: * revalide (droits, état, période clôturée) ; un refus remonte comme opération en échec.
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\domain\repository\MoiRepository.kt:7: * Profil de l'utilisateur connecté. PATCH volontairement restreint à
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\domain\repository\MoiRepository.kt:13: suspend fun obtenirProfil(): Resultat<Utilisateur>
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\domain\repository\MoiRepository.kt:14: suspend fun mettreAJourProfil(nomComplet: String?, telephone: String?): Resultat<Utilisateur>
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\domain\repository\RessourceRepository.kt:22: ressource: Ressource, nom: String, emplacement: String?, seuilCritique: BigDecimal?, seuilAlerte: BigDecimal?,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\domain\repository\RessourceRepository.kt:32: seuilCritique: BigDecimal?,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\domain\repository\TransactionRepository.kt:27: * stock négatif (décision métier ouverte) : la ressource passe alors « critique ».
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\admin\AdminScreen.kt:67: surClicProfil: () -> Unit,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\admin\AdminScreen.kt:90: surClicProfil = surClicProfil,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\admin\AdminViewModel.kt:63: is Resultat.Echec -> _uiState.update {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\admin\AdminViewModel.kt:95: is Resultat.Echec -> _uiState.update {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\admin\AdminViewModel.kt:139: is Resultat.Echec -> _uiState.update {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\admin\AdminViewModel.kt:158: is Resultat.Echec -> _uiState.update {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\alerts\AlertsScreen.kt:24: import androidx.compose.material.icons.filled.Warning
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\alerts\AlertsScreen.kt:54: surClicProfil: () -> Unit,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\alerts\AlertsScreen.kt:65: surClicProfil = surClicProfil,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\alerts\AlertsScreen.kt:78: surClicProfil: () -> Unit,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\alerts\AlertsScreen.kt:101: surClicProfil = surClicProfil,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\alerts\AlertsScreen.kt:112: "Surveillez les points critiques de votre activité",
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\alerts\AlertsScreen.kt:186: Triple("Critique", resume.critiques, MaterialTheme.colorScheme.error),
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\alerts\AlertsScreen.kt:187: Triple("Élevée", resume.elevees, SpiPmeTheme.extendedColors.avertissement),
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\alerts\AlertsScreen.kt:211: "critique" -> MaterialTheme.colorScheme.error
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\alerts\AlertsScreen.kt:212: "elevee" -> SpiPmeTheme.extendedColors.avertissement
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\alerts\AlertsScreen.kt:216: "critique" -> Icons.Filled.Warning
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\alerts\AlertsScreen.kt:217: "elevee" -> Icons.Filled.Warning
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\alerts\AlertsScreen.kt:270: resume = ResumeAlertes(critiques = 5, elevees = 8, moderees = 12, resolues = 24),
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\alerts\AlertsScreen.kt:272: Alerte(1, "stock_critique", "critique", "Stock critique : Lait en poudre", "Stock actuel : 2 unités restantes.", "active", "Lait en poudre", null, null, null, 1, "2026-07-28", null),
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\alerts\AlertsScreen.kt:275: surClicNotifications = {}, surClicProfil = {}, surClicSecteur = {},
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\alerts\AlertsUiState.kt:8: CRITIQUES("Critiques", "critique", "active"),
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\alerts\AlertsViewModel.kt:64: is Resultat.Echec -> _uiState.update { it.copy(enCoursDeGeneration = false, messageErreur = resultat.message) }
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\alerts\AlertsViewModel.kt:73: is Resultat.Echec -> _uiState.update { it.copy(messageErreur = resultat.message) }
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\alerts\AlertsViewModel.kt:82: is Resultat.Echec -> _uiState.update { it.copy(messageErreur = resultat.message) }
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\alerts\AlertsViewModel.kt:100: is Resultat.Echec -> _uiState.update { it.copy(messageErreur = resultat.message) }
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\alerts\AlertsViewModel.kt:111: is Resultat.Echec -> _uiState.update { it.copy(messageErreur = resultat.message) }
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\audit\AuditScreen.kt:1: package com.spipme.app.ui.audit
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\audit\AuditScreen.kt:20: import androidx.compose.material.icons.filled.WarningAmber
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\audit\AuditScreen.kt:39: import com.spipme.app.domain.model.EvenementAudit
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\audit\AuditScreen.kt:40: import com.spipme.app.domain.model.ResumeAudit
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\audit\AuditScreen.kt:46: * Journal d'audit — LECTURE SEULE. Aucune action de modification ou de
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\audit\AuditScreen.kt:49: * Accès restreint par la permission `audit.read` (rôles Administrateur et
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\audit\AuditScreen.kt:50: * Auditeur) — contrôle appliqué côté serveur, pas seulement masqué ici.
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\audit\AuditScreen.kt:53: fun AuditScreen(
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\audit\AuditScreen.kt:55: surClicProfil: () -> Unit,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\audit\AuditScreen.kt:57: viewModel: AuditViewModel = hiltViewModel(),
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\audit\AuditScreen.kt:69: surClicProfil = surClicProfil,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\audit\AuditScreen.kt:83: "Journal d'audit",
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\audit\AuditScreen.kt:102: item { CartesResumeAudit(resume) }
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\audit\AuditScreen.kt:106: FiltresAudit(
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\audit\AuditScreen.kt:120: LigneEvenementAudit(evenement)
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\audit\AuditScreen.kt:143: private fun CartesResumeAudit(resume: ResumeAudit) {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\audit\AuditScreen.kt:149: Triple("Avertissements", resume.avertissements, SpiPmeTheme.extendedColors.avertissement),
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\audit\AuditScreen.kt:150: Triple("Échecs", resume.echecs, MaterialTheme.colorScheme.error),
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\audit\AuditScreen.kt:181: private fun FiltresAudit(filtreResultat: String?, surSelectionResultat: (String?) -> Unit) {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\audit\AuditScreen.kt:182: val options = listOf(null to "Tous", "reussi" to "Réussis", "avertissement" to "Avertissements", "echec" to "Échecs")
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\audit\AuditScreen.kt:195: private fun LigneEvenementAudit(evenement: EvenementAudit) {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\audit\AuditScreen.kt:198: "avertissement" -> SpiPmeTheme.extendedColors.avertissement
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\audit\AuditScreen.kt:203: "avertissement" -> Icons.Filled.WarningAmber
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\audit\AuditScreen.kt:273: "Aucun événement d'audit ne correspond à ces critères.",
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\audit\AuditUiState.kt:1: package com.spipme.app.ui.audit
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\audit\AuditUiState.kt:3: import com.spipme.app.domain.model.EvenementAudit
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\audit\AuditUiState.kt:4: import com.spipme.app.domain.model.ResumeAudit
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\audit\AuditUiState.kt:6: data class AuditUiState(
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\audit\AuditUiState.kt:10: val evenements: List<EvenementAudit> = emptyList(),
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\audit\AuditUiState.kt:11: val resume: ResumeAudit? = null,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\audit\AuditViewModel.kt:1: package com.spipme.app.ui.audit
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\audit\AuditViewModel.kt:7: import com.spipme.app.domain.repository.AuditRepository
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\audit\AuditViewModel.kt:21: class AuditViewModel @Inject constructor(
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\audit\AuditViewModel.kt:22: private val auditRepository: AuditRepository,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\audit\AuditViewModel.kt:26: private val _uiState = MutableStateFlow(AuditUiState())
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\audit\AuditViewModel.kt:27: val uiState: StateFlow<AuditUiState> = _uiState.asStateFlow()
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\audit\AuditViewModel.kt:69: val resultat = auditRepository.lister(
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\audit\AuditViewModel.kt:83: is Resultat.Echec -> _uiState.update {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\audit\AuditViewModel.kt:89: val resultat = auditRepository.obtenirResume(
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\audit\AuditViewModel.kt:97: // Un échec du seul résumé ne doit pas masquer la liste : l'erreur
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\audit\AuditViewModel.kt:111: val resultat = auditRepository.lister(
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\audit\AuditViewModel.kt:126: is Resultat.Echec -> _uiState.update {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\auth\login\LoginViewModel.kt:51: is Resultat.Echec -> _uiState.update {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\auth\motdepasseoublie\MotDePasseOublieScreen.kt:42: * cf. audit — le bouton ne faisait rien auparavant).
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\auth\motdepasseoublie\MotDePasseOublieViewModel.kt:16: * Écran "Mot de passe oublié" (absent à l'audit initial — lien non câblé
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\auth\motdepasseoublie\MotDePasseOublieViewModel.kt:59: is Resultat.Echec -> _uiState.update { it.copy(enCours = false, messageErreur = resultat.message) }
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\auth\motdepasseoublie\MotDePasseOublieViewModel.kt:76: is Resultat.Echec -> _uiState.update { it.copy(enCours = false, messageErreur = resultat.message) }
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\auth\offline\OfflineLoginViewModel.kt:55: is Resultat.Echec -> _uiState.update {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\auth\register\RegisterViewModel.kt:67: is Resultat.Echec -> _uiState.update { it.copy(enCoursDInscription = false, messageErreur = resultat.message) }
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\compliance\ComplianceScreen.kt:59: surClicProfil: () -> Unit,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\compliance\ComplianceScreen.kt:85: surClicProfil = surClicProfil,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\compliance\ComplianceScreen.kt:226: else -> SpiPmeTheme.extendedColors.avertissement
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\compliance\ComplianceViewModel.kt:75: is Resultat.Echec -> _uiState.update {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\compliance\ComplianceViewModel.kt:97: is Resultat.Echec -> _uiState.update {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\compliance\ComplianceViewModel.kt:138: is Resultat.Echec -> _uiState.update {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\components\SecteurSelectorViewModel.kt:49: is Resultat.Echec -> _uiState.update {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\components\SpiPmeTopBar.kt:46: * notifications (badge = nombre non lues), avatar utilisateur. Un seul
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\components\SpiPmeTopBar.kt:61: surClicProfil: () -> Unit,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\components\SpiPmeTopBar.kt:85: AvatarUtilisateur(surClicProfil)
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\components\SpiPmeTopBar.kt:202: private fun AvatarUtilisateur(surClic: () -> Unit) {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\components\SpiPmeTopBar.kt:210: Icon(Icons.Filled.Person, contentDescription = "Profil", tint = MaterialTheme.colorScheme.primary)
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\dashboard\DashboardScreen.kt:33: import androidx.compose.material.icons.filled.Warning
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\dashboard\DashboardScreen.kt:77: surClicProfil: () -> Unit,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\dashboard\DashboardScreen.kt:86: surClicAudit: () -> Unit,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\dashboard\DashboardScreen.kt:104: titre = "Ressources critiques",
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\dashboard\DashboardScreen.kt:105: valeur = resume.critiques.toString(),
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\dashboard\DashboardScreen.kt:106: detail = if (resume.critiques == 1) "À surveiller" else "À traiter",
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\dashboard\DashboardScreen.kt:108: couleur = if (resume.critiques > 0) MaterialTheme.colorScheme.error else SpiPmeTheme.extendedColors.succes,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\dashboard\DashboardScreen.kt:119: couleur = if (resume.enRetard > 0) MaterialTheme.colorScheme.error else SpiPmeTheme.extendedColors.avertissement,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\dashboard\DashboardScreen.kt:124: val actives = resume.critiques + resume.elevees + resume.moderees
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\dashboard\DashboardScreen.kt:129: detail = "${resume.critiques} critique(s)",
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\dashboard\DashboardScreen.kt:131: couleur = if (resume.critiques > 0) MaterialTheme.colorScheme.error else SpiPmeTheme.extendedColors.information,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\dashboard\DashboardScreen.kt:156: surClicProfil = surClicProfil,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\dashboard\DashboardScreen.kt:176: etat.echecComplet -> Box(
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\dashboard\DashboardScreen.kt:181: Icon(Icons.Filled.Warning, contentDescription = null, tint = MaterialTheme.colorScheme.error)
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\dashboard\DashboardScreen.kt:337: EnteteSection("Activité récente", "Voir le journal") { surClicAudit() }
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\dashboard\DashboardScreen.kt:379: EnteteSection("Autres modules", "Ouvrir le journal") { surClicAudit() }
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\dashboard\DashboardViewModel.kt:60: val echecComplet: Boolean get() = !chargement && listOf(
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\home\HomeScreen.kt:37: surClicAudit: () -> Unit,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\home\HomeScreen.kt:82: Button(onClick = surClicAudit, modifier = Modifier.padding(bottom = 12.dp)) {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\home\HomeScreen.kt:83: Text("Journal d'audit")
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\imports\ImportsScreen.kt:60: surClicProfil: () -> Unit,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\imports\ImportsScreen.kt:89: surClicProfil = surClicProfil,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\imports\ImportsScreen.kt:112: surClicProfil: () -> Unit,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\imports\ImportsScreen.kt:127: surClicProfil = surClicProfil,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\imports\ImportsScreen.kt:306: val succes = resultat.statut != "echec"
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\imports\ImportsScreen.kt:315: if (succes) "Import terminé" else "Échec de l'import",
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\imports\ImportsScreen.kt:335: "termine_avec_anomalies" -> SpiPmeTheme.extendedColors.avertissement to "Terminé avec anomalies"
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\imports\ImportsScreen.kt:336: "echec" -> MaterialTheme.colorScheme.error to "Échec de l'import"
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\imports\ImportsScreen.kt:381: surClicNotifications = {}, surClicProfil = {}, surClicSecteur = {},
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\imports\ImportsViewModel.kt:73: is Resultat.Echec -> _uiState.update {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\imports\ImportsViewModel.kt:93: is Resultat.Echec -> _uiState.update {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\imports\ImportsViewModel.kt:111: is Resultat.Echec -> _uiState.update { it.copy(messageErreur = resultat.message, enChargementHistorique = false) }
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\intelligence\IntelligenceScreen.kt:58: surClicProfil: () -> Unit,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\intelligence\IntelligenceScreen.kt:69: surClicProfil = surClicProfil,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\intelligence\IntelligenceScreen.kt:84: surClicProfil: () -> Unit,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\intelligence\IntelligenceScreen.kt:109: surClicProfil = surClicProfil,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\intelligence\IntelligenceScreen.kt:193: Triple("En attente", resume.enAttente, SpiPmeTheme.extendedColors.avertissement),
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\intelligence\IntelligenceScreen.kt:233: else -> SpiPmeTheme.extendedColors.avertissement
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\intelligence\IntelligenceScreen.kt:363: listOf("Niveau actuel" to "18.0", "Seuil critique" to "10.0"),
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\intelligence\IntelligenceScreen.kt:368: surClicNotifications = {}, surClicProfil = {}, surClicSecteur = {},
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\intelligence\IntelligenceViewModel.kt:58: is Resultat.Echec -> _uiState.update { it.copy(enCoursDeGeneration = false, messageErreur = resultat.message) }
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\intelligence\IntelligenceViewModel.kt:67: is Resultat.Echec -> _uiState.update { it.copy(messageErreur = resultat.message) }
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\intelligence\IntelligenceViewModel.kt:92: is Resultat.Echec -> _uiState.update { it.copy(messageErreur = resultat.message) }
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\intelligence\IntelligenceViewModel.kt:110: is Resultat.Echec -> _uiState.update { it.copy(messageErreur = resultat.message) }
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\intelligence\IntelligenceViewModel.kt:119: is Resultat.Echec -> _uiState.update { it.copy(messageErreur = resultat.message) }
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\invoices\InvoicesScreen.kt:47: surClicProfil: () -> Unit,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\invoices\InvoicesScreen.kt:61: surClicProfil = surClicProfil,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\invoices\InvoicesScreen.kt:133: "impayee" to "Impayées",
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\invoices\InvoicesScreen.kt:188: "impayee" -> MaterialTheme.colorScheme.error
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\invoices\InvoicesScreen.kt:189: "relancee" -> SpiPmeTheme.extendedColors.avertissement
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\invoices\InvoicesScreen.kt:227: color = SpiPmeTheme.extendedColors.avertissement,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\invoices\InvoicesViewModel.kt:99: is Resultat.Echec -> _uiState.update { it.copy(messageErreur = resultat.message) }
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\invoices\InvoicesViewModel.kt:129: is Resultat.Echec -> _uiState.update {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\invoices\InvoicesViewModel.kt:152: is Resultat.Echec -> _uiState.update {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\navigation\Ecran.kt:20: data object Audit : Ecran("audit")
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\navigation\Ecran.kt:23: data object Profil : Ecran("profil")
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\navigation\SpiPmeNavGraph.kt:42: import com.spipme.app.ui.audit.AuditScreen
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\navigation\SpiPmeNavGraph.kt:46: import com.spipme.app.ui.profile.ProfileScreen
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\navigation\SpiPmeNavGraph.kt:83: Ecran.Audit.route,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\navigation\SpiPmeNavGraph.kt:86: Ecran.Profil.route,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\navigation\SpiPmeNavGraph.kt:295: surClicAudit = { naviguerVers(Ecran.Audit.route) },
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\navigation\SpiPmeNavGraph.kt:307: surClicProfil = { naviguerVers(Ecran.Profil.route) },
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\navigation\SpiPmeNavGraph.kt:320: surClicProfil = { naviguerVers(Ecran.Profil.route) },
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\navigation\SpiPmeNavGraph.kt:344: surClicProfil = { naviguerVers(Ecran.Profil.route) },
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\navigation\SpiPmeNavGraph.kt:368: surClicProfil = { naviguerVers(Ecran.Profil.route) },
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\navigation\SpiPmeNavGraph.kt:392: surClicProfil = { naviguerVers(Ecran.Profil.route) },
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\navigation\SpiPmeNavGraph.kt:411: surClicProfil = { naviguerVers(Ecran.Profil.route) },
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\navigation\SpiPmeNavGraph.kt:419: surClicProfil = { naviguerVers(Ecran.Profil.route) },
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\navigation\SpiPmeNavGraph.kt:427: surClicProfil = { naviguerVers(Ecran.Profil.route) },
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\navigation\SpiPmeNavGraph.kt:432: composable(Ecran.Audit.route) {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\navigation\SpiPmeNavGraph.kt:433: AuditScreen(
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\navigation\SpiPmeNavGraph.kt:435: surClicProfil = { naviguerVers(Ecran.Profil.route) },
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\navigation\SpiPmeNavGraph.kt:443: surClicProfil = { naviguerVers(Ecran.Profil.route) },
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\navigation\SpiPmeNavGraph.kt:451: surClicProfil = { naviguerVers(Ecran.Profil.route) },
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\navigation\SpiPmeNavGraph.kt:456: composable(Ecran.Profil.route) {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\navigation\SpiPmeNavGraph.kt:457: ProfileScreen(
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\navigation\SpiPmeNavGraph.kt:470: surClicProfil = { naviguerVers(Ecran.Profil.route) },
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\navigation\SpiPmeNavGraph.kt:478: surClicProfil = { naviguerVers(Ecran.Profil.route) },
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\navigation\SpiPmeNavGraph.kt:487: surClicAudit = { naviguerVers(Ecran.Audit.route) },
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\navigation\SpiPmeNavGraph.kt:526: "Journal d’audit" to Ecran.Audit.route,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\navigation\SpiPmeNavGraph.kt:531: "Profil" to Ecran.Profil.route,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\pilotage\PilotageScreen.kt:41: import com.spipme.app.domain.model.Kpi
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\pilotage\PilotageScreen.kt:48: * Pilotage intelligent. Tout provient du serveur (KPI et analyses DISTANTS, calculs déterministes) ; hors
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\pilotage\PilotageScreen.kt:55: surClicProfil: () -> Unit,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\pilotage\PilotageScreen.kt:74: surClicProfil = surClicProfil,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\pilotage\PilotageScreen.kt:103: color = SpiPmeTheme.extendedColors.avertissement,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\pilotage\PilotageScreen.kt:107: item { LigneKpis(pilotage.kpis) }
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\pilotage\PilotageScreen.kt:161: private fun LigneKpis(kpis: List<Kpi>) {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\pilotage\PilotageScreen.kt:163: items(kpis) { kpi ->
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\pilotage\PilotageScreen.kt:171: Text(kpi.libelle, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\pilotage\PilotageScreen.kt:174: kpi.valeur ?: "Information insuffisante",
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\pilotage\PilotageScreen.kt:175: style = if (kpi.valeur == null) MaterialTheme.typography.bodyMedium else MaterialTheme.typography.titleMedium,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\pilotage\PilotageScreen.kt:178: kpi.detail?.let { Text(it, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\pilotage\PilotageScreen.kt:188: "critique" -> MaterialTheme.colorScheme.error
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\pilotage\PilotageScreen.kt:189: "attention" -> SpiPmeTheme.extendedColors.avertissement
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\pilotage\PilotageViewModel.kt:67: is Resultat.Echec -> _uiState.update { it.copy(enChargement = false, messageErreur = resultat.message) }
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\pilotage\PilotageViewModel.kt:86: is Resultat.Echec -> MessageCopilote(
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\profile\ProfileScreen.kt:1: package com.spipme.app.ui.profile
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\profile\ProfileScreen.kt:41: fun ProfileScreen(
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\profile\ProfileScreen.kt:44: viewModel: ProfileViewModel = hiltViewModel(),
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\profile\ProfileScreen.kt:61: topBar = { TopAppBar(title = { Text("Profil") }) },
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\profile\ProfileViewModel.kt:1: package com.spipme.app.ui.profile
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\profile\ProfileViewModel.kt:18: data class ProfileUiState(
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\profile\ProfileViewModel.kt:35: class ProfileViewModel @Inject constructor(
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\profile\ProfileViewModel.kt:41: private val _uiState = MutableStateFlow(ProfileUiState())
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\profile\ProfileViewModel.kt:42: val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\profile\ProfileViewModel.kt:51: when (val resultat = moiRepository.obtenirProfil()) {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\profile\ProfileViewModel.kt:60: is Resultat.Echec -> _uiState.update { it.copy(chargement = false, messageErreur = resultat.message) }
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\profile\ProfileViewModel.kt:86: when (val resultat = moiRepository.mettreAJourProfil(etat.nomComplet.trim(), etat.telephone.trim())) {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\profile\ProfileViewModel.kt:92: messageSucces = "Profil mis à jour.",
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\profile\ProfileViewModel.kt:95: is Resultat.Echec -> _uiState.update {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\profile\ProfileViewModel.kt:128: is Resultat.Echec -> _uiState.update {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\registry\RegistryScreen.kt:57: surClicProfil: () -> Unit,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\registry\RegistryScreen.kt:76: surClicProfil = surClicProfil,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\registry\RegistryScreen.kt:88: surClicProfil: () -> Unit,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\registry\RegistryScreen.kt:106: surClicProfil = surClicProfil,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\registry\RegistryScreen.kt:307: surClicProfil = {},
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\registry\RegistryViewModel.kt:82: is Resultat.Echec -> _uiState.update { it.copy(messageErreur = resultat.message) }
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\registry\RegistryViewModel.kt:97: is Resultat.Echec -> _uiState.update { it.copy(messageErreur = resultat.message) }
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\registry\creation\CreerEntiteViewModel.kt:63: is Resultat.Echec -> _uiState.update {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\resources\ResourcesScreen.kt:80: surClicProfil: () -> Unit,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\resources\ResourcesScreen.kt:99: surClicProfil = surClicProfil,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\resources\ResourcesScreen.kt:131: surClicProfil: () -> Unit,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\resources\ResourcesScreen.kt:155: surClicProfil = surClicProfil,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\resources\ResourcesScreen.kt:254: Triple("Critiques", resume.critiques, MaterialTheme.colorScheme.error),
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\resources\ResourcesScreen.kt:255: Triple("À surveiller", resume.aSurveiller, SpiPmeTheme.extendedColors.avertissement),
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\resources\ResourcesScreen.kt:280: SpiPmeTheme.extendedColors.avertissement,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\resources\ResourcesScreen.kt:426: "critique" -> MaterialTheme.colorScheme.error
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\resources\ResourcesScreen.kt:427: "a_surveiller" -> SpiPmeTheme.extendedColors.avertissement
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\resources\ResourcesScreen.kt:431: "critique" -> "Critique"
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\resources\ResourcesScreen.kt:509: color = SpiPmeTheme.extendedColors.avertissement,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\resources\ResourcesScreen.kt:521: color = SpiPmeTheme.extendedColors.avertissement,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\resources\ResourcesScreen.kt:544: color = SpiPmeTheme.extendedColors.avertissement,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\resources\ResourcesScreen.kt:592: var critique by rememberSaveable(ressource.id) { mutableStateOf(ressource.seuilCritique?.toPlainString().orEmpty()) }
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\resources\ResourcesScreen.kt:601: OutlinedTextField(critique, { critique = it }, label = { Text("Seuil critique") }, singleLine = true, modifier = Modifier.fillMaxWidth())
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\resources\ResourcesScreen.kt:606: confirmButton = { TextButton(onClick = { surConfirmer(nom, emplacement, critique, alerte) }) { Text("Enregistrer") } },
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\resources\ResourcesScreen.kt:622: resume = ResumeRessources(total = 76, critiques = 12, aSurveiller = 18, stables = 46),
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\resources\ResourcesScreen.kt:626: BigDecimal("2"), BigDecimal("10"), BigDecimal("25"), "critique", "Entrepôt principal", 1, "Commerce",
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\resources\ResourcesScreen.kt:631: surClicProfil = {},
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\resources\ResourcesUiState.kt:11: CRITIQUES("Critiques", "critique"),
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\resources\ResourcesViewModel.kt:162: is Resultat.Echec -> _uiState.update {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\resources\ResourcesViewModel.kt:175: fun confirmerModification(nom: String, emplacement: String, seuilCritiqueTexte: String, seuilAlerteTexte: String) {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\resources\ResourcesViewModel.kt:178: val critique = seuilCritiqueTexte.trim().takeIf { it.isNotEmpty() }?.let {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\resources\ResourcesViewModel.kt:179: it.replace(',', '.').toBigDecimalOrNull() ?: run { erreur("Seuil critique invalide."); return }
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\resources\ResourcesViewModel.kt:184: if ((critique != null && critique.signum() < 0) || (alerte != null && alerte.signum() < 0)) { erreur("Les seuils ne peuvent pas être négatifs."); return }
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\resources\ResourcesViewModel.kt:185: if (critique != null && alerte != null && critique > alerte) { erreur("Le seuil critique doit être inférieur ou égal au seuil d'alerte."); return }
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\resources\ResourcesViewModel.kt:188: when (val resultat = ressourceRepository.modifier(ressource, nom.trim(), emplacement.trim().ifEmpty { null }, critique, alerte)) {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\resources\ResourcesViewModel.kt:193: is Resultat.Echec -> _uiState.update {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\resources\ResourcesViewModel.kt:266: is Resultat.Echec -> _uiState.update { it.copy(messageErreur = resultat.message) }
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\resources\ResourcesViewModel.kt:284: is Resultat.Echec -> _uiState.update { it.copy(messageErreur = resultat.message) }
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\resources\creation\CreerRessourceScreen.kt:54: surChangementSeuilCritique = viewModel::surChangementSeuilCritique,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\resources\creation\CreerRessourceScreen.kt:71: surChangementSeuilCritique: (String) -> Unit,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\resources\creation\CreerRessourceScreen.kt:114: Champ("Seuil critique", etat.seuilCritique, surChangementSeuilCritique, "0", KeyboardType.Decimal)
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\resources\creation\CreerRessourceScreen.kt:157: surChangementNiveauActuel = {}, surChangementSeuilCritique = {}, surChangementSeuilAlerte = {},
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\resources\creation\CreerRessourceUiState.kt:8: val seuilCritique: String = "",
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\resources\creation\CreerRessourceViewModel.kt:31: fun surChangementSeuilCritique(v: String) = _uiState.update { it.copy(seuilCritique = v, messageErreur = null) }
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\resources\creation\CreerRessourceViewModel.kt:55: val seuilCritique = if (etat.seuilCritique.isBlank()) null else versBigDecimalOuNull(etat.seuilCritique)
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\resources\creation\CreerRessourceViewModel.kt:56: if (etat.seuilCritique.isNotBlank() && seuilCritique == null) {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\resources\creation\CreerRessourceViewModel.kt:57: _uiState.update { it.copy(messageErreur = "Seuil critique invalide.") }
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\resources\creation\CreerRessourceViewModel.kt:65: if (seuilCritique != null && seuilAlerte != null && seuilCritique > seuilAlerte) {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\resources\creation\CreerRessourceViewModel.kt:66: _uiState.update { it.copy(messageErreur = "Le seuil critique doit être inférieur ou égal au seuil d'alerte.") }
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\resources\creation\CreerRessourceViewModel.kt:90: seuilCritique = seuilCritique,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\resources\creation\CreerRessourceViewModel.kt:96: is Resultat.Echec -> _uiState.update {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\sync\BandeauSynchronisation.kt:16: import androidx.compose.material.icons.filled.Warning
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\sync\BandeauSynchronisation.kt:39: * liste des opérations nécessitant une décision (conflits, échecs).
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\sync\BandeauSynchronisation.kt:50: ResumeSynchronisation.CONFLITS, ResumeSynchronisation.ECHECS ->
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\sync\BandeauSynchronisation.kt:56: val necessiteDecision = etat.conflits + etat.echecs > 0
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\sync\BandeauSynchronisation.kt:70: ResumeSynchronisation.CONFLITS -> Icon(Icons.Filled.Warning, null, tint = contenu, modifier = Modifier.size(16.dp))
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\sync\BandeauSynchronisation.kt:71: ResumeSynchronisation.ECHECS -> Icon(Icons.Filled.ErrorOutline, null, tint = contenu, modifier = Modifier.size(16.dp))
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\sync\BandeauSynchronisation.kt:121: if (op.statut == StatutOperation.ECHEC_DEFINITIF) {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\tasks\TasksScreen.kt:55: surClicProfil: () -> Unit,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\tasks\TasksScreen.kt:74: surClicProfil = surClicProfil,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\tasks\TasksScreen.kt:86: surClicProfil: () -> Unit,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\tasks\TasksScreen.kt:108: surClicProfil = surClicProfil,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\tasks\TasksScreen.kt:180: Triple("En cours", resume.enCours, SpiPmeTheme.extendedColors.avertissement),
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\tasks\TasksScreen.kt:204: "moyenne" -> SpiPmeTheme.extendedColors.avertissement
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\tasks\TasksScreen.kt:278: Tache(1, "Commander du stock critique", "", "Approvisionnement", "haute", "a_faire", "", null, null, "28 juil. 2026", 1, true),
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\tasks\TasksScreen.kt:281: surClicNotifications = {}, surClicProfil = {}, surClicSecteur = {},
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\tasks\TasksViewModel.kt:53: is Resultat.Echec -> _uiState.update { it.copy(messageErreur = resultat.message) }
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\tasks\TasksViewModel.kt:71: is Resultat.Echec -> _uiState.update { it.copy(messageErreur = resultat.message) }
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\tasks\TasksViewModel.kt:87: is Resultat.Echec -> _uiState.update { it.copy(messageErreur = resultat.message) }
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\tasks\creation\CreerTacheViewModel.kt:63: is Resultat.Echec -> _uiState.update {
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\theme\Color.kt:24: val Avertissement = Color(0xFFF59E0B)
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\theme\Theme.kt:53: val avertissement: androidx.compose.ui.graphics.Color,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\theme\Theme.kt:60: succes = Succes, avertissement = Avertissement, information = Information, ia = IA, sidebar = Sidebar,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\theme\Theme.kt:63: succes = Succes, avertissement = Avertissement, information = Information, ia = IA, sidebar = CarteSombre,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\treasury\TreasuryScreen.kt:65: surClicProfil: () -> Unit,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\treasury\TreasuryScreen.kt:84: surClicProfil = surClicProfil,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\treasury\TreasuryScreen.kt:105: surClicProfil: () -> Unit,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\treasury\TreasuryScreen.kt:127: surClicProfil = surClicProfil,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\treasury\TreasuryScreen.kt:190: color = SpiPmeTheme.extendedColors.avertissement)
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\treasury\TreasuryScreen.kt:360: color = SpiPmeTheme.extendedColors.avertissement,
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\treasury\TreasuryScreen.kt:427: surClicProfil = {},
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\treasury\TreasuryViewModel.kt:87: is Resultat.Echec -> _uiState.update { it.copy(erreurContrePassation = resultat.message) }
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\treasury\TreasuryViewModel.kt:115: is Resultat.Echec -> _uiState.update { it.copy(messageErreur = resultat.message) }
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\treasury\TreasuryViewModel.kt:123: is Resultat.Echec -> _uiState.update { it.copy(messageErreur = resultat.message) }
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\treasury\TreasuryViewModel.kt:132: is Resultat.Echec -> _uiState.update { it.copy(messageErreur = resultat.message) }
+C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\treasury\creation\CreerTransactionViewModel.kt:59: is Resultat.Echec -> _uiState.update {

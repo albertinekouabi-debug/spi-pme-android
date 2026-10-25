@@ -1,0 +1,469 @@
+﻿
+===== C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\audit\AuditScreen.kt | 304 lignes =====
+   5: import androidx.compose.foundation.layout.Column
+   6: import androidx.compose.foundation.layout.Row
+   7: import androidx.compose.foundation.layout.Spacer
+   8: import androidx.compose.foundation.layout.fillMaxSize
+   9: import androidx.compose.foundation.layout.fillMaxWidth
+  10: import androidx.compose.foundation.layout.height
+  11: import androidx.compose.foundation.layout.padding
+  12: import androidx.compose.foundation.layout.size
+  13: import androidx.compose.foundation.lazy.LazyColumn
+  14: import androidx.compose.foundation.lazy.items
+  15: import androidx.compose.material.icons.Icons
+  16: import androidx.compose.material.icons.filled.CheckCircle
+  17: import androidx.compose.material.icons.filled.ErrorOutline
+  18: import androidx.compose.material.icons.filled.HistoryToggleOff
+  58: ) {
+  59:     val etat by viewModel.uiState.collectAsStateWithLifecycle()
+  60:     val nombreNotifs by (hiltViewModel<NotificationBadgeViewModel>()).compte.collectAsStateWithLifecycle()
+  61: 
+  62:     Scaffold(
+  63:         topBar = {
+  64:             SpiPmeTopBar(
+  65:                 secteurActifNom = etat.secteurActifNom,
+  66:                 nombreNotificationsNonLues = nombreNotifs,
+  67:                 surClicSecteur = surClicSecteur,
+  69:                 surClicProfil = surClicProfil,
+  70:             )
+  71:         },
+  72:     ) { paddingInterne ->
+  73:         LazyColumn(
+  74:             modifier = Modifier
+  75:                 .fillMaxSize()
+  76:                 .padding(paddingInterne)
+  77:                 .padding(horizontal = 16.dp),
+  78:             verticalArrangement = Arrangement.spacedBy(8.dp),
+  79:         ) {
+  80:             item {
+  81:                 Spacer(Modifier.height(8.dp))
+  82:                 Text(
+  83:                     "Journal d'audit",
+  84:                     style = MaterialTheme.typography.headlineSmall,
+  85:                     fontWeight = FontWeight.Bold,
+  86:                 )
+  87:                 Text(
+  88:                     "Consultation en lecture seule des Ã©vÃ©nements du systÃ¨me",
+  89:                     style = MaterialTheme.typography.bodySmall,
+  90:                     color = MaterialTheme.colorScheme.onSurfaceVariant,
+  91:                 )
+  92:                 Spacer(Modifier.height(12.dp))
+  93:                 SpiPmeTextField(
+  94:                     valeur = etat.recherche,
+  95:                     surChangement = viewModel::surChangementRecherche,
+  96:                     libelle = "Rechercher une action, une cible...",
+  97:                     iconeDebut = { Icon(Icons.Filled.Search, contentDescription = null) },
+ 125:                                 EtatChargement()
+ 126:                             } else {
+ 127:                                 TextButton(
+ 128:                                     onClick = viewModel::chargerPageSuivante,
+ 129:                                     modifier = Modifier.fillMaxWidth(),
+ 130:                                 ) { Text("Charger plus d'Ã©vÃ©nements") }
+ 131:                             }
+ 132:                         }
+ 133:                     }
+ 134:                 }
+ 135:             }
+ 136: 
+ 137:             item { Spacer(Modifier.height(16.dp)) }
+ 138:         }
+ 139:     }
+ 140: }
+ 141: 
+ 142: @Composable
+ 145:     // lambda LazyListScope), cf. correctif COMPILE-KOTLIN-002.
+ 146:     val donnees = listOf(
+ 147:         Triple("Total", resume.total, MaterialTheme.colorScheme.onSurface),
+ 148:         Triple("RÃ©ussies", resume.reussies, SpiPmeTheme.extendedColors.succes),
+ 149:         Triple("Avertissements", resume.avertissements, SpiPmeTheme.extendedColors.avertissement),
+ 150:         Triple("Ã‰checs", resume.echecs, MaterialTheme.colorScheme.error),
+ 151:     )
+ 152:     Row(
+ 153:         modifier = Modifier.fillMaxWidth(),
+ 154:         horizontalArrangement = Arrangement.spacedBy(8.dp),
+ 155:     ) {
+ 156:         donnees.forEach { (libelle, valeur, couleur) ->
+ 157:             Card(modifier = Modifier.weight(1f), colors = CardDefaults.cardColors()) {
+ 158:                 Column(
+ 159:                     modifier = Modifier.padding(12.dp),
+ 160:                     horizontalAlignment = Alignment.CenterHorizontally,
+ 161:                 ) {
+ 162:                     Text(
+ 163:                         valeur.toString(),
+ 164:                         style = MaterialTheme.typography.titleLarge,
+ 165:                         fontWeight = FontWeight.Bold,
+ 166:                         color = couleur,
+ 167:                     )
+ 168:                     Text(
+ 169:                         libelle,
+ 170:                         style = MaterialTheme.typography.labelSmall,
+ 171:                         color = MaterialTheme.colorScheme.onSurfaceVariant,
+ 172:                         textAlign = TextAlign.Center,
+ 173:                     )
+
+===== C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\alerts\AlertsScreen.kt | 280 lignes =====
+   8: import androidx.compose.foundation.layout.PaddingValues
+   9: import androidx.compose.foundation.layout.Row
+  10: import androidx.compose.foundation.layout.Spacer
+  11: import androidx.compose.foundation.layout.fillMaxSize
+  12: import androidx.compose.foundation.layout.fillMaxWidth
+  13: import androidx.compose.foundation.layout.height
+  14: import androidx.compose.foundation.layout.padding
+  15: import androidx.compose.foundation.layout.width
+  16: import androidx.compose.foundation.lazy.LazyColumn
+  17: import androidx.compose.foundation.lazy.LazyRow
+  18: import androidx.compose.foundation.lazy.items
+  19: import androidx.compose.foundation.shape.RoundedCornerShape
+  20: import androidx.compose.material.icons.Icons
+  21: import androidx.compose.material.icons.filled.CheckCircle
+  22: import androidx.compose.material.icons.filled.Info
+  82:     surClicResoudre: (Int) -> Unit,
+  83:     surClicIgnorer: (Int) -> Unit,
+  84:     nombreNotifs: Int = 0,
+  85: ) {
+  86:     Scaffold(
+  87:         floatingActionButton = {
+  88:             ExtendedFloatingActionButton(
+  89:                 onClick = surClicGenerer,
+  90:                 icon = { Icon(Icons.Filled.NotificationsActive, null) },
+  91:                 text = { Text(if (etat.enCoursDeGeneration) "Analyse..." else "Analyser") },
+  92:             )
+  93:         },
+  94:     ) { padding ->
+  95:         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
+  96:             SpiPmeTopBar(
+  97:                 secteurActifNom = etat.secteurActifNom,
+  98:                 nombreNotificationsNonLues = nombreNotifs,
+  99:                 surClicSecteur = surClicSecteur,
+ 100:                 surClicNotifications = surClicNotifications,
+ 101:                 surClicProfil = surClicProfil,
+ 102:             )
+ 103: 
+ 104:             LazyColumn(
+ 105:                 modifier = Modifier.fillMaxSize(),
+ 106:                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+ 107:                 verticalArrangement = Arrangement.spacedBy(12.dp),
+ 108:             ) {
+ 109:                 item {
+ 110:                     Text("Alertes", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+ 111:                     Text(
+ 112:                         "Surveillez les points critiques de votre activitÃ©",
+ 113:                         style = MaterialTheme.typography.bodyMedium,
+ 114:                         color = MaterialTheme.colorScheme.onSurfaceVariant,
+ 115:                     )
+ 116:                 }
+ 117: 
+ 118:                 etat.resume?.let { resume -> item { CartesResume(resume) } }
+ 119: 
+ 120:                 item {
+ 121:                     LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+ 122:                         items(OngletAlertes.values().toList()) { onglet ->
+ 123:                             FilterChip(
+ 124:                                 selected = etat.ongletActif == onglet,
+ 125:                                 onClick = { surChangementOnglet(onglet) },
+ 126:                                 label = { Text(onglet.libelle) },
+ 127:                                 colors = FilterChipDefaults.filterChipColors(
+ 128:                                     selectedContainerColor = MaterialTheme.colorScheme.primary,
+ 129:                                     selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
+ 130:                                 ),
+ 131:                             )
+ 134:                 }
+ 135: 
+ 136:                 etat.messageInfo?.let { message ->
+ 137:                     item {
+ 138:                         Card(
+ 139:                             colors = CardDefaults.cardColors(containerColor = SpiPmeTheme.extendedColors.information.copy(alpha = 0.1f)),
+ 140:                             shape = RoundedCornerShape(12.dp),
+ 141:                         ) {
+ 142:                             Text(message, modifier = Modifier.padding(12.dp), style = MaterialTheme.typography.bodySmall)
+ 143:                         }
+ 144:                     }
+ 145:                 }
+ 146: 
+ 147:                 if (etat.enChargement) {
+ 148:                     item {
+ 149:                         Box(modifier = Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
+ 150:                             CircularProgressIndicator()
+ 151:                         }
+ 152:                     }
+ 153:                 } else if (etat.alertes.isEmpty()) {
+ 154:                     item {
+ 155:                         Text(
+ 156:                             "Aucune alerte dans cette catÃ©gorie.",
+ 157:                             modifier = Modifier.fillMaxWidth().padding(32.dp),
+ 158:                             color = MaterialTheme.colorScheme.onSurfaceVariant,
+ 159:                         )
+ 160:                     }
+ 161:                 } else {
+ 162:                     items(etat.alertes, key = { it.id }) { alerte ->
+ 169:                 }
+ 170: 
+ 171:                 etat.messageErreur?.let { message ->
+ 172:                     item {
+ 173:                         Text(message, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(vertical = 8.dp))
+ 174:                     }
+ 175:                 }
+ 176: 
+ 177:                 item { Spacer(Modifier.height(72.dp)) }
+ 178:             }
+
+===== C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\dashboard\DashboardScreen.kt | 719 lignes =====
+   8: import androidx.compose.foundation.layout.PaddingValues
+   9: import androidx.compose.foundation.layout.Row
+  10: import androidx.compose.foundation.layout.Spacer
+  11: import androidx.compose.foundation.layout.fillMaxSize
+  12: import androidx.compose.foundation.layout.fillMaxWidth
+  13: import androidx.compose.foundation.layout.height
+  14: import androidx.compose.foundation.layout.heightIn
+  15: import androidx.compose.foundation.layout.padding
+  16: import androidx.compose.foundation.layout.size
+  17: import androidx.compose.foundation.layout.width
+  18: import androidx.compose.foundation.lazy.LazyColumn
+  19: import androidx.compose.foundation.lazy.LazyRow
+  20: import androidx.compose.foundation.lazy.items
+  21: import androidx.compose.foundation.shape.CircleShape
+  22: import androidx.compose.foundation.shape.RoundedCornerShape
+  23: import androidx.compose.material.icons.Icons
+  24: import androidx.compose.material.icons.filled.AccountBalanceWallet
+  25: import androidx.compose.material.icons.filled.Add
+  26: import androidx.compose.material.icons.filled.AutoAwesome
+ 100:     val indicateurs = listOfNotNull(
+ 101:         etat.resumeRessources?.let { resume ->
+ 102:             IndicateurDashboard(
+ 103:                 cle = "ressources",
+ 104:                 titre = "Ressources critiques",
+ 105:                 valeur = resume.critiques.toString(),
+ 106:                 detail = if (resume.critiques == 1) "Ã€ surveiller" else "Ã€ traiter",
+ 107:                 icone = Icons.Filled.Inventory,
+ 108:                 couleur = if (resume.critiques > 0) MaterialTheme.colorScheme.error else SpiPmeTheme.extendedColors.succes,
+ 109:                 action = surClicRessources,
+ 115:                 titre = "TÃ¢ches en cours",
+ 116:                 valeur = resume.enCours.toString(),
+ 117:                 detail = if (resume.enRetard > 0) "${resume.enRetard} en retard" else "Aucun retard signalÃ©",
+ 118:                 icone = Icons.Filled.Assignment,
+ 119:                 couleur = if (resume.enRetard > 0) MaterialTheme.colorScheme.error else SpiPmeTheme.extendedColors.avertissement,
+ 120:                 action = surClicTaches,
+ 121:             )
+ 122:         },
+ 123:         etat.resumeAlertes?.let { resume ->
+ 124:             val actives = resume.critiques + resume.elevees + resume.moderees
+ 144:             )
+ 145:         },
+ 146:     )
+ 147: 
+ 148:     Scaffold(
+ 149:         containerColor = MaterialTheme.colorScheme.background,
+ 150:         topBar = {
+ 151:             SpiPmeTopBar(
+ 152:                 secteurActifNom = etat.secteurActifNom,
+ 153:                 nombreNotificationsNonLues = nombreNotifs,
+ 161:             etat.chargement -> Box(
+ 162:                 modifier = Modifier.fillMaxSize().padding(paddingInterne),
+ 163:                 contentAlignment = Alignment.Center,
+ 164:             ) {
+ 165:                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
+ 166:                     CircularProgressIndicator()
+ 167:                     Spacer(Modifier.height(12.dp))
+ 168:                     Text(
+ 169:                         text = "PrÃ©paration de votre tableau de bordâ€¦",
+ 170:                         color = MaterialTheme.colorScheme.onSurfaceVariant,
+ 171:                         style = MaterialTheme.typography.bodyMedium,
+ 172:                     )
+ 173:                 }
+ 174:             }
+ 175: 
+ 176:             etat.echecComplet -> Box(
+ 177:                 modifier = Modifier.fillMaxSize().padding(paddingInterne).padding(24.dp),
+ 178:                 contentAlignment = Alignment.Center,
+ 179:             ) {
+ 180:                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
+ 181:                     Icon(Icons.Filled.Warning, contentDescription = null, tint = MaterialTheme.colorScheme.error)
+ 182:                     Spacer(Modifier.height(12.dp))
+ 183:                     Text(
+ 184:                         text = etat.messageErreur ?: "Les donnÃ©es du tableau de bord sont momentanÃ©ment indisponibles.",
+ 185:                         color = MaterialTheme.colorScheme.onSurface,
+ 186:                         style = MaterialTheme.typography.bodyLarge,
+ 187:                     )
+ 188:                     Spacer(Modifier.height(12.dp))
+ 189:                     TextButton(onClick = viewModel::rafraichir) { Text("RÃ©essayer") }
+ 190:                 }
+ 191:             }
+ 192: 
+ 193:             else -> LazyColumn(
+ 194:                 modifier = Modifier.fillMaxSize().padding(paddingInterne),
+ 195:                 contentPadding = PaddingValues(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 24.dp),
+ 196:                 verticalArrangement = Arrangement.spacedBy(16.dp),
+ 197:             ) {
+ 198:                 item(key = "bienvenue") {
+ 199:                     Column(modifier = Modifier.fillMaxWidth().padding(top = 4.dp)) {
+ 200:                         Text(
+ 201:                             text = "Vue dâ€™ensemble",
+ 202:                             style = MaterialTheme.typography.headlineMedium,
+ 203:                             fontWeight = FontWeight.Bold,
+ 204:                             color = MaterialTheme.colorScheme.onBackground,
+ 205:                         )
+ 206:                         Spacer(Modifier.height(4.dp))
+ 207:                         Text(
+ 208:                             text = "Voici un aperÃ§u de la situation de votre entreprise aujourdâ€™hui.",
+ 209:                             style = MaterialTheme.typography.bodyMedium,
+ 210:                             color = MaterialTheme.colorScheme.onSurfaceVariant,
+ 211:                         )
+
+===== C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\home\HomeScreen.kt | 106 lignes =====
+  42:     surClicPilotage: () -> Unit,
+  43:     viewModel: HomeViewModel = hiltViewModel(),
+  44: ) {
+  45:     Scaffold { padding ->
+  46:         Column(
+  47:             modifier = Modifier
+  48:                 .fillMaxSize()
+  49:                 .padding(padding)
+  50:                 .verticalScroll(rememberScrollState())
+  51:                 .padding(24.dp),
+  52:             horizontalAlignment = Alignment.CenterHorizontally,
+  53:             verticalArrangement = Arrangement.Center,
+  54:         ) {
+  55:             Text("Connexion rÃ©ussie", style = MaterialTheme.typography.headlineMedium)
+  56:             Text(
+  57:                 "Le tableau de bord complet (Ã©cran Accueil) sera construit comme module suivant.",
+  58:                 style = MaterialTheme.typography.bodyMedium,
+  59:                 modifier = Modifier.padding(top = 8.dp, bottom = 24.dp),
+  60:             )
+  61:             Button(onClick = surClicRegistre, modifier = Modifier.padding(bottom = 12.dp)) {
+  62:                 Text("Aller au Registre")
+  63:             }
+  64:             Button(onClick = surClicRessources, modifier = Modifier.padding(bottom = 12.dp)) {
+  65:                 Text("Aller aux Ressources")
+  66:             }
+  67:             Button(onClick = surClicTresorerie, modifier = Modifier.padding(bottom = 12.dp)) {
+  68:                 Text("Aller Ã  la TrÃ©sorerie")
+  69:             }
+  70:             Button(onClick = surClicTaches, modifier = Modifier.padding(bottom = 12.dp)) {
+  71:                 Text("Aller aux TÃ¢ches")
+  72:             }
+  73:             Button(onClick = surClicSuggestions, modifier = Modifier.padding(bottom = 12.dp)) {
+  74:                 Text("Aller aux Suggestions IA")
+  75:             }
+  76:             Button(onClick = surClicAlertes, modifier = Modifier.padding(bottom = 12.dp)) {
+  77:                 Text("Aller aux Alertes")
+  78:             }
+  79:             Button(onClick = surClicImports, modifier = Modifier.padding(bottom = 12.dp)) {
+  80:                 Text("Aller aux Imports")
+  81:             }
+  82:             Button(onClick = surClicAudit, modifier = Modifier.padding(bottom = 12.dp)) {
+  83:                 Text("Journal d'audit")
+  84:             }
+  85:             Button(onClick = surClicFactures, modifier = Modifier.padding(bottom = 12.dp)) {
+  86:                 Text("Factures")
+  87:             }
+  88:             Button(onClick = surClicConformite, modifier = Modifier.padding(bottom = 12.dp)) {
+  89:                 Text("ConformitÃ©")
+  90:             }
+  91:             Button(onClick = surClicDashboard, modifier = Modifier.padding(bottom = 12.dp)) {
+  92:                 Text("Tableau de bord")
+  93:             }
+  94:             Button(onClick = surClicPilotage, modifier = Modifier.padding(bottom = 12.dp)) {
+  95:                 Text("Pilotage intelligent")
+  96:             }
+  97:             Button(onClick = surClicAdministration, modifier = Modifier.padding(bottom = 12.dp)) {
+  98:                 Text("Administration")
+  99:             }
+ 100:             Button(onClick = { viewModel.seDeconnecter(); surDeconnexion() }) {
+ 101:                 Text("Se dÃ©connecter")
+ 102:             }
+ 103:         }
+ 104:     }
+ 105: }
+ 106: 
+
+===== C:\Android\spi_pme_android\app\src\main\java\com\spipme\app\ui\navigation\SpiPmeNavGraph.kt | 558 lignes =====
+   1: package com.spipme.app.ui.navigation
+   2: import androidx.activity.compose.BackHandler
+   3: import androidx.compose.ui.text.style.TextOverflow
+   4: import androidx.compose.foundation.layout.fillMaxWidth
+   5: import androidx.compose.runtime.saveable.rememberSaveable
+   6: 
+   7: import androidx.compose.foundation.layout.Column
+   8: import androidx.compose.foundation.layout.fillMaxSize
+   9: import androidx.compose.foundation.layout.heightIn
+ 170:             launchSingleTop = true
+ 171:         }
+ 172:     }
+ 173: 
+ 174: Scaffold(
+ 175:         containerColor = MaterialTheme.colorScheme.background,
+ 176:         bottomBar = {
+ 177:             if (routeActuelle in routesAvecNavigation) {
+ 178:                 val accueilSelectionne = routeActuelle == Ecran.Accueil.route || routeActuelle == Ecran.Dashboard.route
+ 179:                 val plusSelectionne = plusOuvert || (
+ 194:                             val destination = if (routeActuelle == Ecran.Accueil.route) Ecran.Accueil.route else Ecran.Dashboard.route
+ 195:                             if (routeActuelle != destination) naviguerVers(destination)
+ 196:                         },
+ 197:                         icon = { Icon(Icons.Filled.Home, contentDescription = null) },
+ 198:                         label = { Text("Accueil") },
+ 199:                     )
+ 200:                     NavigationBarItem(
+ 201:                         selected = routeActuelle == Ecran.Alertes.route && !plusOuvert,
+ 202:                         onClick = {
+ 203:                             plusOuvert = false
+ 204:                             if (routeActuelle != Ecran.Alertes.route) naviguerVers(Ecran.Alertes.route)
+ 205:                         },
+ 206:                         icon = { Icon(Icons.Filled.Notifications, contentDescription = null) },
+ 207:                         label = { Text("Alertes") },
+ 208:                     )
+ 209:                     NavigationBarItem(
+ 210:                         selected = routeActuelle == Ecran.Ressources.route && !plusOuvert,
+ 211:                         onClick = {
+ 212:                             plusOuvert = false
+ 213:                             if (routeActuelle != Ecran.Ressources.route) naviguerVers(Ecran.Ressources.route)
+ 214:                         },
+ 215:                         icon = { Icon(Icons.Filled.Inventory, contentDescription = null) },
+ 216:                         label = { Text("Stocks", maxLines = 1, overflow = TextOverflow.Ellipsis) },
+ 217:                     )
+ 218:                     NavigationBarItem(
+ 219:                         selected = routeActuelle == Ecran.Taches.route && !plusOuvert,
+ 220:                         onClick = {
+ 221:                             plusOuvert = false
+ 222:                             if (routeActuelle != Ecran.Taches.route) naviguerVers(Ecran.Taches.route)
+ 223:                         },
+ 224:                         icon = { Icon(Icons.Filled.Assignment, contentDescription = null) },
+ 225:                         label = { Text("TÃ¢ches") },
+ 226:                     )
+ 227:                     NavigationBarItem(
+ 228:                         selected = plusSelectionne,
+ 229:                         onClick = { plusOuvert = true },
+ 230:                         icon = { Icon(Icons.Filled.MoreHoriz, contentDescription = null) },
+ 231:                         label = { Text("Plus") },
+ 232:                     )
+ 233:                 }
+ 234:             }
+ 235:         },
+ 236:     ) { paddingRacine ->
+ 531:             "Profil" to Ecran.Profil.route,
+ 532:         )
+ 533:         AlertDialog(
+ 534:             onDismissRequest = { plusOuvert = false },
+ 535:             title = { Text("Autres modules") },
+ 536:             text = {
+ 537:                 Column(
+ 538:                     modifier = Modifier.fillMaxWidth().heightIn(max = 420.dp).verticalScroll(rememberScrollState()),
+ 539:                 ) {
+ 540:                     optionsPlus.forEach { (libelle, destination) ->
+ 541:                         TextButton(
+ 542:                             onClick = {
+ 543:                                 plusOuvert = false
+ 544:                                 naviguerVers(destination)
+ 545:                             },
+ 546:                             modifier = Modifier.fillMaxWidth(),
+ 547:                         ) {
+ 548:                             Text(libelle, modifier = Modifier.fillMaxWidth())
+ 549:                         }
+ 550:                     }
+ 551:                 }
+ 552:             },
+ 553:             confirmButton = {
+ 554:                 TextButton(onClick = { plusOuvert = false }) { Text("Fermer") }
+ 555:             },
+ 556:         )
+ 557:     }
+ 558: }

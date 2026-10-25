@@ -6,11 +6,13 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
+import com.spipme.app.core.security.SessionManager
 import com.spipme.app.core.security.TokenManager
 import com.spipme.app.core.sync.EtatSynchronisation
 import com.spipme.app.core.sync.OperationEnAttente
 import com.spipme.app.core.sync.StatutOperation
 import com.spipme.app.data.local.dao.OperationDao
+import com.spipme.app.data.local.entity.OperationEnAttenteEntity
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -20,7 +22,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
@@ -77,22 +82,34 @@ class SynchronisationRepository @Inject constructor(
     private val connectivite: ConnectivityMonitor,
     private val activite: SyncActivite,
     private val tokenManager: TokenManager,
+    private val sessionManager: SessionManager,
     private val json: Json,
 ) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
+    /** Flux dépendant du compte connecté : change de source à chaque connexion/déconnexion. */
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun <T> pourUtilisateur(vide: T, source: (Long) -> Flow<T>): Flow<T> =
+        sessionManager.utilisateurIdFlow.distinctUntilChanged().flatMapLatest { id -> if (id == null) flowOf(vide) else source(id) }
+
     val etat: Flow<EtatSynchronisation> = combine(
-        connectivite.enLigne, dao.compterEnAttente(), dao.compterConflits(), dao.compterEchecs(), activite.enCours,
+        connectivite.enLigne,
+        pourUtilisateur<Int>(0) { dao.compterEnAttente(it) },
+        pourUtilisateur<Int>(0) { dao.compterConflits(it) },
+        pourUtilisateur<Int>(0) { dao.compterEchecs(it) },
+        activite.enCours,
     ) { enLigne, enAttente, conflits, echecs, enCours ->
         EtatSynchronisation(enLigne, enAttente, conflits, echecs, enCours)
     }
 
-    val aTraiter: Flow<List<OperationEnAttente>> = dao.aTraiter().map { liste -> liste.map { it.versDomaine() } }
+    val aTraiter: Flow<List<OperationEnAttente>> =
+        pourUtilisateur<List<OperationEnAttenteEntity>>(emptyList()) { dao.aTraiter(it) }.map { liste -> liste.map { it.versDomaine() } }
 
-    fun entitesEnAttente(entityType: String): Flow<List<String>> = dao.entitesEnAttente(entityType)
+    fun entitesEnAttente(entityType: String): Flow<List<String>> =
+        pourUtilisateur<List<String>>(emptyList()) { dao.entitesEnAttente(it, entityType) }
 
     fun operationsEnAttente(vararg types: String): Flow<List<OperationEnAttente>> =
-        dao.enAttentePourTypes(types.toList()).map { liste -> liste.map { it.versDomaine() } }
+        pourUtilisateur<List<OperationEnAttenteEntity>>(emptyList()) { dao.enAttentePourTypes(it, types.toList()) }.map { liste -> liste.map { it.versDomaine() } }
 
     /** À appeler une fois (Application.onCreate) : filet périodique + déclencheurs automatiques. */
     fun demarrer() {
@@ -105,18 +122,27 @@ class SynchronisationRepository @Inject constructor(
 
     /** Enfile une écriture. Une clé d'idempotence déjà présente (double appui) est ignorée sans erreur. */
     suspend fun enfiler(operation: OperationEnAttente) {
+        // Une saisie sans compte connecté ne peut pas exister (l'UI exige une session) ; garde-fou : on refuse
+        // plutôt que d'enfiler une opération sans propriétaire qui ne partirait jamais.
+        val proprietaire = sessionManager.utilisateurId() ?: return
         try {
-            dao.inserer(operation.versEntite())
+            dao.inserer(operation.copy(utilisateurId = proprietaire).versEntite())
         } catch (e: SQLiteConstraintException) {
             return  // déjà enfilée : la saisie n'est jamais dupliquée
         }
         scheduler.declencher()
     }
 
-    suspend fun relancer(id: Long) { dao.relancer(id); scheduler.declencher() }
+    /** Une opération ne se manipule que par le compte qui l'a saisie. */
+    private suspend fun possede(id: Long) = dao.parId(id)?.takeIf { it.utilisateurId == sessionManager.utilisateurId() }
+
+    suspend fun relancer(id: Long) {
+        possede(id) ?: return
+        dao.relancer(id); scheduler.declencher()
+    }
 
     suspend fun abandonner(id: Long) {
-        val op = dao.parId(id) ?: return
+        val op = possede(id) ?: return
         // On n'abandonne que ce qui attend une décision : jamais une opération encore à envoyer.
         if (op.statut == StatutOperation.CONFLIT.name || op.statut == StatutOperation.ECHEC_DEFINITIF.name) dao.supprimer(id)
     }
@@ -127,7 +153,7 @@ class SynchronisationRepository @Inject constructor(
      * Refusé pour toute opération sans version de base (écritures financières append-only).
      */
     suspend fun garderMaVersion(id: Long): Boolean {
-        val op = dao.parId(id) ?: return false
+        val op = possede(id) ?: return false
         if (op.statut != StatutOperation.CONFLIT.name || op.versionBase == null) return false
         val versionServeur = op.conflitJson?.let {
             runCatching { json.parseToJsonElement(it).jsonObject["version_serveur"]?.jsonPrimitive?.intOrNull }.getOrNull()
